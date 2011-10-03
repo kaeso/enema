@@ -1,10 +1,10 @@
 ===Syntax===
 
-*[[sub]* - It means where injection substring.
+*[[sub]]* - It means where injection substring.
 
 Example: id=' or 1=[[sub]]--
 
-*cmd* - Variable for command execution if your user rights *sysadmin*
+*[[cmd]]* - Variable for command execution if your user rights *sysadmin*
 
 Example: id=' or 1=[[sub]];[[cmd]]-- ([[cmd]] cannot be used without [[sub]])
 
