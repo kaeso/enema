@@ -1,5 +1,4 @@
 #Query strings
-#Last modified: $WCDATE$
 #${...} - query variables
 
 class error_based():
