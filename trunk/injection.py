@@ -61,7 +61,8 @@ class ErrorBased(QtCore.QThread):
     def buildQuery(self, query, vars=None):
         ms =  txtproc.strToSqlChar(self.vars['ms'], self.vars['db_type'])
         try:
-                if self.vars['db_type'] == "mysql":
+                if self.vars['db_type'] == "mysql"\
+                and (self.vars['task'] =='tables' or self.vars['task'] =='columns'):
                     vars['cdb'] = txtproc.strToSqlChar(vars['cdb'], self.vars['db_type'])
         except Exception:
             pass
@@ -115,7 +116,7 @@ class ErrorBased(QtCore.QThread):
         if self.vars['notInArray']:
             current_db = self.vars['dbName']
             while True:
-                query = self.buildQuery(self.dbType('get_db_name'), {'cdb' : current_db})
+                query = self.buildQuery(error_based.mssql['get_db_name'], {'cdb' : current_db})
                 db_name = web.webRequest(self.vars, query, False)
                 if db_name == "no_content":
                     web.debug(sys._getframe().f_code.co_name + "() -> db_name")
@@ -158,6 +159,7 @@ class ErrorBased(QtCore.QThread):
 #Getting tables
     def getTables(self):
         current_db = self.getCurrDb()
+        print(current_db)
         query = self.buildQuery(self.dbType('tbls_count'), {'cdb' : current_db})
         tblCount = web.webRequest(self.vars, query, False)
         if tblCount == "no_content": 
@@ -167,7 +169,7 @@ class ErrorBased(QtCore.QThread):
         if self.vars['notInArray']:
             current_table = ""
             while True:
-                query = self.buildQuery(self.dbType('get_tbl_name'), {'cdb' : current_db, 'ctbl' : current_table})
+                query = self.buildQuery(error_based.mssql['get_tbl_name'], {'cdb' : current_db, 'ctbl' : current_table})
                 table_name = web.webRequest(self.vars, query, False)
                 if table_name == "no_content":
                     web.debug(sys._getframe().f_code.co_name + "() -> table_name")
@@ -214,7 +216,7 @@ class ErrorBased(QtCore.QThread):
             for i in range (self.vars['tblTreeCount']):
                 current_table = txtproc.strToSqlChar(tables[i], self.vars['db_type'])
                 current_column = ""
-                query = self.buildQuery(self.dbType('columns_count'), {'cdb' : current_db, 'ctbl' : current_table})
+                query = self.buildQuery(error_based.mssql['columns_count'], {'cdb' : current_db, 'ctbl' : current_table})
                 columnsInTable = web.webRequest(self.vars, query, False)
                 if columnsInTable == "no_content": 
                     web.debug(sys._getframe().f_code.co_name + "() -> notInArray -> columnsinTable")
