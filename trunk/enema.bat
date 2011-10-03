@@ -1,1 +1,1 @@
-@"C:\Python\python" "enema.py"
+@"python" "enema.py"
