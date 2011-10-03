@@ -1,6 +1,6 @@
 ===Syntax===
 
-&#91;sub - It means where injection substring.
+[sub] - It means where injection substring.
 
 Example: id=' or 1=[[sub]]--
 
