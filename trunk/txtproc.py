@@ -1,6 +1,6 @@
 """
     $Id$
-    Enema - Text / Strings processing module.
+    Enema module: Text / Strings processing.
     Copyright (C) 2011  Valeriy Bogachuk
         
     This program is free software: you can redistribute it and/or modify

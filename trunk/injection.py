@@ -1,6 +1,6 @@
 """
     $Id$
-    Enema - MySQL / MSSQL injection module
+    Enema module: SQL Injection.
     Copyright (C) 2011  Valeriy Bogachuk
         
     This program is free software: you can redistribute it and/or modify

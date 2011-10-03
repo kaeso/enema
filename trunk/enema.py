@@ -1,6 +1,6 @@
 """
     $Id$
-    Enema - GUI events
+    Enema module: GUI events (main).
     Copyright (C) 2011  Valeriy Bogachuk
     
     This program is free software: you can redistribute it and/or modify
