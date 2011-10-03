@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Projects\enema\form.ui'
 #
-# Created: Mon Oct  3 18:30:54 2011
+# Created: Mon Oct  3 23:52:00 2011
 #      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -106,6 +106,7 @@ class Ui_MainForm(object):
         self.label_23.setObjectName(_fromUtf8("label_23"))
         self.lineMP = QtGui.QLineEdit(self.groupBox)
         self.lineMP.setGeometry(QtCore.QRect(80, 110, 81, 20))
+        self.lineMP.setText(_fromUtf8(""))
         self.lineMP.setObjectName(_fromUtf8("lineMP"))
         self.lineUrl = QtGui.QLineEdit(self.tab)
         self.lineUrl.setGeometry(QtCore.QRect(40, 10, 491, 20))
@@ -755,7 +756,6 @@ class Ui_MainForm(object):
         self.lineMS.setText(QtGui.QApplication.translate("MainForm", "~", None, QtGui.QApplication.UnicodeUTF8))
         self.label_22.setText(QtGui.QApplication.translate("MainForm", "Match symbol:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_23.setText(QtGui.QApplication.translate("MainForm", "Match pattern:", None, QtGui.QApplication.UnicodeUTF8))
-        self.lineMP.setText(QtGui.QApplication.translate("MainForm", "80040e07", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("MainForm", "URL:", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MainForm", "Tables total:", None, QtGui.QApplication.UnicodeUTF8))
         self.totalLabel.setText(QtGui.QApplication.translate("MainForm", "0", None, QtGui.QApplication.UnicodeUTF8))
