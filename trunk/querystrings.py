@@ -1,5 +1,5 @@
-#$Id$
-#ERROR-BASED query strings
+#Query strings
+#Last modified: $WCDATE$
 #${...} - query variables
 
 class error_based():
