@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Projects\trunk\enema\encoder_form.ui'
+# Form implementation generated from reading ui file 'C:\Projects\enema\encoder_form.ui'
 #
-# Created: Mon Oct  3 18:17:32 2011
+# Created: Mon Oct  3 18:30:53 2011
 #      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!
