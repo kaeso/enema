@@ -1,6 +1,6 @@
 """
     $Id$
-    Enema http-request module
+    Enema module: HTTP request.
     Copyright (C) 2011  Valeriy Bogachuk
 
     This program is free software: you can redistribute it and/or modify

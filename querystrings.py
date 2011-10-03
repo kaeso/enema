@@ -1,5 +1,5 @@
 #$Id$
-#MSSQL ERROR-BASED query strings
+#ERROR-BASED query strings
 #${...} - query variables
 
 class error_based():
