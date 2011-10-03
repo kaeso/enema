@@ -1,7 +1,6 @@
 """
     Enema module: SQL Injection.
     Copyright (C) 2011  Valeriy Bogachuk
-    Last modified: $WCDATE$
     
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
