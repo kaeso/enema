@@ -1,4 +1,5 @@
 """
+    $Id$
     Enema http-request module
     Copyright (C) 2011  Valeriy Bogachuk
 

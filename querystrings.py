@@ -1,3 +1,4 @@
+#$Id$
 #MSSQL ERROR-BASED query strings
 #${...} - query variables
 
