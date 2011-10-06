@@ -1,5 +1,5 @@
 """
-    Enema module: Text / Strings processing.
+    Enema module: Text / Strings processing
     Copyright (C) 2011  Valeriy Bogachuk
     
     This program is free software: you can redistribute it and/or modify
@@ -43,12 +43,16 @@ def contentParse(content, match_pattern, match_sybol):
         return "no_content"
     return content[fromStr:toStr]
     
-#Convert string to CONVERT Error generation method:
-def castToConvert(query, match_sybol):
-    MS = strToSqlChar(match_sybol)
-    query = query.replace(MS + '+cast(',  'convert(varchar, ' + MS + '+')
-    query = query.replace(' as varchar)+' + MS, '+' + MS + ')')
-    return query
+#Symbols recovery to readable format
+def recoverSymbols(cmdResult):
+    symbols = {
+    '&lt;' : '<',
+    '&gt;' : '>',
+    '&quot' : '"', 
+    '&nbsp;' : chr(160), 
+    '&#160;' : chr(160)}
+    for key in symbols:
+        cmdResult = cmdResult.replace(key, symbols[key])
+    return cmdResult
 
-    
 

