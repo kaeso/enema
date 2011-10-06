@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Projects\enema\encoder_form.ui'
 #
-# Created: Mon Oct  3 18:30:53 2011
+# Created: Fri Oct  7 01:59:55 2011
 #      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!

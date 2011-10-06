@@ -1,5 +1,5 @@
 """
-    Enema module: HTTP request.
+    Enema module: HTTP request
     Copyright (C) 2011  Valeriy Bogachuk
     
     This program is free software: you can redistribute it and/or modify
@@ -13,7 +13,6 @@
     GNU General Public License for more details.
 """
 
-import os
 import sys
 import e_const
 import txtproc
@@ -26,17 +25,6 @@ from urllib.parse import urlencode
 #Server response debugging
 def debug(strValue):
     print("\n - [x] 'no_content' returned by function", strValue)
-    question = "\n - [!] View html file in browser? [y/n]: "
-    answer = input(question)
-    while (answer !="y" or answer != "n"):
-        if (answer =="n"):
-            print("\nOK. Aborted.")
-            break
-        elif answer == "y":
-            os.system("err_response.html")
-            break
-        else:
-            answer = input(question)
 
 #Injection in cookies?:
 def isCookieInjection(cookie):
