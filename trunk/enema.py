@@ -136,10 +136,14 @@ class EnemaForm(QtGui.QMainWindow):
 #===============================GENERAL-FUNCTIONS=====================================#
 #Get user defined parametes from GUI
     def webData(self):
+        ftpPath = self.ui.lineFtpPath.text()
         if not self.ui.listOfTables.currentItem():
             currTable = ""
         else:
             currTable = self.ui.listOfTables.currentItem().text()
+        if len(ftpPath) > 0:
+            if ftpPath[-1] != "\\":
+                ftpPath += "\\"
         wD = {
               'url' : self.ui.lineUrl.text(), 
               'method' : self.getMethod() , 
@@ -157,7 +161,7 @@ class EnemaForm(QtGui.QMainWindow):
               'login' : self.ui.lineFtpLogin.text(), 
               'password' : self.ui.lineFtpPwd.text(), 
               'ftpFiles': self.ui.lineFtpFile.text().split(";"), 
-              'filePath' : self.ui.lineFtpPath.text(), 
+              'ftpPath' : ftpPath, 
               'ip' : self.ui.lineIP.text(), 
               'cmd' : self.ui.lineCmd.text(), 
               'query_cmd' : self.ui.queryText.toPlainText(), 

