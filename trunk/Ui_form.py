@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Projects\enema\form.ui'
 #
-# Created: Fri Oct  7 01:59:55 2011
+# Created: Mon Oct 10 11:38:55 2011
 #      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -462,6 +462,8 @@ class Ui_MainForm(object):
         self.lpSettings.setObjectName(_fromUtf8("lpSettings"))
         self.spSettings = QtGui.QAction(MainForm)
         self.spSettings.setObjectName(_fromUtf8("spSettings"))
+        self.qEditor = QtGui.QAction(MainForm)
+        self.qEditor.setObjectName(_fromUtf8("qEditor"))
         self.menuSave.addAction(self.saveTables)
         self.menuSave.addAction(self.saveColumns)
         self.menuSave.addAction(self.saveBases)
@@ -475,6 +477,7 @@ class Ui_MainForm(object):
         self.menuLoad.addSeparator()
         self.menuLoad.addAction(self.lsSettings)
         self.menuTools.addAction(self.menuEncoder)
+        self.menuTools.addAction(self.qEditor)
         self.menuHelp.addAction(self.menuAbout)
         self.menubar.addAction(self.menuSave.menuAction())
         self.menubar.addAction(self.menuLoad.menuAction())
@@ -581,6 +584,7 @@ class Ui_MainForm(object):
         self.lsSettings.setText(QtGui.QApplication.translate("MainForm", "Site settings", None, QtGui.QApplication.UnicodeUTF8))
         self.lpSettings.setText(QtGui.QApplication.translate("MainForm", "Program settings", None, QtGui.QApplication.UnicodeUTF8))
         self.spSettings.setText(QtGui.QApplication.translate("MainForm", "Program settings", None, QtGui.QApplication.UnicodeUTF8))
+        self.qEditor.setText(QtGui.QApplication.translate("MainForm", "Query editor", None, QtGui.QApplication.UnicodeUTF8))
 
 
 if __name__ == "__main__":

@@ -141,7 +141,6 @@ def webRequest(args, query, isCmd):
         try:
             content = content.decode(e_const.ENCODING)
         except:
-            print("\n\nCan't decode content!\nDefined charset='" + e_const.ENCODING + "'")
             return "no_content"
         db_data = txtproc.contentParse(content, args['mp'], args['ms'])
     else:

