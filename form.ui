@@ -1449,6 +1449,7 @@ p, li { white-space: pre-wrap; }
      <string>Tools</string>
     </property>
     <addaction name="menuEncoder"/>
+    <addaction name="qEditor"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -1549,6 +1550,11 @@ p, li { white-space: pre-wrap; }
   <action name="spSettings">
    <property name="text">
     <string>Program settings</string>
+   </property>
+  </action>
+  <action name="qEditor">
+   <property name="text">
+    <string>Query editor</string>
    </property>
   </action>
  </widget>
