@@ -1,6 +1,6 @@
 """
     Enema module: Core
-    Copyright (C) 2011  Valeriy Bogachuk
+    Copyright (C) 2011 Valeriy Bogachuk
     
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -90,11 +90,14 @@ class ErrorBased(QtCore.QThread):
         return query
     
 #Current db type selected
-    def dbType(self, key):
+    def dbType(self, todo):
         if self.vars['db_type'] == "mysql":
-            return self.qstrings['mysql_error_based'][key]
+            qstring = self.qstrings['mysql_error_based'][todo]
         else:
-            return self.qstrings['mssql_error_based'][key]
+            qstring = self.qstrings['mssql_error_based'][todo]
+        if (qstring.startswith('"') and qstring.endswith('"')):
+            qstring = qstring[1:-1]
+        return qstring
         
 #Get current database
     def getCurrDb(self):
