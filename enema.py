@@ -1,6 +1,6 @@
 """
     Enema module: GUI events (main)
-    Copyright (C) 2011  Valeriy Bogachuk
+    Copyright (C) 2011 Valeriy Bogachuk
     
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -564,7 +564,7 @@ class EnemaForm(QtGui.QMainWindow):
         else:
             cfgparser.read_file(open(defaultPath))
         self.qstrings = cfgparser
-        
+
 #================================MENU=ABOUT======================================#
     def menuAbout_OnClick(self):
         self.about_frm.show()
