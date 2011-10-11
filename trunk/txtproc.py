@@ -48,7 +48,7 @@ def recoverSymbols(cmdResult):
     symbols = {
     '&lt;' : '<',
     '&gt;' : '>',
-    '&quot' : '"', 
+    '&quot;' : '"', 
     '&nbsp;' : chr(160), 
     '&#160;' : chr(160)}
     for key in symbols:

