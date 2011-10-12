@@ -27,22 +27,6 @@ def strToSqlChar(string, dbtype):
         encoded = ')+char('.join((hex(ord(symbol)) for symbol in string))
     return 'char(' + encoded + ")"
     
-#SQL error parsing:
-def contentParse(content, match_pattern, match_sybol):
-    patternStr = content.find(match_pattern)
-    fromStr = content.find(match_sybol, patternStr, len(content))
-    fromStr += 1
-    toStr = content.find(match_sybol, fromStr, len(content))
-    if (fromStr or toStr) <= 0:
-        file = open("err_response.html", "w")
-        file.write(content)
-        file.close()
-        print("\n==================[SERVER RESPONSE]==================\n\n"\
-                + content +\
-                "\n\n=========[Saved to file: err_response.html===========")
-        return "no_content"
-    return content[fromStr:toStr]
-    
 #Symbols recovery to readable format
 def recoverSymbols(cmdResult):
     symbols = {

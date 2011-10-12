@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Projects\enema\form.ui'
 #
-# Created: Mon Oct 10 11:38:55 2011
+# Created: Wed Oct 12 10:45:37 2011
 #      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -74,16 +74,16 @@ class Ui_MainForm(object):
         self.radioNotInSubstring.setChecked(False)
         self.radioNotInSubstring.setObjectName(_fromUtf8("radioNotInSubstring"))
         self.threadBox = QtGui.QSpinBox(self.groupBox)
-        self.threadBox.setGeometry(QtCore.QRect(40, 280, 41, 20))
+        self.threadBox.setGeometry(QtCore.QRect(10, 280, 41, 20))
         self.threadBox.setMinimum(1)
         self.threadBox.setMaximum(100)
         self.threadBox.setProperty(_fromUtf8("value"), 10)
         self.threadBox.setObjectName(_fromUtf8("threadBox"))
         self.label_5 = QtGui.QLabel(self.groupBox)
-        self.label_5.setGeometry(QtCore.QRect(40, 260, 101, 20))
+        self.label_5.setGeometry(QtCore.QRect(10, 260, 101, 20))
         self.label_5.setObjectName(_fromUtf8("label_5"))
         self.lineTimeout = QtGui.QLineEdit(self.groupBox)
-        self.lineTimeout.setGeometry(QtCore.QRect(90, 280, 41, 20))
+        self.lineTimeout.setGeometry(QtCore.QRect(60, 280, 41, 20))
         self.lineTimeout.setObjectName(_fromUtf8("lineTimeout"))
         self.comboBox_3 = QtGui.QComboBox(self.groupBox)
         self.comboBox_3.setGeometry(QtCore.QRect(10, 20, 81, 21))
@@ -103,6 +103,10 @@ class Ui_MainForm(object):
         self.lineMP.setGeometry(QtCore.QRect(80, 110, 81, 20))
         self.lineMP.setText(_fromUtf8(""))
         self.lineMP.setObjectName(_fromUtf8("lineMP"))
+        self.logCheckBox = QtGui.QCheckBox(self.groupBox)
+        self.logCheckBox.setGeometry(QtCore.QRect(110, 280, 41, 17))
+        self.logCheckBox.setChecked(True)
+        self.logCheckBox.setObjectName(_fromUtf8("logCheckBox"))
         self.lineUrl = QtGui.QLineEdit(self.tab)
         self.lineUrl.setGeometry(QtCore.QRect(40, 10, 491, 20))
         self.lineUrl.setText(_fromUtf8(""))
@@ -507,6 +511,7 @@ class Ui_MainForm(object):
         self.lineMS.setText(QtGui.QApplication.translate("MainForm", "~", None, QtGui.QApplication.UnicodeUTF8))
         self.label_22.setText(QtGui.QApplication.translate("MainForm", "Match symbol:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_23.setText(QtGui.QApplication.translate("MainForm", "Match pattern:", None, QtGui.QApplication.UnicodeUTF8))
+        self.logCheckBox.setText(QtGui.QApplication.translate("MainForm", "Log", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("MainForm", "URL:", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MainForm", "Tables total:", None, QtGui.QApplication.UnicodeUTF8))
         self.totalLabel.setText(QtGui.QApplication.translate("MainForm", "0", None, QtGui.QApplication.UnicodeUTF8))

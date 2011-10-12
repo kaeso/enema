@@ -1,1 +1,2 @@
-@"python" "enema.py"
+@echo off
+start "" "pythonw.exe" "enema.py"
