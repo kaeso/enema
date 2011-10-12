@@ -203,7 +203,7 @@
       <widget class="QSpinBox" name="threadBox">
        <property name="geometry">
         <rect>
-         <x>40</x>
+         <x>10</x>
          <y>280</y>
          <width>41</width>
          <height>20</height>
@@ -222,7 +222,7 @@
       <widget class="QLabel" name="label_5">
        <property name="geometry">
         <rect>
-         <x>40</x>
+         <x>10</x>
          <y>260</y>
          <width>101</width>
          <height>20</height>
@@ -235,7 +235,7 @@
       <widget class="QLineEdit" name="lineTimeout">
        <property name="geometry">
         <rect>
-         <x>90</x>
+         <x>60</x>
          <y>280</y>
          <width>41</width>
          <height>20</height>
@@ -318,6 +318,22 @@
        </property>
        <property name="text">
         <string/>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="logCheckBox">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>280</y>
+         <width>41</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Log</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </widget>

@@ -14,14 +14,17 @@
 """
 
 import os
+import sys
 import txtproc
 import configparser
 from core import ErrorBased
 from PyQt4 import QtCore, QtGui 
 from Ui_form import Ui_MainForm
+from Ui_log_form import Ui_LogForm
 from Ui_encoder_form import Ui_EncoderForm
 from Ui_about_form import Ui_AboutForm
 from Ui_query_editor import Ui_QueryEditorForm
+
 
 #Query editor form GUI class
 class QueryEditorForm(QtGui.QMainWindow):
@@ -205,6 +208,26 @@ class AboutForm(QtGui.QWidget):
         self.ui.setupUi(self)
         #Set current program version
         self.ui.versionLabel.setText("Version: 1.3")
+
+#Log widget GUI class
+class LogForm(QtGui.QWidget):
+    
+    uncheckLogSignal = QtCore.pyqtSignal()
+    
+    def __init__(self, parent=None):
+        QtGui.QWidget.__init__(self, parent)
+        self.ui = Ui_LogForm()
+        self.ui.setupUi(self)
+#SIGNALS-----------------------------------------------------------------------
+        self.ui.clearLogButton.clicked.connect(self.clearLogButton_OnClick)
+        
+    def closeEvent(self, event):
+        self.uncheckLogSignal.emit()
+        self.hide()
+        event.ignore()
+
+    def clearLogButton_OnClick(self):
+        self.ui.logTxtEdit.clear()
         
 #Main form GUI class
 class EnemaForm(QtGui.QMainWindow):
@@ -217,29 +240,39 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.progressBar.hide()
         self.ui.progressBarCmd.hide()
         self.ui.progressBarDump.hide()
-        #Loading settings
-        settings = QtCore.QSettings(os.path.normcase("settings/")  + "enema.ini", QtCore.QSettings.IniFormat)
-        #FTP
-        self.ui.lineIP.setText(settings.value('FTP/ip', ''))
-        self.ui.lineFtpLogin.setText(settings.value('FTP/login', ''))
-        self.ui.lineFtpPwd.setText(settings.value('FTP/password', ''))
-        self.ui.lineFtpFile.setText(settings.value('FTP/files', ''))
-        self.ui.lineFtpPath.setText(settings.value('FTP/path', ''))
-        #SQL user
-        self.ui.lineAddUserLogin.setText(settings.value('sql_user/login', ''))
-        self.ui.lineAddUserPwd.setText(settings.value('sql_user/password', ''))
-        #Etc
-        self.ui.queryText.setText(settings.value('other/query', ''))
-        #Other forms
+        #Forms / widgets
         self.qeditor_frm = QueryEditorForm()
         self.enc_frm = EncoderForm()
         self.about_frm = AboutForm()
+        self.log_frm = LogForm()
+        configPath = os.path.normcase("settings/") + "enema.ini"
+        #Loading settings if ini file exists
+        if os.path.exists(configPath):
+            settings = QtCore.QSettings(configPath, QtCore.QSettings.IniFormat)
+            #FTP
+            self.ui.lineIP.setText(settings.value('FTP/ip', ''))
+            self.ui.lineFtpLogin.setText(settings.value('FTP/login', ''))
+            self.ui.lineFtpPwd.setText(settings.value('FTP/password', ''))
+            self.ui.lineFtpFile.setText(settings.value('FTP/files', ''))
+            self.ui.lineFtpPath.setText(settings.value('FTP/path', ''))
+            #SQL user
+            self.ui.lineAddUserLogin.setText(settings.value('sql_user/login', ''))
+            self.ui.lineAddUserPwd.setText(settings.value('sql_user/password', ''))
+            #Etc
+            self.ui.queryText.setText(settings.value('other/query', ''))
+            #restore window state
+            self.move(settings.value("GUI/mainWpos"))
+            self.log_frm.move(settings.value("GUI/logWpos"))
         #Query strings loading
         self.readQstrings()
-
+        #Showing log widget
+        self.log_frm.show()
+        
 #SIGNAL CONNECTIONS--------------------------------------------------------------------------
         #Query changed in editor
         self.qeditor_frm.qstringsChanged.connect(self.readQstrings)
+        self.ui.logCheckBox.stateChanged.connect(self.logChecked)
+        self.log_frm.uncheckLogSignal.connect(self.uncheckLog)
 #DB_STRUCTURE-TAB ------------
         self.ui.getBasesButton.clicked.connect(self.getBasesButton_OnClick)
         self.ui.tablesButton.clicked.connect(self.tablesButton_OnClick)
@@ -277,6 +310,34 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.comboBox_3.currentIndexChanged.connect(self.dbTypeChanged)
 
 #===============================GENERAL-FUNCTIONS=====================================#
+#When form closing
+    def closeEvent(self, event):
+        settings = QtCore.QSettings(os.path.normcase("settings/") + "enema.ini", QtCore.QSettings.IniFormat)
+        settings.setValue('GUI/mainWpos', self.pos())
+        settings.setValue('GUI/logWpos', self.log_frm.pos())
+        sys.exit(0)
+
+#Log Checkbox checked or unchecked
+    def logChecked(self):
+        if not self.ui.logCheckBox.isChecked():
+            self.log_frm.hide()
+        else:
+            self.log_frm.show()
+            
+    def uncheckLog(self):
+        self.ui.logCheckBox.setChecked(False)
+
+#Add text to log
+    @QtCore.pyqtSlot(str)
+    def addLog(self, logStr):
+        #Autoclean log when blocks more than 3000
+        if self.log_frm.ui.logTxtEdit.document().blockCount() > 3000:
+            self.log_frm.ui.logTxtEdit.clear()
+        self.log_frm.ui.logTxtEdit.append("\n---------------------\n" + logStr)
+        #Autoscrolling
+        sb = self.log_frm.ui.logTxtEdit.verticalScrollBar()
+        sb.setValue(sb.maximum())
+        
 #Get user defined parametes from GUI
     def webData(self):
         ftpPath = self.ui.lineFtpPath.text()
@@ -601,6 +662,8 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.progressBar.setValue(0)
         self.ui.progressBar.show()
         self.t = ErrorBased(wD, self.qstrings)
+        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
+        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
         self.t.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
         self.t.progressSignal.connect(self.updatePb, type=QtCore.Qt.QueuedConnection)
         self.t.start()
@@ -626,6 +689,8 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.progressBar.setValue(0)
         self.ui.progressBar.show()
         self.t = ErrorBased(wD, self.qstrings)
+        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
+        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)    
         self.t.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
         self.t.tblCountSignal.connect(self.setTblCount)
         self.t.tblSignal.connect(self.addTable, type=QtCore.Qt.QueuedConnection)
@@ -653,7 +718,9 @@ class EnemaForm(QtGui.QMainWindow):
         wD['task'] = 'count'
         if not self.ui.listOfTables.currentItem():
             return
-        self.t = ErrorBased(wD, self.qstrings)
+        self.t = ErrorBased(wD, self.qstrings)       
+        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
+        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
         self.t.msgSignal.connect(self.showInfoMsg)
         self.t.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
         self.t.start()
@@ -677,6 +744,8 @@ class EnemaForm(QtGui.QMainWindow):
             tables.append(self.ui.treeOfTables.topLevelItem(table).text(0))
         wD['tables'] = tables
         self.t = ErrorBased(wD, self.qstrings)
+        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
+        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
         self.t.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
         self.t.columnSignal.connect(self.addColumn)
         self.t.progressSignal.connect(self.updatePb)
@@ -710,6 +779,8 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.progressBarDump.show()
         self.ui.progressBarDump.setMaximum(self.ui.tableWidget.rowCount() * len(wD['columns']))
         self.t = ErrorBased(wD, self.qstrings)
+        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
+        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
         self.t.rowDataSignal.connect(self.addRowData, type=QtCore.Qt.QueuedConnection)
         self.t.progressSignal.connect(self.updatePbDump, type=QtCore.Qt.QueuedConnection)
         self.t.start()          
@@ -749,6 +820,8 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.progressBarCmd.setMaximum(0)
         self.ui.progressBarCmd.show()
         self.t = ErrorBased(wD, self.qstrings)
+        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
+        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
         self.t.cmdSignal.connect(self.cmdOutputAppend, type=QtCore.Qt.QueuedConnection)
         self.t.progressSignal.connect(self.updatePbCmd, type=QtCore.Qt.QueuedConnection)
         self.t.start()
@@ -777,6 +850,8 @@ class EnemaForm(QtGui.QMainWindow):
         wD = self.webData()
         wD['task'] = "enable_cmd"
         self.t = ErrorBased(wD, self.qstrings)
+        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
+        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
         self.t.msgSignal.connect(self.showInfoMsg)
         self.t.start()
         
@@ -790,6 +865,8 @@ class EnemaForm(QtGui.QMainWindow):
         else:
             wD['ftp_mode'] = 'send'
         self.t = ErrorBased(wD, self.qstrings)
+        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
+        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
         self.t.start()   
  
 #Query button click    
@@ -797,6 +874,8 @@ class EnemaForm(QtGui.QMainWindow):
         wD = self.webData()
         wD['task'] = "query"
         self.t = ErrorBased(wD, self.qstrings)
+        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
+        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
         self.t.querySignal.connect(self.queryResult)
         self.t.start()
 
@@ -810,6 +889,8 @@ class EnemaForm(QtGui.QMainWindow):
         wD = self.webData()
         wD['task'] = "enable_openrowset"
         self.t = ErrorBased(wD, self.qstrings)
+        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
+        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
         self.t.msgSignal.connect(self.showInfoMsg)
         self.t.start()
         
@@ -818,12 +899,13 @@ class EnemaForm(QtGui.QMainWindow):
         wD = self.webData()
         wD['task'] = "addSqlUser"
         self.t = ErrorBased(wD, self.qstrings)
+        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
+        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
         self.t.msgSignal.connect(self.showInfoMsg)
         self.t.start()
         
 #========================================END==========================================#
 if __name__ == "__main__":
-    import sys
     app = QtGui.QApplication(sys.argv)
     mform = EnemaForm()
     mform.show()
