@@ -113,9 +113,9 @@ class ErrorBased(QtCore.QThread):
     
 #Preparing POST data
     def preparePostData(self, data, query, isCmd):
-        data = data.replace("=[sub]",  "[shgrp_sub]")   #saving sensetive data  
         data = ''.join([x.replace("=",  ":") for x in data])
-        data = data.replace("[shgrp_sub]",  "=[sub]")   #restore sensetive data
+        data = data.replace("[eq]", "=")
+        print(data)
         if isCmd:
             if "[cmd]" in data:
                 data = data.replace("[cmd]", query)

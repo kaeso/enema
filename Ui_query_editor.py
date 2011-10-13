@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Projects\enema\query_editor.ui'
 #
-# Created: Mon Oct 10 22:18:20 2011
+# Created: Wed Oct 12 19:04:25 2011
 #      by: PyQt4 UI code generator 4.8.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -24,11 +24,13 @@ class Ui_QueryEditorForm(object):
         self.centralWidget.setObjectName(_fromUtf8("centralWidget"))
         self.qeTabWidget = QtGui.QTabWidget(self.centralWidget)
         self.qeTabWidget.setGeometry(QtCore.QRect(0, 0, 871, 481))
+        self.qeTabWidget.setDocumentMode(True)
         self.qeTabWidget.setObjectName(_fromUtf8("qeTabWidget"))
         self.tab = QtGui.QWidget()
         self.tab.setObjectName(_fromUtf8("tab"))
         self.tabWidget = QtGui.QTabWidget(self.tab)
         self.tabWidget.setGeometry(QtCore.QRect(0, 0, 871, 421))
+        self.tabWidget.setDocumentMode(True)
         self.tabWidget.setObjectName(_fromUtf8("tabWidget"))
         self.tab_3 = QtGui.QWidget()
         self.tab_3.setObjectName(_fromUtf8("tab_3"))
@@ -349,6 +351,7 @@ class Ui_QueryEditorForm(object):
         self.tab_2.setObjectName(_fromUtf8("tab_2"))
         self.tabWidget_2 = QtGui.QTabWidget(self.tab_2)
         self.tabWidget_2.setGeometry(QtCore.QRect(0, 0, 871, 421))
+        self.tabWidget_2.setDocumentMode(True)
         self.tabWidget_2.setObjectName(_fromUtf8("tabWidget_2"))
         self.tab_13 = QtGui.QWidget()
         self.tab_13.setObjectName(_fromUtf8("tab_13"))
