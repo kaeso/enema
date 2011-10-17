@@ -79,8 +79,9 @@ class ErrorBased(QtCore.QThread):
     def buildUrl(self, strVar, query, isCmd, isCookie):
         if isCookie:
             query = request.quote(query)
-            strVar = strVar.replace("=[sub]", "%3d[sub]")
-            strVar = strVar.replace("=[cmd]", "%3d[cmd]")
+            strVar = strVar.replace("[eq]", "%3d")
+        else:
+            strVar = strVar.replace("[eq]", "=")
         if isCmd:
             if "[cmd]" in strVar:
                 strVar = strVar.replace("[cmd]", query)
@@ -115,7 +116,6 @@ class ErrorBased(QtCore.QThread):
     def preparePostData(self, data, query, isCmd):
         data = ''.join([x.replace("=",  ":") for x in data])
         data = data.replace("[eq]", "=")
-        print(data)
         if isCmd:
             if "[cmd]" in data:
                 data = data.replace("[cmd]", query)
@@ -170,14 +170,11 @@ class ErrorBased(QtCore.QThread):
             if self.isCookieInjection(cookie):
                 cookie = self.buildUrl(cookie, query, isCmd, True)
             else:
-                data = self.buildUrl(data, query, isCmd, False)
-            data = ''.join(data)
-            data = request.quote(data)
+                get_url = self.buildUrl(self.vars['url'], query, isCmd, False)
+            get_url = request.quote(get_url)
             #Replacing important symbols
-            data = data.replace("%3D", "=")
-            data = data.replace("%26", "&")
-            url = self.vars['url'] + "?" + data
-            reqLog = "\n[GET] " + url
+            get_url = get_url.replace("%3D", "=").replace("%26", "&").replace("%3A", ":")
+            reqLog = "\n[GET] " + get_url
             if len(cookie) > 0:
                 reqLog += "\nCookie: " + cookie
                 urlOpener.addheaders = [('User-Agent', e_const.USER_AGENT), ('Cookie', cookie)]
@@ -185,7 +182,7 @@ class ErrorBased(QtCore.QThread):
                 urlOpener.addheaders = [('User-Agent', e_const.USER_AGENT)]
             try:
                 self.reqLogSignal.emit(reqLog)
-                response = urlOpener.open(url, None, self.vars['timeOut'])
+                response = urlOpener.open(get_url, None, self.vars['timeOut'])
                 content = response.read()
             except HTTPError as httpErr: 
                 content = httpErr.read()
