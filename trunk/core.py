@@ -121,8 +121,6 @@ class ErrorBased(QtCore.QThread):
                 data = data.replace("[cmd]", query)
                 if "[sub]" in data:
                     data = data.replace("[sub]", "1")
-                else:
-                    return           
         else:
             if "[cmd]" in data:
                 data = data.replace(";[cmd]", "")
