@@ -1,6 +1,6 @@
 """
     Enema module: GUI events (main)
-    Copyright (C) 2011 Valeriy Bogachuk
+    Copyright (C) 2011 Kaeso
     
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
