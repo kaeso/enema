@@ -2,13 +2,13 @@
 ---------------
 ===SQL injection in GET requests===
 ---------------
-For example vulnerable script - _{{{http://site.com/vuln.aspx?id=1[sub]}}}'_
+For example vulnerable script - {{{http://site.com/vuln.aspx?id=1'}}}
 
 `==> Unclosed quotation mark after the character string '1'`
 
-If injection type is Error-based then ready for injection string using Enema will be - _http://site.com/vuln.aspx?id=1' and 1=[ sub ]--_
+If injection type is Error-based then ready for injection string using Enema will be - _{{{http://site.com/vuln.aspx?id=1' and 1=[sub]--}}}_
 
-For UNION-based sql injections you can use this url - _http://site.com/vuln.aspx?id=1' union all select null,null,[[sub]],null--_
+For UNION-based sql injections you can use this url - _{{{http://site.com/vuln.aspx?id=1' union all select null,null,[sub],null}}}--_
 
 What is *[[sub]]*? This variable tells to our program where inject SQL Substring.
 
