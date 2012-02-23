@@ -50,7 +50,7 @@ For example Cookie string - _session=12345; uid=32321; cartid=' and 1={{{[sub]}}
 
 If variable {{{[sub]}}} or {{{[cmd]}}} found in cookies, then Enema perceives attack as injection in cookies.
 ---------------
-===Buttons and methods on tab "db structure"===
+===Buttons and methods on tab db structure===
 ---------------
 *Tables* - get tables from current database.
 
