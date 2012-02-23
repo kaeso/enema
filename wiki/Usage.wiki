@@ -54,23 +54,23 @@ Drag table or tables from left field and drop it in right. *Columns* - get colum
 
 *`Supported tables extraction methods:`*
 
-1. not in([array])
+1. not in({{{[array]}}})
 
-2. not in([substring]) - *multithreaded*
+2. not in({{{[substring]}}}) - *multithreaded*
 
 *`Supported columns extraction methods:`*
 
-1. not in([array])
+1. not in({{{[array]}}})
 
-2. not in([substring]) - *multithreaded*
+2. not in({{{[substring]}}}) - *multithreaded*
 
 3. by ordinal_position - *multithreaded*
 
 *`Supported database extraction methods:`*
 
-1. not in([array])
+1. not in({{{[array]}}})
 
-2. not in([substring]) - *multithreaded*
+2. not in({{{[substring]}}}) - *multithreaded*
 
 Field "Match pattern" for exclusive cases only.
 Enema parsing sql data between "Match symbols", default match symbol is "~"
