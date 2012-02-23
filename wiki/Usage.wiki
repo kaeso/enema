@@ -1,6 +1,12 @@
 #labels Enema,SQL,Usage
 [#SQL_injection_in_GET_requests]
-[#SQL_injection_in_GET_requests]
+
+[#SQL_injection_in_POST_requests,_Cookies]
+
+[#Buttons_and_methods_on_tab_db_structure]
+
+[#Dump_tab]
+
 ---------------
 ===SQL injection in GET requests===
 ---------------
