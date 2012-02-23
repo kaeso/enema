@@ -2,7 +2,7 @@
 ---------------
 ===SQL injection in GET requests===
 ---------------
-For example vulnerable script - _http://site.com/vuln.aspx?id=1'_
+For example vulnerable script - _{{{http://site.com/vuln.aspx?id=1[sub]}}}'_
 
 `==> Unclosed quotation mark after the character string '1'`
 
