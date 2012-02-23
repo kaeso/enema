@@ -6,7 +6,7 @@ For example vulnerable script - _http://site.com/vuln.aspx?id=1'_
 
 `==> Unclosed quotation mark after the character string '1'`
 
-If injection type is Error-based then ready for injection string using Enema will be - _http://site.com/vuln.aspx?id=1' and 1=[ sub]--_
+If injection type is Error-based then ready for injection string using Enema will be - _http://site.com/vuln.aspx?id=1' and 1=[ sub ]--_
 
 For UNION-based sql injections you can use this url - _http://site.com/vuln.aspx?id=1' union all select null,null,[[sub]],null--_
 
