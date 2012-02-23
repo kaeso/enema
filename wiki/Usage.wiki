@@ -1,5 +1,5 @@
 #labels Enema,SQL,Usage
-[#SQL_injection_in_GET_requests]
+[SQL_injection_in_GET_requests]
 ---------------
 =SQL injection in GET requests=
 ---------------
