@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Projects\enema\form.ui'
 #
-# Created: Sun Feb 26 08:55:45 2012
+# Created: Sun Feb 26 10:53:37 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -50,15 +50,15 @@ class Ui_MainForm(object):
         self.comboBox.setItemText(1, QtGui.QApplication.translate("MainForm", "POST", None, QtGui.QApplication.UnicodeUTF8))
         self.tablesButton = QtGui.QPushButton(self.tab)
         self.tablesButton.setGeometry(QtCore.QRect(10, 200, 91, 23))
-        self.tablesButton.setText(QtGui.QApplication.translate("MainForm", "Tables", None, QtGui.QApplication.UnicodeUTF8))
+        self.tablesButton.setText(QtGui.QApplication.translate("MainForm", "tables", None, QtGui.QApplication.UnicodeUTF8))
         self.tablesButton.setObjectName(_fromUtf8("tablesButton"))
         self.countButton = QtGui.QPushButton(self.tab)
         self.countButton.setGeometry(QtCore.QRect(110, 200, 91, 23))
-        self.countButton.setText(QtGui.QApplication.translate("MainForm", "Count", None, QtGui.QApplication.UnicodeUTF8))
+        self.countButton.setText(QtGui.QApplication.translate("MainForm", "count", None, QtGui.QApplication.UnicodeUTF8))
         self.countButton.setObjectName(_fromUtf8("countButton"))
         self.getColumnsButton = QtGui.QPushButton(self.tab)
         self.getColumnsButton.setGeometry(QtCore.QRect(210, 200, 91, 23))
-        self.getColumnsButton.setText(QtGui.QApplication.translate("MainForm", "Columns", None, QtGui.QApplication.UnicodeUTF8))
+        self.getColumnsButton.setText(QtGui.QApplication.translate("MainForm", "columns", None, QtGui.QApplication.UnicodeUTF8))
         self.getColumnsButton.setObjectName(_fromUtf8("getColumnsButton"))
         self.groupBox = QtGui.QGroupBox(self.tab)
         self.groupBox.setGeometry(QtCore.QRect(410, 200, 171, 301))
@@ -121,10 +121,10 @@ class Ui_MainForm(object):
         self.lineMP.setGeometry(QtCore.QRect(110, 110, 51, 20))
         self.lineMP.setText(_fromUtf8(""))
         self.lineMP.setObjectName(_fromUtf8("lineMP"))
-        self.showLogButton = QtGui.QToolButton(self.groupBox)
-        self.showLogButton.setGeometry(QtCore.QRect(40, 260, 91, 21))
-        self.showLogButton.setText(QtGui.QApplication.translate("MainForm", "Show log ->", None, QtGui.QApplication.UnicodeUTF8))
-        self.showLogButton.setObjectName(_fromUtf8("showLogButton"))
+        self.logButton = QtGui.QToolButton(self.groupBox)
+        self.logButton.setGeometry(QtCore.QRect(40, 260, 91, 21))
+        self.logButton.setText(QtGui.QApplication.translate("MainForm", "show log", None, QtGui.QApplication.UnicodeUTF8))
+        self.logButton.setObjectName(_fromUtf8("logButton"))
         self.lineUrl = QtGui.QLineEdit(self.tab)
         self.lineUrl.setGeometry(QtCore.QRect(40, 10, 471, 20))
         self.lineUrl.setText(_fromUtf8(""))
@@ -157,7 +157,7 @@ class Ui_MainForm(object):
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.cleanThreeButton = QtGui.QPushButton(self.tab)
         self.cleanThreeButton.setGeometry(QtCore.QRect(310, 200, 91, 23))
-        self.cleanThreeButton.setText(QtGui.QApplication.translate("MainForm", "Clear", None, QtGui.QApplication.UnicodeUTF8))
+        self.cleanThreeButton.setText(QtGui.QApplication.translate("MainForm", "clear", None, QtGui.QApplication.UnicodeUTF8))
         self.cleanThreeButton.setObjectName(_fromUtf8("cleanThreeButton"))
         self.listOfTables = QtGui.QListWidget(self.tab)
         self.listOfTables.setGeometry(QtCore.QRect(10, 230, 191, 311))
@@ -283,7 +283,7 @@ class Ui_MainForm(object):
         self.tableWidget.verticalHeader().setDefaultSectionSize(20)
         self.dmpButton = QtGui.QCommandLinkButton(self.tab_4)
         self.dmpButton.setGeometry(QtCore.QRect(430, 30, 91, 41))
-        self.dmpButton.setText(QtGui.QApplication.translate("MainForm", "Start", None, QtGui.QApplication.UnicodeUTF8))
+        self.dmpButton.setText(QtGui.QApplication.translate("MainForm", "start", None, QtGui.QApplication.UnicodeUTF8))
         self.dmpButton.setObjectName(_fromUtf8("dmpButton"))
         self.progressBarDump = QtGui.QProgressBar(self.tab_4)
         self.progressBarDump.setEnabled(True)
@@ -487,10 +487,6 @@ class Ui_MainForm(object):
         self.logTxtEdit.setGeometry(QtCore.QRect(600, 20, 501, 541))
         self.logTxtEdit.setReadOnly(True)
         self.logTxtEdit.setObjectName(_fromUtf8("logTxtEdit"))
-        self.hideLogButton = QtGui.QToolButton(self.centralwidget)
-        self.hideLogButton.setGeometry(QtCore.QRect(600, 570, 81, 21))
-        self.hideLogButton.setText(QtGui.QApplication.translate("MainForm", "<- Hide log", None, QtGui.QApplication.UnicodeUTF8))
-        self.hideLogButton.setObjectName(_fromUtf8("hideLogButton"))
         self.clearLogButton = QtGui.QToolButton(self.centralwidget)
         self.clearLogButton.setGeometry(QtCore.QRect(1020, 570, 81, 21))
         self.clearLogButton.setText(QtGui.QApplication.translate("MainForm", "Clear", None, QtGui.QApplication.UnicodeUTF8))

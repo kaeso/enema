@@ -273,8 +273,7 @@ class EnemaForm(QtGui.QMainWindow):
 #SIGNAL CONNECTIONS--------------------------------------------------------------------------
         #Query changed in editor
         self.qeditor_frm.qstringsChanged.connect(self.readQstrings)
-        self.ui.showLogButton.clicked.connect(self.showLogButton_OnClick)
-        self.ui.hideLogButton.clicked.connect(self.hideLogButton_OnClick)
+        self.ui.logButton.clicked.connect(self.logButton_OnClick)
         self.ui.clearLogButton.clicked.connect(self.clearLogButton_OnClick)
 #DB_STRUCTURE-TAB ------------
         self.ui.getBasesButton.clicked.connect(self.getBasesButton_OnClick)
@@ -719,15 +718,16 @@ class EnemaForm(QtGui.QMainWindow):
         self.t.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
         self.t.start()
         
-#Show log
-    def showLogButton_OnClick(self):
-        self.setFixedSize(1112, 618)
-        self.resize(1112, 618)
-        
-#Hide log
-    def hideLogButton_OnClick(self):
-        self.setFixedSize(591, 618)
-        self.resize(591, 618)
+#Show or Hide log field
+    def logButton_OnClick(self):
+        if self.ui.logButton.text() == "show log":
+            self.setFixedSize(1112, 618)
+            self.resize(1112, 618)
+            self.ui.logButton.setText("hide log")
+        else:
+            self.setFixedSize(591, 618)
+            self.resize(591, 618)
+            self.ui.logButton.setText("show log")
         
 #Cleaning log
     def clearLogButton_OnClick(self):

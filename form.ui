@@ -114,7 +114,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Tables</string>
+       <string>tables</string>
       </property>
      </widget>
      <widget class="QPushButton" name="countButton">
@@ -127,7 +127,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Count</string>
+       <string>count</string>
       </property>
      </widget>
      <widget class="QPushButton" name="getColumnsButton">
@@ -140,7 +140,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Columns</string>
+       <string>columns</string>
       </property>
      </widget>
      <widget class="QGroupBox" name="groupBox">
@@ -329,7 +329,7 @@
         <string/>
        </property>
       </widget>
-      <widget class="QToolButton" name="showLogButton">
+      <widget class="QToolButton" name="logButton">
        <property name="geometry">
         <rect>
          <x>40</x>
@@ -339,7 +339,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Show log -&gt;</string>
+        <string>show log</string>
        </property>
       </widget>
      </widget>
@@ -448,7 +448,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Clear</string>
+       <string>clear</string>
       </property>
      </widget>
      <widget class="QListWidget" name="listOfTables">
@@ -840,7 +840,7 @@ p, li { white-space: pre-wrap; }
        </rect>
       </property>
       <property name="text">
-       <string>Start</string>
+       <string>start</string>
       </property>
      </widget>
      <widget class="QProgressBar" name="progressBarDump">
@@ -1445,19 +1445,6 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="readOnly">
      <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QToolButton" name="hideLogButton">
-    <property name="geometry">
-     <rect>
-      <x>600</x>
-      <y>570</y>
-      <width>81</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;- Hide log</string>
     </property>
    </widget>
    <widget class="QToolButton" name="clearLogButton">
