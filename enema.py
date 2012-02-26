@@ -16,11 +16,14 @@
 import os
 import sys
 import txtproc
+import random
 import configparser
+#---plugins---#
+#import plugins.mssql.test
+#--------------#
 from core import ErrorBased
 from PyQt4 import QtCore, QtGui 
 from Ui_form import Ui_MainForm
-from Ui_log_form import Ui_LogForm
 from Ui_encoder_form import Ui_EncoderForm
 from Ui_about_form import Ui_AboutForm
 from Ui_query_editor import Ui_QueryEditorForm
@@ -30,6 +33,7 @@ from Ui_query_editor import Ui_QueryEditorForm
 class QueryEditorForm(QtGui.QMainWindow):
     
     qstringsChanged = QtCore.pyqtSignal()
+    logSignal = QtCore.pyqtSignal(str)
     
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -42,10 +46,10 @@ class QueryEditorForm(QtGui.QMainWindow):
         
 #Loading querystrings to GUI
     def loadQstrings(self):
-        if os.path.exists(os.path.normcase("settings/") + "qstrings_custom.ini"):
-            settings = QtCore.QSettings(os.path.normcase("settings/") + "qstrings_custom.ini", QtCore.QSettings.IniFormat)
+        if os.path.exists("settings/qstrings_custom.ini"):
+            settings = QtCore.QSettings("settings/qstrings_custom.ini", QtCore.QSettings.IniFormat)
         else:
-            settings = QtCore.QSettings(os.path.normcase("settings/") + "qstrings.ini", QtCore.QSettings.IniFormat)
+            settings = QtCore.QSettings("settings/qstrings.ini", QtCore.QSettings.IniFormat)
         #MSSQL------------------------------------------------------------------
         #bases
         self.ui.q_ms_curr_db_name.setText(settings.value('mssql_error_based/curr_db_name', ''))
@@ -94,7 +98,7 @@ class QueryEditorForm(QtGui.QMainWindow):
         
     def qsSave_OnClick(self):
         #Saving customised querys
-        settings = QtCore.QSettings(os.path.normcase("settings/") + "qstrings_custom.ini", QtCore.QSettings.IniFormat)
+        settings = QtCore.QSettings("settings/qstrings_custom.ini", QtCore.QSettings.IniFormat)
         #MSSQL------------------------------------------------------------------
         #bases
         settings.setValue('mssql_error_based/curr_db_name', self.ui.q_ms_curr_db_name.text())
@@ -141,21 +145,21 @@ class QueryEditorForm(QtGui.QMainWindow):
         settings.setValue('mysql_error_based/query', self.ui.q_my_query.text())
         #---------------------------------------------------------------------------
         settings.sync()
-        print("\n\n [+] Customised query strings saved to: " + os.path.normcase("settings/") + "qstrings_custom.ini")
+        self.logSignal.emit("[+] Customised query strings saved to: " + os.path.abspath("settings/qstrings_custom.ini"))
         self.qstringsChanged.emit()
 
 #Reset query strings to default
     def qsRestore_OnClick(self):
-        customPath = os.path.normcase("settings/") + "qstrings_custom.ini"
+        customPath = "settings/qstrings_custom.ini"
         if os.path.exists(customPath):
             try:
                 os.remove(customPath)
             except Exception:
-                print("\n\n [x] Cannot remove file: " + customPath)
+                self.logSignal.emit("[x] Cannot remove file (access denied): " + os.path.abspath(customPath))
         else:
             return
         self.loadQstrings()
-        print("\n\n [+] Query strings restored to default.")
+        self.logSignal.emit("[+] Query strings restored to default.")
         self.qstringsChanged.emit()
         
 #Enccoder form GUI class
@@ -166,38 +170,57 @@ class EncoderForm(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_EncoderForm()
         self.ui.setupUi(self)
+        self.ui.decodeButton.hide()
 #SIGNALS------------------------------------------------------------------------
         self.ui.encodeButton.clicked.connect(self.encodeButton_OnClick)
-        self.ui.radioChar.toggled.connect(self.radioChanged)
+        self.ui.decodeButton.clicked.connect(self.decodeButton_OnClick)
         self.ui.comboBox.currentIndexChanged.connect(self.comboChanged)
         
 #Encode button click
     def encodeButton_OnClick(self):
+        string = self.ui.lineString.text()
+        if len(string) < 1:
+            return
+        if self.ui.isPlay.isChecked():
+            string = ''.join(random.choice([s.upper(), s]) for s in string)
+        if self.ui.comboBox.currentText() == "Base64":
+            readyStr = txtproc.base64proc(string, "enc")
+            self.ui.textResult.setText(readyStr)
+            return
         if self.ui.radioHex.isChecked():
-            self.ui.textResult.setText(txtproc.strToHex(self.ui.lineString.text()))
+            hexStr = txtproc.strToHex(string)
+            if self.ui.isUrlencoded.isChecked():
+                readyStr = hexStr.replace("0x", "%")
+            else:
+                readyStr = "0x" + hexStr.replace("0x", "")
         else:
             if self.ui.comboBox.currentText() == "MySQL":
-                encResult = txtproc.strToSqlChar(self.ui.lineString.text(), "mysql")
+                readyStr = txtproc.strToSqlChar(string, "mysql")
             else:
-                encResult = txtproc.strToSqlChar(self.ui.lineString.text(), "mssql")
+                readyStr = txtproc.strToSqlChar(string, "mssql")
                 if self.ui.isUrlencoded.isChecked():
-                    encResult = encResult.replace("+",  "%2b")
-            self.ui.textResult.setText(encResult)
- 
+                    readyStr = readyStr.replace("+",  "%2b")
+        self.ui.textResult.setText(readyStr)
+
+#Encode button click
+    def decodeButton_OnClick(self):
+        string = self.ui.lineString.text()
+        readyStr = txtproc.base64proc(string, "dec")
+        self.ui.textResult.setText(readyStr)
+        
 #ComboBox changed:
     def comboChanged(self):
-        if self.ui.comboBox.currentText() == "MySQL":
+        if self.ui.comboBox.currentText() == "Base64":
+            self.ui.decodeButton.show()
+            self.ui.radioChar.setEnabled(False)
+            self.ui.radioHex.setEnabled(False)
             self.ui.isUrlencoded.setEnabled(False)
         else:
+            self.ui.decodeButton.hide()
+            self.ui.radioChar.setEnabled(True)
+            self.ui.radioHex.setEnabled(True)
             self.ui.isUrlencoded.setEnabled(True)
-
-#Char radio selected
-    def radioChanged(self) :
-        if (self.ui.radioChar.isChecked() and self.ui.comboBox.currentText() == "MSSQL"):
-            self.ui.isUrlencoded.setEnabled(True)
-        else:
-            self.ui.isUrlencoded.setEnabled(False)
-
+        
 #About form GUI class
 class AboutForm(QtGui.QWidget):
     
@@ -209,25 +232,6 @@ class AboutForm(QtGui.QWidget):
         #Set current program version
         self.ui.versionLabel.setText("Version: 1.3")
 
-#Log widget GUI class
-class LogForm(QtGui.QWidget):
-    
-    uncheckLogSignal = QtCore.pyqtSignal()
-    
-    def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
-        self.ui = Ui_LogForm()
-        self.ui.setupUi(self)
-#SIGNALS-----------------------------------------------------------------------
-        self.ui.clearLogButton.clicked.connect(self.clearLogButton_OnClick)
-        
-    def closeEvent(self, event):
-        self.uncheckLogSignal.emit()
-        self.hide()
-        event.ignore()
-
-    def clearLogButton_OnClick(self):
-        self.ui.logTxtEdit.clear()
         
 #Main form GUI class
 class EnemaForm(QtGui.QMainWindow):
@@ -237,6 +241,7 @@ class EnemaForm(QtGui.QMainWindow):
         QtGui.QWidget.__init__(self, parent)
         self.ui = Ui_MainForm()
         self.ui.setupUi(self)
+        self.setFixedSize(591, 618)
         self.ui.progressBar.hide()
         self.ui.progressBarCmd.hide()
         self.ui.progressBarDump.hide()
@@ -244,8 +249,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.qeditor_frm = QueryEditorForm()
         self.enc_frm = EncoderForm()
         self.about_frm = AboutForm()
-        self.log_frm = LogForm()
-        configPath = os.path.normcase("settings/") + "enema.ini"
+        configPath = "settings/enema.ini"
         #Loading settings if ini file exists
         if os.path.exists(configPath):
             settings = QtCore.QSettings(configPath, QtCore.QSettings.IniFormat)
@@ -262,17 +266,16 @@ class EnemaForm(QtGui.QMainWindow):
             self.ui.queryText.setText(settings.value('other/query', ''))
             #restore window state
             self.move(settings.value("GUI/mainWpos"))
-            self.log_frm.move(settings.value("GUI/logWpos"))
         #Query strings loading
         self.readQstrings()
         #Showing log widget
-        self.log_frm.show()
         
 #SIGNAL CONNECTIONS--------------------------------------------------------------------------
         #Query changed in editor
         self.qeditor_frm.qstringsChanged.connect(self.readQstrings)
-        self.ui.logCheckBox.stateChanged.connect(self.logChecked)
-        self.log_frm.uncheckLogSignal.connect(self.uncheckLog)
+        self.ui.showLogButton.clicked.connect(self.showLogButton_OnClick)
+        self.ui.hideLogButton.clicked.connect(self.hideLogButton_OnClick)
+        self.ui.clearLogButton.clicked.connect(self.clearLogButton_OnClick)
 #DB_STRUCTURE-TAB ------------
         self.ui.getBasesButton.clicked.connect(self.getBasesButton_OnClick)
         self.ui.tablesButton.clicked.connect(self.tablesButton_OnClick)
@@ -312,32 +315,22 @@ class EnemaForm(QtGui.QMainWindow):
 #===============================GENERAL-FUNCTIONS=====================================#
 #When form closing
     def closeEvent(self, event):
-        settings = QtCore.QSettings(os.path.normcase("settings/") + "enema.ini", QtCore.QSettings.IniFormat)
+        #Saving main and log window position
+        settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
         settings.setValue('GUI/mainWpos', self.pos())
-        settings.setValue('GUI/logWpos', self.log_frm.pos())
         sys.exit(0)
-
-#Log Checkbox checked or unchecked
-    def logChecked(self):
-        if not self.ui.logCheckBox.isChecked():
-            self.log_frm.hide()
-        else:
-            self.log_frm.show()
-            
-    def uncheckLog(self):
-        self.ui.logCheckBox.setChecked(False)
 
 #Add text to log
     @QtCore.pyqtSlot(str)
     def addLog(self, logStr):
         #Autoclean log when blocks more than 3000
-        if self.log_frm.ui.logTxtEdit.document().blockCount() > 3000:
-            self.log_frm.ui.logTxtEdit.clear()
-        self.log_frm.ui.logTxtEdit.append("\n---------------------\n" + logStr)
+        if self.ui.logTxtEdit.document().blockCount() > 3000:
+            self.ui.logTxtEdit.clear()
+        self.ui.logTxtEdit.append("\n" + logStr)
         #Autoscrolling
-        sb = self.log_frm.ui.logTxtEdit.verticalScrollBar()
+        sb = self.ui.logTxtEdit.verticalScrollBar()
         sb.setValue(sb.maximum())
-        
+                
 #Get user defined parametes from GUI
     def webData(self):
         ftpPath = self.ui.lineFtpPath.text()
@@ -483,7 +476,7 @@ class EnemaForm(QtGui.QMainWindow):
 
 #Saving program settings
     def saveProgramSettings_OnClick(self):
-        settings = QtCore.QSettings(os.path.normcase("settings/") + "enema.ini", QtCore.QSettings.IniFormat)
+        settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
         #FTP settings
         settings.setValue('FTP/ip', self.ui.lineIP.text())
         settings.setValue('FTP/login', self.ui.lineFtpLogin.text())
@@ -612,14 +605,15 @@ class EnemaForm(QtGui.QMainWindow):
         self.enc_frm.show()
     
     def queryEditor_OnClick(self):
+        self.qeditor_frm.logSignal.connect(self.addLog)
         self.qeditor_frm.show()
         
 #Reading default or custom query strings
     @QtCore.pyqtSlot()
     def readQstrings(self):
         cfgparser = configparser.ConfigParser()
-        customPath = os.path.normcase("settings/") + "qstrings_custom.ini"
-        defaultPath = os.path.normcase("settings/") + "qstrings.ini"
+        customPath = "settings/qstrings_custom.ini"
+        defaultPath = "settings/qstrings.ini"
         if os.path.exists(customPath):
             cfgparser.read_file(open(customPath))
         else:
@@ -725,6 +719,20 @@ class EnemaForm(QtGui.QMainWindow):
         self.t.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
         self.t.start()
         
+#Show log
+    def showLogButton_OnClick(self):
+        self.setFixedSize(1112, 618)
+        self.resize(1112, 618)
+        
+#Hide log
+    def hideLogButton_OnClick(self):
+        self.setFixedSize(591, 618)
+        self.resize(591, 618)
+        
+#Cleaning log
+    def clearLogButton_OnClick(self):
+        self.ui.logTxtEdit.clear()
+
 #Show Informational MessageBox:
     @QtCore.pyqtSlot(str)
     def showInfoMsg(self, msg):
@@ -905,6 +913,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.t.start()
         
 #========================================END==========================================#
+    
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     mform = EnemaForm()

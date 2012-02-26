@@ -13,11 +13,25 @@
     GNU General Public License for more details.
 """
 
+import base64
+import e_const
+
+#Convert string to base64:
+def base64proc(string, mode):
+    encoding = e_const.ENCODING
+    if mode == "enc":
+        readyStr = base64.b64encode(bytes(string, encoding))
+    else:
+        try:
+            readyStr = base64.b64decode(bytes(string, encoding))
+        except Exception:
+            return " - invalid string - "
+    return str(readyStr, encoding)
+    
 #Convert string to HEX:
 def strToHex(string):
-    encoded = ''.join((hex(ord(symbol)) for symbol in string))
-    encoded = encoded.replace("0x", "")
-    return "0x" + encoded
+    hexStr = ''.join((hex(ord(symbol)) for symbol in string))
+    return hexStr
     
 #Convert string to SQL char:
 def strToSqlChar(string, dbtype):
