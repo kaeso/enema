@@ -15,6 +15,7 @@
 
 import base64
 import e_const
+import random
 
 #Convert string to base64:
 def base64proc(string, mode):
@@ -40,6 +41,11 @@ def strToSqlChar(string, dbtype):
     else:
         encoded = ')+char('.join((hex(ord(symbol)) for symbol in string))
     return 'char(' + encoded + ")"
+
+#Random changing uppercase
+def rndUpCase(string):
+    string = ''.join(random.choice([s.upper(), s]) for s in string)
+    return string
     
 #Symbols recovery to readable format
 def recoverSymbols(cmdResult):

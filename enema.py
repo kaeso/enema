@@ -16,7 +16,6 @@
 import os
 import sys
 import txtproc
-import random
 import configparser
 #---plugins---#
 #import plugins.mssql.test
@@ -182,7 +181,7 @@ class EncoderForm(QtGui.QWidget):
         if len(string) < 1:
             return
         if self.ui.isPlay.isChecked():
-            string = ''.join(random.choice([s.upper(), s]) for s in string)
+            string = txtproc.rndUpCase(string)
         if self.ui.comboBox.currentText() == "Base64":
             readyStr = txtproc.base64proc(string, "enc")
             self.ui.textResult.setText(readyStr)
@@ -347,6 +346,7 @@ class EnemaForm(QtGui.QMainWindow):
               'ms' : self.ui.lineMS.text(), 
               'threads' : int(self.ui.threadBox.value()), 
               'timeOut' : int(self.ui.lineTimeout.text()), 
+              'isRandomUpCase' : self.ui.isRndUpper.isChecked(), 
               'dbListCount' : self.ui.dbListComboBox.count(),
               'dbName' : str(self.ui.dbListComboBox.currentText()), 
               'notInArray' : self.ui.radioNotInArray.isChecked(),
