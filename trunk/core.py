@@ -237,6 +237,8 @@ class ErrorBased(QtCore.QThread):
         '${hex}' : vars.setdefault('hex'), } 
         for key in query_vars:
             query = query.replace(key, str(query_vars[key]))
+        if self.vars['isRandomUpCase']:
+            query = txtproc.rndUpCase(query)
         return query
     
 #Current db type selected

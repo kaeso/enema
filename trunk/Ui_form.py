@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Projects\enema\form.ui'
 #
-# Created: Sun Feb 26 10:53:37 2012
+# Created: Wed Feb 29 19:27:11 2012
 #      by: PyQt4 UI code generator 4.8.5
 #
 # WARNING! All changes made in this file will be lost!
@@ -125,6 +125,10 @@ class Ui_MainForm(object):
         self.logButton.setGeometry(QtCore.QRect(40, 260, 91, 21))
         self.logButton.setText(QtGui.QApplication.translate("MainForm", "show log", None, QtGui.QApplication.UnicodeUTF8))
         self.logButton.setObjectName(_fromUtf8("logButton"))
+        self.isRndUpper = QtGui.QCheckBox(self.groupBox)
+        self.isRndUpper.setGeometry(QtCore.QRect(10, 210, 131, 17))
+        self.isRndUpper.setText(QtGui.QApplication.translate("MainForm", "Random UpCase", None, QtGui.QApplication.UnicodeUTF8))
+        self.isRndUpper.setObjectName(_fromUtf8("isRndUpper"))
         self.lineUrl = QtGui.QLineEdit(self.tab)
         self.lineUrl.setGeometry(QtCore.QRect(40, 10, 471, 20))
         self.lineUrl.setText(_fromUtf8(""))
@@ -188,7 +192,7 @@ class Ui_MainForm(object):
         self.dbListComboBox.setGeometry(QtCore.QRect(410, 520, 131, 21))
         self.dbListComboBox.setObjectName(_fromUtf8("dbListComboBox"))
         self.label_7 = QtGui.QLabel(self.tab)
-        self.label_7.setGeometry(QtCore.QRect(490, 500, 41, 20))
+        self.label_7.setGeometry(QtCore.QRect(470, 500, 41, 20))
         self.label_7.setText(QtGui.QApplication.translate("MainForm", "db:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setObjectName(_fromUtf8("label_7"))
         self.getBasesButton = QtGui.QToolButton(self.tab)
