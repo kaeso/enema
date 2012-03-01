@@ -111,11 +111,16 @@ class ErrorBased(QtCore.QThread):
                     "\n\n>>>Saved to file: err_response.html", True)
             return "no_content"
         return content[fromStr:toStr]
-    
+        
 #Preparing POST data
     def preparePostData(self, data, query, isCmd):
+        #Post data must be Var=value, otherwise function fails when trying to build dictionary.
+        print(data)
+        data = data.replace("=&",  "=[empty]&").replace("\n", "")
+        if  data[-1] == "=":
+            data += "[empty]"
         data = ''.join([x.replace("=",  ":") for x in data])
-        data = data.replace("[eq]", "=")
+        data = data.replace("[eq]", "=").replace("[eq-urlhex]",  "=")
         if isCmd:
             if "[cmd]" in data:
                 data = data.replace("[cmd]", query)
@@ -126,7 +131,11 @@ class ErrorBased(QtCore.QThread):
                 data = data.replace(";[cmd]", "")
             data = data.replace("[sub]", query)
         data = data.split("&")
-        data= dict([s.split(':') for s in data])
+        print(data)
+        data = dict([s.split(':') for s in data])
+        for key, value in data.items():
+            if value == "[empty]":
+                data[key] = ""
         urlEncoded = urlencode(data)
         postData = urlEncoded.encode(e_const.ENCODING)
         return postData
@@ -134,10 +143,10 @@ class ErrorBased(QtCore.QThread):
 #Web request:
     def web_request(self, query, isCmd):
         urlOpener = request.build_opener()
-        data = request.unquote(self.vars['data'])
+        data = self.vars['data']
         cookie = self.vars['cookie']
-        data = data.replace("+",  " ")
-        data = data.replace(":",  "")
+        data = data.replace("+",  " ").replace(":",  "").replace("%3D",  "[eq-urlhex]")
+        data = request.unquote(data)
         if self.vars['method'] == "POST":
             postData = self.preparePostData(data, query, isCmd)
             if self.isCookieInjection(cookie):
@@ -578,6 +587,3 @@ class ErrorBased(QtCore.QThread):
                                  {'login' : self.vars['addUserLogin'], 'password' : self.vars['addUserPassword']})
         self.web_request(query, True)
         self.msgSignal.emit("Add admin user request sent.")
-        
-    def blind_getResponseLenght(self):
-        return
