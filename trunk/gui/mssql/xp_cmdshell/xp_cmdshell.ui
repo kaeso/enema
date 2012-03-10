@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>xp_cmdshell</string>
   </property>
   <widget class="QTableWidget" name="tableWidget">
    <property name="geometry">
