@@ -1,5 +1,5 @@
 """
-    Enema module: Text / Strings processing
+    Enema module (core): Text / Strings processing
     Copyright (C) 2011 Kaeso
     
     This program is free software: you can redistribute it and/or modify
@@ -30,8 +30,11 @@ def base64proc(string, mode):
     return str(readyStr, encoding)
     
 #Convert string to HEX:
-def strToHex(string):
+def strToHex(string, isCmdHex):
     hexStr = ''.join((hex(ord(symbol)) for symbol in string))
+    if isCmdHex:
+        cmdhex = "0x" + hexStr.replace("0x", "")
+        return cmdhex
     return hexStr
     
 #Convert string to SQL char:
@@ -59,4 +62,9 @@ def recoverSymbols(cmdResult):
         cmdResult = cmdResult.replace(key, symbols[key])
     return cmdResult
 
-
+#Some settings in INI file between double quotes, removing qoutes
+def correctQstr(qstring):
+    if (qstring.startswith('"') and qstring.endswith('"')):
+        return qstring[1:-1]
+    return qstring
+    

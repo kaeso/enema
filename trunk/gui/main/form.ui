@@ -47,7 +47,7 @@
    <enum>QTabWidget::Rounded</enum>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTabWidget" name="tabWidget">
+   <widget class="QTabWidget" name="tabs">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -77,7 +77,7 @@
     <property name="documentMode">
      <bool>true</bool>
     </property>
-    <widget class="QWidget" name="tab">
+    <widget class="QWidget" name="db_structureTab">
      <attribute name="title">
       <string>db structure</string>
      </attribute>
@@ -114,7 +114,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>tables</string>
+       <string>Tables</string>
       </property>
      </widget>
      <widget class="QPushButton" name="countButton">
@@ -127,7 +127,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>count</string>
+       <string>Count</string>
       </property>
      </widget>
      <widget class="QPushButton" name="getColumnsButton">
@@ -140,7 +140,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>columns</string>
+       <string>Columns</string>
       </property>
      </widget>
      <widget class="QGroupBox" name="groupBox">
@@ -333,13 +333,13 @@
        <property name="geometry">
         <rect>
          <x>40</x>
-         <y>260</y>
+         <y>240</y>
          <width>91</width>
          <height>21</height>
         </rect>
        </property>
        <property name="text">
-        <string>show log</string>
+        <string>Show log</string>
        </property>
       </widget>
       <widget class="QCheckBox" name="isRndUpper">
@@ -355,6 +355,19 @@
         <string>Random UpCase</string>
        </property>
       </widget>
+      <widget class="QToolButton" name="killButton">
+       <property name="geometry">
+        <rect>
+         <x>40</x>
+         <y>270</y>
+         <width>91</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Kill task</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QLineEdit" name="lineUrl">
       <property name="geometry">
@@ -366,7 +379,7 @@
        </rect>
       </property>
       <property name="text">
-       <string/>
+       <string>http://192.168.1.35/Default.aspx?db=mssql&amp;id=1 and 1=[sub];[cmd]--</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_4">
@@ -461,7 +474,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>clear</string>
+       <string>Clear</string>
       </property>
      </widget>
      <widget class="QListWidget" name="listOfTables">
@@ -599,7 +612,7 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="acceptRichText">
        <bool>false</bool>
@@ -645,7 +658,96 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="tab_4">
+    <widget class="QWidget" name="queryTab">
+     <attribute name="title">
+      <string>query</string>
+     </attribute>
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>571</width>
+        <height>281</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Query</string>
+      </property>
+      <widget class="QPushButton" name="queryButton">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>250</y>
+         <width>101</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Query</string>
+       </property>
+      </widget>
+      <widget class="QTextEdit" name="queryText">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>551</width>
+         <height>111</height>
+        </rect>
+       </property>
+       <property name="documentTitle">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QTextEdit" name="queryOutput">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>160</y>
+         <width>551</width>
+         <height>81</height>
+        </rect>
+       </property>
+       <property name="documentTitle">
+        <string/>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioSelect">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>140</y>
+         <width>91</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string> SELECT TOP</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QRadioButton" name="radioExec">
+       <property name="geometry">
+        <rect>
+         <x>100</x>
+         <y>140</y>
+         <width>151</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>STACKED QURY</string>
+       </property>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="dumpTab">
      <attribute name="title">
       <string>dump</string>
      </attribute>
@@ -846,7 +948,7 @@ p, li { white-space: pre-wrap; }
      <widget class="QCommandLinkButton" name="dmpButton">
       <property name="geometry">
        <rect>
-        <x>430</x>
+        <x>380</x>
         <y>30</y>
         <width>91</width>
         <height>41</height>
@@ -916,534 +1018,18 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt; color:#ff0000;&quot;&gt;WARNING: Separate thread pool for each column!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
-    </widget>
-    <widget class="QWidget" name="tab_3">
-     <attribute name="title">
-      <string>upload / query</string>
-     </attribute>
-     <widget class="QGroupBox" name="groupBox_2">
+     <widget class="QToolButton" name="killDumpButton">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>431</width>
-        <height>111</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>File Upload / Send (FTP)</string>
-      </property>
-      <widget class="QLabel" name="label_9">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>20</y>
-         <width>46</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>IP:</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineIP">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>20</y>
-         <width>121</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineFtpLogin">
-       <property name="geometry">
-        <rect>
-         <x>190</x>
-         <y>20</y>
-         <width>81</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_10">
-       <property name="geometry">
-        <rect>
-         <x>160</x>
-         <y>20</y>
-         <width>46</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Login:</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineFtpPwd">
-       <property name="geometry">
-        <rect>
-         <x>330</x>
-         <y>20</y>
-         <width>91</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="echoMode">
-        <enum>QLineEdit::Password</enum>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_11">
-       <property name="geometry">
-        <rect>
-         <x>280</x>
-         <y>20</y>
-         <width>61</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Password:</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineFtpFile">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>50</y>
-         <width>381</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_12">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>50</y>
-         <width>61</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Files:</string>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_13">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>80</y>
-         <width>31</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Path:</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineFtpPath">
-       <property name="geometry">
-        <rect>
-         <x>40</x>
-         <y>80</y>
-         <width>171</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="ftpButton">
-       <property name="geometry">
-        <rect>
-         <x>340</x>
-         <y>82</y>
-         <width>81</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>GO</string>
-       </property>
-       <property name="flat">
-        <bool>false</bool>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="radioGet">
-       <property name="geometry">
-        <rect>
-         <x>220</x>
-         <y>80</y>
-         <width>51</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>GET</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="radioSend">
-       <property name="geometry">
-        <rect>
-         <x>270</x>
-         <y>80</y>
-         <width>51</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>SEND</string>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QGroupBox" name="groupBox_5">
-      <property name="geometry">
-       <rect>
-        <x>450</x>
-        <y>10</y>
-        <width>131</width>
-        <height>111</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>Add SQL admin</string>
-      </property>
-      <widget class="QLineEdit" name="lineAddUserLogin">
-       <property name="geometry">
-        <rect>
-         <x>60</x>
-         <y>20</y>
-         <width>61</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_16">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>20</y>
-         <width>46</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Login:</string>
-       </property>
-      </widget>
-      <widget class="QLineEdit" name="lineAddUserPwd">
-       <property name="geometry">
-        <rect>
-         <x>70</x>
-         <y>50</y>
-         <width>51</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="echoMode">
-        <enum>QLineEdit::Password</enum>
-       </property>
-      </widget>
-      <widget class="QLabel" name="label_17">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>50</y>
-         <width>61</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Password:</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="addUserButton">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>80</y>
-         <width>81</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Add</string>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QGroupBox" name="groupBox_3">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>130</y>
-        <width>571</width>
-        <height>291</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>Query</string>
-      </property>
-      <widget class="QPushButton" name="queryButton">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>260</y>
-         <width>101</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Query</string>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="queryText">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>30</y>
-         <width>551</width>
-         <height>101</height>
-        </rect>
-       </property>
-       <property name="documentTitle">
-        <string/>
-       </property>
-      </widget>
-      <widget class="QTextEdit" name="queryOutput">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>170</y>
-         <width>551</width>
-         <height>81</height>
-        </rect>
-       </property>
-       <property name="documentTitle">
-        <string/>
-       </property>
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="radioSelect">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>140</y>
-         <width>91</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string> SELECT TOP</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="radioExec">
-       <property name="geometry">
-        <rect>
-         <x>100</x>
-         <y>140</y>
-         <width>151</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>DECLARE, etc...</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="openRowSetButton">
-       <property name="geometry">
-        <rect>
-         <x>440</x>
-         <y>260</y>
-         <width>121</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Enable openrowset</string>
-       </property>
-      </widget>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="tab_2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <attribute name="title">
-      <string>xp_cmdshell</string>
-     </attribute>
-     <widget class="QLabel" name="label_8">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>41</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>CMD&gt;</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineCmd">
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>9</y>
-        <width>531</width>
+        <x>490</x>
+        <y>40</y>
+        <width>91</width>
         <height>21</height>
        </rect>
       </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <stylestrategy>PreferAntialias</stylestrategy>
-       </font>
-      </property>
       <property name="text">
-       <string/>
+       <string>Kill task</string>
       </property>
-     </widget>
-     <widget class="QProgressBar" name="progressBarCmd">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>541</y>
-        <width>441</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="acceptDrops">
-       <bool>false</bool>
-      </property>
-      <property name="toolTip">
-       <string/>
-      </property>
-      <property name="statusTip">
-       <string/>
-      </property>
-      <property name="maximum">
-       <number>0</number>
-      </property>
-      <property name="value">
-       <number>4769</number>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-      <property name="textVisible">
-       <bool>true</bool>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="invertedAppearance">
-       <bool>false</bool>
-      </property>
-      <property name="textDirection">
-       <enum>QProgressBar::BottomToTop</enum>
-      </property>
-      <property name="format">
-       <string>%p%</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="enableXpcmdButton">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>540</y>
-        <width>121</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Enabe xp_cmdshell</string>
-      </property>
-     </widget>
-     <widget class="QTableWidget" name="cmdOutput">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>30</y>
-        <width>571</width>
-        <height>501</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>MS Shell Dlg 2</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAsNeeded</enum>
-      </property>
-      <property name="selectionBehavior">
-       <enum>QAbstractItemView::SelectRows</enum>
-      </property>
-      <property name="verticalScrollMode">
-       <enum>QAbstractItemView::ScrollPerItem</enum>
-      </property>
-      <property name="horizontalScrollMode">
-       <enum>QAbstractItemView::ScrollPerPixel</enum>
-      </property>
-      <property name="showGrid">
-       <bool>false</bool>
-      </property>
-      <property name="columnCount">
-       <number>1</number>
-      </property>
-      <attribute name="horizontalHeaderVisible">
-       <bool>false</bool>
-      </attribute>
-      <attribute name="horizontalHeaderDefaultSectionSize">
-       <number>1500</number>
-      </attribute>
-      <attribute name="horizontalHeaderMinimumSectionSize">
-       <number>1500</number>
-      </attribute>
-      <attribute name="verticalHeaderVisible">
-       <bool>false</bool>
-      </attribute>
-      <attribute name="verticalHeaderDefaultSectionSize">
-       <number>19</number>
-      </attribute>
-      <column/>
      </widget>
     </widget>
    </widget>
@@ -1491,10 +1077,8 @@ p, li { white-space: pre-wrap; }
     <addaction name="saveColumns"/>
     <addaction name="saveBases"/>
     <addaction name="csvExport"/>
-    <addaction name="save_cmdshell"/>
     <addaction name="separator"/>
     <addaction name="ssSettings"/>
-    <addaction name="spSettings"/>
    </widget>
    <widget class="QMenu" name="menuLoad">
     <property name="title">
@@ -1518,9 +1102,25 @@ p, li { white-space: pre-wrap; }
     </property>
     <addaction name="menuAbout"/>
    </widget>
+   <widget class="QMenu" name="menuPlugins">
+    <property name="title">
+     <string>Plugins</string>
+    </property>
+    <widget class="QMenu" name="menuMssql">
+     <property name="title">
+      <string>mssql</string>
+     </property>
+     <addaction name="actionFtp"/>
+     <addaction name="actionAdd_user"/>
+     <addaction name="actionOpenrowset"/>
+     <addaction name="actionXp_cmdshell"/>
+    </widget>
+    <addaction name="menuMssql"/>
+   </widget>
    <addaction name="menuSave"/>
    <addaction name="menuLoad"/>
    <addaction name="menuTools"/>
+   <addaction name="menuPlugins"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="saveTables">
@@ -1616,6 +1216,26 @@ p, li { white-space: pre-wrap; }
   <action name="qEditor">
    <property name="text">
     <string>Query editor</string>
+   </property>
+  </action>
+  <action name="actionFtp">
+   <property name="text">
+    <string>ftp</string>
+   </property>
+  </action>
+  <action name="actionAdd_user">
+   <property name="text">
+    <string>add_user</string>
+   </property>
+  </action>
+  <action name="actionOpenrowset">
+   <property name="text">
+    <string>openrowset</string>
+   </property>
+  </action>
+  <action name="actionXp_cmdshell">
+   <property name="text">
+    <string>xp_cmdshell</string>
    </property>
   </action>
  </widget>

@@ -15,18 +15,24 @@
 
 import os
 import sys
-import txtproc
+import core.txtproc
 import configparser
-#---plugins---#
-#import plugins.mssql.test
-#--------------#
-from core import ErrorBased
+#Plugins
+#ftp
+from plugins.mssql.ftp import FtpWidget
+#add_user
+from plugins.mssql.addUser import AddUserWidget
+#openrowset
+from plugins.mssql.openrowset import OpenrowsetWidget
+#xp_cmdshell
+from plugins.mssql.xp_cmdshell import CmdShellWidget
+#---
+from core.injector import ErrorBased
 from PyQt4 import QtCore, QtGui 
-from Ui_form import Ui_MainForm
-from Ui_encoder_form import Ui_EncoderForm
-from Ui_about_form import Ui_AboutForm
-from Ui_query_editor import Ui_QueryEditorForm
-
+from gui.main.Ui_form import Ui_MainForm
+from gui.main.Ui_encoder_form import Ui_EncoderForm
+from gui.main.Ui_about_form import Ui_AboutForm
+from gui.main.Ui_query_editor import Ui_QueryEditorForm
 
 #Query editor form GUI class
 class QueryEditorForm(QtGui.QMainWindow):
@@ -35,15 +41,16 @@ class QueryEditorForm(QtGui.QMainWindow):
     logSignal = QtCore.pyqtSignal(str)
     
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        QtGui.QWidget.__init__(self, parent, QtCore.Qt.Tool)
         self.ui = Ui_QueryEditorForm()
         self.ui.setupUi(self)
+        self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.loadQstrings()
-#SIGNALS-----------------------------------------------------------------------
+        #SIGNALS-----------------------------------------------------------------------
         self.ui.qsSave.triggered.connect(self.qsSave_OnClick)
         self.ui.qsRestore.triggered.connect(self.qsRestore_OnClick)
         
-#Loading querystrings to GUI
+    #Loading querystrings to GUI
     def loadQstrings(self):
         if os.path.exists("settings/qstrings_custom.ini"):
             settings = QtCore.QSettings("settings/qstrings_custom.ini", QtCore.QSettings.IniFormat)
@@ -65,18 +72,11 @@ class QueryEditorForm(QtGui.QMainWindow):
         self.ui.q_ms_get_column_name2.setText(settings.value('mssql_error_based/get_column_name2', ''))
         self.ui.q_ms_get_column_name3.setText(settings.value('mssql_error_based/get_column_name3', ''))      
         #xp_cmdshell
-        self.ui.q_ms_enable_xp_cmdshell.setText(settings.value('mssql_error_based/enable_xp_cmdshell', ''))
-        self.ui.q_ms_create_tmp_tbl.setText(settings.value('mssql_error_based/create_tmp_tbl', ''))
-        self.ui.q_ms_drop_tmp_tbl.setText(settings.value('mssql_error_based/drop_tmp_tbl', ''))
-        self.ui.q_ms_insert_result.setText(settings.value('mssql_error_based/insert_result', ''))
         self.ui.q_ms_exec_cmdshell.setText(settings.value('mssql_error_based/exec_cmdshell', ''))
-        self.ui.q_ms_tmp_count.setText(settings.value('mssql_error_based/tmp_count', ''))
         self.ui.q_ms_get_row.setText(settings.value('mssql_error_based/get_row', ''))
         #etc
         self.ui.q_ms_rows_count.setText(settings.value('mssql_error_based/rows_count', ''))
         self.ui.q_ms_query.setText(settings.value('mssql_error_based/query', ''))
-        self.ui.q_ms_enable_openrowset.setText(settings.value('mssql_error_based/enable_openrowset', ''))
-        self.ui.q_ms_add_sqluser.setText(settings.value('mssql_error_based/add_sqluser', ''))
         self.ui.q_ms_data_dump.setText(settings.value('mssql_error_based/data_dump', ''))
         #MySQL------------------------------------------------------------------
         #bases
@@ -114,18 +114,11 @@ class QueryEditorForm(QtGui.QMainWindow):
         settings.setValue('mssql_error_based/get_column_name2', self.ui.q_ms_get_column_name2.text())
         settings.setValue('mssql_error_based/get_column_name3', self.ui.q_ms_get_column_name3.text())    
         #xp_cmdshell
-        settings.setValue('mssql_error_based/enable_xp_cmdshell', self.ui.q_ms_enable_xp_cmdshell.text())
-        settings.setValue('mssql_error_based/create_tmp_tbl', self.ui.q_ms_create_tmp_tbl.text())
-        settings.setValue('mssql_error_based/drop_tmp_tbl', self.ui.q_ms_drop_tmp_tbl.text())
-        settings.setValue('mssql_error_based/insert_result', self.ui.q_ms_insert_result.text())
         settings.setValue('mssql_error_based/exec_cmdshell', self.ui.q_ms_exec_cmdshell.text())
-        settings.setValue('mssql_error_based/tmp_count', self.ui.q_ms_tmp_count.text())
         settings.setValue('mssql_error_based/get_row', self.ui.q_ms_get_row.text())
         #etc
         settings.setValue('mssql_error_based/rows_count', self.ui.q_ms_rows_count.text())
         settings.setValue('mssql_error_based/query', self.ui.q_ms_query.text())
-        settings.setValue('mssql_error_based/enable_openrowset', self.ui.q_ms_enable_openrowset.text())
-        settings.setValue('mssql_error_based/add_sqluser', self.ui.q_ms_add_sqluser.text())
         settings.setValue('mssql_error_based/data_dump', self.ui.q_ms_data_dump.text())
         #MySQL------------------------------------------------------------------
         #bases
@@ -147,7 +140,7 @@ class QueryEditorForm(QtGui.QMainWindow):
         self.logSignal.emit("[+] Customised query strings saved to: " + os.path.abspath("settings/qstrings_custom.ini"))
         self.qstringsChanged.emit()
 
-#Reset query strings to default
+    #Reset query strings to default
     def qsRestore_OnClick(self):
         customPath = "settings/qstrings_custom.ini"
         if os.path.exists(customPath):
@@ -166,48 +159,49 @@ class EncoderForm(QtGui.QWidget):
     
     
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        QtGui.QWidget.__init__(self, parent, QtCore.Qt.Tool)
         self.ui = Ui_EncoderForm()
         self.ui.setupUi(self)
+        self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.ui.decodeButton.hide()
-#SIGNALS------------------------------------------------------------------------
+    #SIGNALS------------------------------------------------------------------------
         self.ui.encodeButton.clicked.connect(self.encodeButton_OnClick)
         self.ui.decodeButton.clicked.connect(self.decodeButton_OnClick)
         self.ui.comboBox.currentIndexChanged.connect(self.comboChanged)
         
-#Encode button click
+    #Encode button click
     def encodeButton_OnClick(self):
         string = self.ui.lineString.text()
         if len(string) < 1:
             return
         if self.ui.isPlay.isChecked():
-            string = txtproc.rndUpCase(string)
+            string = core.txtproc.rndUpCase(string)
         if self.ui.comboBox.currentText() == "Base64":
-            readyStr = txtproc.base64proc(string, "enc")
+            readyStr = core.txtproc.base64proc(string, "enc")
             self.ui.textResult.setText(readyStr)
             return
         if self.ui.radioHex.isChecked():
-            hexStr = txtproc.strToHex(string)
+            hexStr = core.txtproc.strToHex(string, False)
             if self.ui.isUrlencoded.isChecked():
                 readyStr = hexStr.replace("0x", "%")
             else:
-                readyStr = "0x" + hexStr.replace("0x", "")
+                readyStr = core.txtproc.strToHex(string, True)
         else:
             if self.ui.comboBox.currentText() == "MySQL":
-                readyStr = txtproc.strToSqlChar(string, "mysql")
+                readyStr = core.txtproc.strToSqlChar(string, "mysql")
             else:
-                readyStr = txtproc.strToSqlChar(string, "mssql")
+                readyStr = core.txtproc.strToSqlChar(string, "mssql")
                 if self.ui.isUrlencoded.isChecked():
                     readyStr = readyStr.replace("+",  "%2b")
         self.ui.textResult.setText(readyStr)
 
-#Encode button click
+    #Encode button click
     def decodeButton_OnClick(self):
         string = self.ui.lineString.text()
-        readyStr = txtproc.base64proc(string, "dec")
+        readyStr = core.txtproc.base64proc(string, "dec")
         self.ui.textResult.setText(readyStr)
         
-#ComboBox changed:
+    #ComboBox changed:
     def comboChanged(self):
         if self.ui.comboBox.currentText() == "Base64":
             self.ui.decodeButton.show()
@@ -225,101 +219,130 @@ class AboutForm(QtGui.QWidget):
     
     
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        QtGui.QWidget.__init__(self, parent,\
+                               QtCore.Qt.Tool |\
+                               QtCore.Qt.WindowTitleHint |\
+                               QtCore.Qt.CustomizeWindowHint)
         self.ui = Ui_AboutForm()
         self.ui.setupUi(self)
+        self.setWindowModality(QtCore.Qt.ApplicationModal)
         #Set current program version
-        self.ui.versionLabel.setText("Version: 1.3")
+        self.ui.versionLabel.setText("Version: 1.5")
 
-        
 #Main form GUI class
 class EnemaForm(QtGui.QMainWindow):
-
     
-    def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+    
+    def __init__(self):
+        QtGui.QMainWindow.__init__(self)
         self.ui = Ui_MainForm()
         self.ui.setupUi(self)
         self.setFixedSize(591, 618)
         self.ui.progressBar.hide()
-        self.ui.progressBarCmd.hide()
         self.ui.progressBarDump.hide()
         #Forms / widgets
-        self.qeditor_frm = QueryEditorForm()
-        self.enc_frm = EncoderForm()
-        self.about_frm = AboutForm()
+        self.qeditor_frm = QueryEditorForm(self)
+        self.enc_frm = EncoderForm(self)
+        self.about_frm = AboutForm(self)
         configPath = "settings/enema.ini"
         #Loading settings if ini file exists
         if os.path.exists(configPath):
             settings = QtCore.QSettings(configPath, QtCore.QSettings.IniFormat)
-            #FTP
-            self.ui.lineIP.setText(settings.value('FTP/ip', ''))
-            self.ui.lineFtpLogin.setText(settings.value('FTP/login', ''))
-            self.ui.lineFtpPwd.setText(settings.value('FTP/password', ''))
-            self.ui.lineFtpFile.setText(settings.value('FTP/files', ''))
-            self.ui.lineFtpPath.setText(settings.value('FTP/path', ''))
-            #SQL user
-            self.ui.lineAddUserLogin.setText(settings.value('sql_user/login', ''))
-            self.ui.lineAddUserPwd.setText(settings.value('sql_user/password', ''))
             #Etc
             self.ui.queryText.setText(settings.value('other/query', ''))
-            #restore window state
-            self.move(settings.value("GUI/mainWpos"))
+            #restoring widgets position
+            widgetPosition = settings.value("GUI/mainWpos")
+            self.move(widgetPosition)
+            self.enc_frm.move(widgetPosition)
+            self.qeditor_frm.move(widgetPosition)
+            self.about_frm.move(widgetPosition)
         #Query strings loading
         self.readQstrings()
-        #Showing log widget
         
+        
+        #self.errBased.setVars(None, None)
 #SIGNAL CONNECTIONS--------------------------------------------------------------------------
         #Query changed in editor
         self.qeditor_frm.qstringsChanged.connect(self.readQstrings)
-        self.ui.logButton.clicked.connect(self.logButton_OnClick)
-        self.ui.clearLogButton.clicked.connect(self.clearLogButton_OnClick)
-#DB_STRUCTURE-TAB ------------
+        #DB_STRUCTURE-TAB
         self.ui.getBasesButton.clicked.connect(self.getBasesButton_OnClick)
         self.ui.tablesButton.clicked.connect(self.tablesButton_OnClick)
         self.ui.countButton.clicked.connect(self.countButton_OnClick)
         self.ui.getColumnsButton.clicked.connect(self.getColumnsButton_OnClick)
         self.ui.cleanThreeButton.clicked.connect(self.cleanThreeButton_OnClick)
-#DUMP-TAB----------------------
+        self.ui.logButton.clicked.connect(self.logButton_OnClick)
+        self.ui.clearLogButton.clicked.connect(self.clearLogButton_OnClick)
+        self.ui.killButton.clicked.connect(self.killTask)
+        self.ui.killDumpButton.clicked.connect(self.killTask)
+        #DUMP-TAB
         self.ui.dmpButton.clicked.connect(self.dmpButton_OnClick)
-#XP_CMDSHELL-TAB ----------
-        self.ui.lineCmd.returnPressed.connect(self.lineCmd_OnPressEnter)
-        self.ui.enableXpcmdButton.clicked.connect(self.enableXpcmdButton_OnClick)
-#upload / query ------------
-        self.ui.ftpButton.clicked.connect(self.ftpButton_OnClick)
+        #QUERY-TAB
         self.ui.queryButton.clicked.connect(self.queryButton_OnClick)
-        self.ui.addUserButton.clicked.connect(self.addUserButton_OnClick)
-        self.ui.openRowSetButton.clicked.connect(self.openRowSetButton_OnClick)
-#Save Menu-----------------  
+        #Save Menu 
         self.ui.saveTables.triggered.connect(self.saveTables_OnClick)
         self.ui.saveColumns.triggered.connect(self.saveColumns_OnClick)
         self.ui.saveBases.triggered.connect(self.saveBases_OnClick)
         self.ui.csvExport.triggered.connect(self.csvExport_OnClick)
-        self.ui.save_cmdshell.triggered.connect(self.save_cmdshell_OnClick)
         self.ui.ssSettings.triggered.connect(self.saveSiteSettings_OnClick)
-        self.ui.spSettings.triggered.connect(self.saveProgramSettings_OnClick)
-#Load Menu-----------------
+        #Load Menu
         self.ui.loadTables.triggered.connect(self.loadTables_OnClick)
         self.ui.loadBases.triggered.connect(self.loadBases_OnClick)
         self.ui.lsSettings.triggered.connect(self.loadSiteSettings_OnClick)
-#Tools Menu----------------
+        #Tools Menu
         self.ui.menuEncoder.triggered.connect(self.menuEncoder_OnClick)
         self.ui.qEditor.triggered.connect(self.queryEditor_OnClick)
-#Help menu-----------------
+        #Help menu
         self.ui.menuAbout.triggered.connect(self.menuAbout_OnClick)
-#Db Type change-----------
+        #Db Type change
         self.ui.comboBox_3.currentIndexChanged.connect(self.dbTypeChanged)
+        
+#-+++++++++++PLUGIN-SIGNAL-CONNECTS++++++++++++#
+        #ftp
+        self.ui.actionFtp.triggered.connect(self.actionFtp_OnClick)
+        #add_user
+        self.ui.actionAdd_user.triggered.connect(self.actionAdd_user_OnClick)
+        #openrowset
+        self.ui.actionOpenrowset.triggered.connect(self.actionOpenrowset_OnClick)
+        #xp_cmdshell
+        self.ui.actionXp_cmdshell.triggered.connect(self.actionXp_cmdshell_OnClick)
+#++++++++++++PLUGIN+SLOTS++++++++++++#
+    #ftp    
+    def actionFtp_OnClick(self):
+        self.pluginWidget = FtpWidget(self.webData(), self.qstrings['mssql_error_based']['exec_cmdshell'], self)
+        self.pluginWidget.logSignal.connect(self.addLog)
+        self.pluginWidget.show()
+        self.pluginWidget.activateWindow()
 
-#===============================GENERAL-FUNCTIONS=====================================#
-#When form closing
+    #add_user       
+    def actionAdd_user_OnClick(self):
+        self.pluginWidget = AddUserWidget(self.webData(), self.qstrings['mssql_error_based']['exec_cmdshell'], self)
+        self.pluginWidget.logSignal.connect(self.addLog)
+        self.pluginWidget.show()
+        self.pluginWidget.activateWindow()
+        
+    #openrowset      
+    def actionOpenrowset_OnClick(self):
+        self.pluginWidget = OpenrowsetWidget(self.webData(), self.qstrings['mssql_error_based']['exec_cmdshell'], self)
+        self.pluginWidget.logSignal.connect(self.addLog)
+        self.pluginWidget.show()
+        self.pluginWidget.activateWindow()
+    
+    
+    def actionXp_cmdshell_OnClick(self):
+        self.pluginWidget = CmdShellWidget(self.webData(), self.qstrings['mssql_error_based'], self)
+        self.pluginWidget.logSignal.connect(self.addLog)
+        self.pluginWidget.show()
+        self.pluginWidget.activateWindow()
+#+++++++++++++++++++++++++++++++#
+
+    #When form closing
     def closeEvent(self, event):
         #Saving main and log window position
         settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
         settings.setValue('GUI/mainWpos', self.pos())
         sys.exit(0)
 
-#Add text to log
-    @QtCore.pyqtSlot(str)
+    #Add text to log
     def addLog(self, logStr):
         #Autoclean log when blocks more than 3000
         if self.ui.logTxtEdit.document().blockCount() > 3000:
@@ -328,17 +351,13 @@ class EnemaForm(QtGui.QMainWindow):
         #Autoscrolling
         sb = self.ui.logTxtEdit.verticalScrollBar()
         sb.setValue(sb.maximum())
-                
-#Get user defined parametes from GUI
+    
+    #Get user defined parametes from GUI
     def webData(self):
-        ftpPath = self.ui.lineFtpPath.text()
         if not self.ui.listOfTables.currentItem():
             currTable = ""
         else:
             currTable = self.ui.listOfTables.currentItem().text()
-        if len(ftpPath) > 0:
-            if ftpPath[-1] != "\\":
-                ftpPath += "\\"
         wD = {
               'url' : self.ui.lineUrl.text(), 
               'method' : self.getMethod() , 
@@ -354,16 +373,8 @@ class EnemaForm(QtGui.QMainWindow):
               'ordinal_position' : self.ui.radioOrdinalPosition.isChecked(), 
               'selected_table' : currTable, 
               'tblTreeCount' : self.ui.treeOfTables.topLevelItemCount(), 
-              'login' : self.ui.lineFtpLogin.text(), 
-              'password' : self.ui.lineFtpPwd.text(), 
-              'ftpFiles': self.ui.lineFtpFile.text().split(";"), 
-              'ftpPath' : ftpPath, 
-              'ip' : self.ui.lineIP.text(), 
-              'cmd' : self.ui.lineCmd.text(), 
               'query_cmd' : self.ui.queryText.toPlainText(), 
               'querySelect' : self.ui.radioSelect.isChecked(), 
-              'addUserLogin' : self.ui.lineAddUserLogin.text(), 
-              'addUserPassword' : self.ui.lineAddUserPwd.text(), 
               'data' : self.ui.textEdit.toPlainText(), 
               'cookie' :  self.ui.lineCookie.text(), 
               'db_type' : self.getDbType(), 
@@ -373,74 +384,108 @@ class EnemaForm(QtGui.QMainWindow):
               'fromPos' : int(self.ui.lineFrom.text()), 
               'toPos' :  int(self.ui.lineTo.text())}
         return wD
+
+    #Sending kill flag to qthread
+    def killTask(self):
+        try:
+            self.qthread.kill()
+        except AttributeError:
+            return
+
+    #Is program busy at this moment
+    def isBusy(self):
+        try:
+            if self.qthread.isRunning():
+                return True
+        except AttributeError:
+            return False
+
+    #Connecting to signals and starting thread
+    def connectAndStart(self):
+        #logSignal
+        self.qthread.logSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
+        #progressSignal
+        self.qthread.progressSignal.connect(self.updatePb, type=QtCore.Qt.QueuedConnection)
+        #dumpProgressSignal
+        self.qthread.dumpProgressSignal.connect(self.updatePbDump, type=QtCore.Qt.QueuedConnection)
+        #msgSignal
+        self.qthread.msgSignal.connect(self.showInfoMsg, type=QtCore.Qt.QueuedConnection)
+        #dbSignal
+        self.qthread.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
+        #columnSignal
+        self.qthread.columnSignal.connect(self.addColumn, type=QtCore.Qt.QueuedConnection)
+        #rowDataSignal
+        self.qthread.rowDataSignal.connect(self.addRowData, type=QtCore.Qt.QueuedConnection)
+        #querySignal
+        self.qthread.querySignal.connect(self.queryResult, type=QtCore.Qt.QueuedConnection)
+        #tblCountSignal
+        self.qthread.tblCountSignal.connect(self.setTblCount, type=QtCore.Qt.QueuedConnection)
+        #tblSignal
+        self.qthread.tblSignal.connect(self.addTable, type=QtCore.Qt.QueuedConnection)
+        #Starting QThread
+        self.qthread.start()
+
+    #Show busy dialog
+    def busyDialog(self):
+        clicked = QtGui.QMessageBox.question(self, "Enema", "Program busy. Kill current task?",\
+                                        QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        if clicked == QtGui.QMessageBox.Yes:
+            self.killTask()
+        else:
+            return
             
-#Db type changed event:
+    #Db type changed event:
     def dbTypeChanged(self):
         if self.getDbType() == "mysql":
             self.ui.radioNotInSubstring.setText("LIMIT")
             self.ui.radioNotInSubstring.setChecked(True)
             self.ui.radioNotInArray.hide()
-            self.ui.tab_2.setEnabled(False)
-            self.ui.groupBox_2.setEnabled(False)
-            self.ui.groupBox_5.setEnabled(False)
-            self.ui.openRowSetButton.setEnabled(False)
-            self.ui.tabWidget.setTabEnabled(1, False)
-            self.ui.tabWidget.setTabEnabled(3, False)
+            self.ui.tabs.setTabEnabled(3, False)
+            self.ui.menuMssql.setEnabled(False)
         else:
-            self.ui.tabWidget.setTabEnabled(1, True)
-            self.ui.tabWidget.setTabEnabled(3, True)
+            self.ui.tabs.setTabEnabled(3, True)
             self.ui.radioNotInSubstring.setText("not in(substring)")
             self.ui.radioNotInArray.show()
             self.ui.radioNotInArray.setChecked(True)
-            self.ui.tab_2.setEnabled(True)
-            self.ui.groupBox_2.setEnabled(True)
-            self.ui.groupBox_5.setEnabled(True)
-            self.ui.openRowSetButton.setEnabled(True)
-        
+            self.ui.menuMssql.setEnabled(True)
+            
 #================================MENU=SAVE=BLOCK======================================#
-#Click on menu save tables
+    #Click on menu save tables
     def saveTables_OnClick(self):
         filePath = QtGui.QFileDialog.getSaveFileName(self, "Save tables",
                                                      QtCore.QDir.homePath(),
                                                      ("Text files (*.txt)"))
         self.writeToFile(filePath, "tables")
         
-#Click on menu save columns 
+    #Click on menu save columns 
     def saveColumns_OnClick(self):
         filePath = QtGui.QFileDialog.getSaveFileName(self, "Save columns", 
                                                      QtCore.QDir.homePath(),
                                                      ("Text files (*.txt)"))
         self.writeToFile(filePath, "columns")
         
-#Click on menu save bases  
+    #Click on menu save bases  
     def saveBases_OnClick(self):
         filePath = QtGui.QFileDialog.getSaveFileName(self, "Save bases",
                                                      QtCore.QDir.homePath(),
                                                      ("Text files (*.txt)"))
         self.writeToFile(filePath, "bases")
 
-#Click on menu csv export
+    #Click on menu csv export
     def csvExport_OnClick(self):
         filePath = QtGui.QFileDialog.getSaveFileName(self, "Export to csv",
                                                      QtCore.QDir.homePath(),
                                                      ("CSV files (*.csv)"))
         self.writeToFile(filePath,  "csv")
-
-#Click on menu save xp_cmdshell output
-    def save_cmdshell_OnClick(self):
-        filePath = QtGui.QFileDialog.getSaveFileName(self, "Save xp_cmdshell output",
-                                                     QtCore.QDir.homePath(),
-                                                     ("Text files (*.txt)"))
-        self.writeToFile(filePath,  "cmd")
         
-#Click on menu save settings
+    #Click on menu save settings
     def saveSiteSettings_OnClick(self):
         filePath = QtGui.QFileDialog.getSaveFileName(self, "Save xp_cmdshell output",
                                                      QtCore.QDir.homePath(),
                                                      ("INI files (*.ini)"))
         self.saveSiteSettings(filePath)
         
-#Write data to file   
+    #Write data to file   
     def writeToFile(self, filePath, save):
         try:
             file = open(filePath, "w")
@@ -464,33 +509,11 @@ class EnemaForm(QtGui.QMainWindow):
                         strLine +=  str(self.ui.tableWidget.item(row, column).data(QtCore.Qt.DisplayRole)) + ";"
                     strLine = strLine[:-1] + "\n"
                 file.write(strLine)
-            else:
-                for row in range(self.ui.cmdOutput.rowCount()):
-                    buff = ""
-                    buff += str(self.ui.cmdOutput.item(row, 1).data(QtCore.Qt.DisplayRole) + "\n")
-                    file.write(buff)
             file.close()
         except Exception:
             return
-
-#Saving program settings
-    def saveProgramSettings_OnClick(self):
-        settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
-        #FTP settings
-        settings.setValue('FTP/ip', self.ui.lineIP.text())
-        settings.setValue('FTP/login', self.ui.lineFtpLogin.text())
-        settings.setValue('FTP/password', self.ui.lineFtpPwd.text())
-        settings.setValue('FTP/files', self.ui.lineFtpFile.text())
-        settings.setValue('FTP/path', self.ui.lineFtpPath.text())
-        settings.setValue('FTP/get', self.ui.radioGet.isChecked())
-        settings.setValue('FTP/send', self.ui.radioSend.isChecked())
-        #Add sql user settings
-        settings.setValue('sql_user/login', self.ui.lineAddUserLogin.text())
-        settings.setValue('sql_user/password', self.ui.lineAddUserPwd.text())
-        settings.setValue('other/query',  self.ui.queryText.toPlainText())
-        settings.sync()
         
-#Saving site settings
+    #Saving site settings
     def saveSiteSettings(self, filepath):
         settings = QtCore.QSettings(filepath, QtCore.QSettings.IniFormat)
         #Making tables list to config format - table1>>table2>>etc...
@@ -525,28 +548,28 @@ class EnemaForm(QtGui.QMainWindow):
         settings.sync()
         
 #================================MENU=LOAD=BLOCK======================================#
-#Click on menu load tables
+    #Click on menu load tables
     def loadTables_OnClick(self):
         filePath = QtGui.QFileDialog.getOpenFileName(self, "Load tables", 
                                                      QtCore.QDir.homePath(),
                                                      ("Text files (*.txt)"))
         self.readFromFile(filePath, "tables")
         
-#Click on menu load bases  
+    #Click on menu load bases  
     def loadBases_OnClick(self):
         filePath = QtGui.QFileDialog.getOpenFileName(self, "Load bases", 
                                                      QtCore.QDir.homePath(),
                                                      ("Text files (*.txt)"))
         self.readFromFile(filePath, "bases")
         
-#Click on menu load site settings  
+    #Click on menu load site settings  
     def loadSiteSettings_OnClick(self):
         filePath = QtGui.QFileDialog.getOpenFileName(self, "Load bases", 
                                                      QtCore.QDir.homePath(),
                                                      ("INI files (*.ini)"))
         self.loadSiteSettings(filePath)
         
-#Read data from file
+    #Read data from file
     def readFromFile(self, filePath, load):
         try:
             file = open(filePath, "r")
@@ -565,7 +588,7 @@ class EnemaForm(QtGui.QMainWindow):
         except Exception:
             return
 
-#Loading site settings
+    #Loading site settings
     def loadSiteSettings(self, filepath):
         settings = QtCore.QSettings(filepath, QtCore.QSettings.IniFormat)
         #Reading tables from config
@@ -602,13 +625,14 @@ class EnemaForm(QtGui.QMainWindow):
 #================================MENU=TOOLS======================================#
     def menuEncoder_OnClick(self):
         self.enc_frm.show()
-    
+        self.enc_frm.activateWindow()
+        
     def queryEditor_OnClick(self):
         self.qeditor_frm.logSignal.connect(self.addLog)
         self.qeditor_frm.show()
+        self.qeditor_frm.activateWindow()
         
-#Reading default or custom query strings
-    @QtCore.pyqtSlot()
+    #Reading default or custom query strings
     def readQstrings(self):
         cfgparser = configparser.ConfigParser()
         customPath = "settings/qstrings_custom.ini"
@@ -618,28 +642,32 @@ class EnemaForm(QtGui.QMainWindow):
         else:
             cfgparser.read_file(open(defaultPath))
         self.qstrings = cfgparser
-
+    
 #================================MENU=ABOUT======================================#
     def menuAbout_OnClick(self):
         self.about_frm.show()
+        self.about_frm.activateWindow()
 
 #=================================DB/TABLES=BLOCK================================#
-#Getting request method
+    #Getting request method
     def getMethod(self):
         if str(self.ui.comboBox.currentText()) == "POST":
             return "POST"
         else:
             return "GET"
  
-#Getting request method
+    #Getting request method
     def getDbType(self):
         if str(self.ui.comboBox_3.currentText()) == "MSSQL":
             return "mssql"
         else:
             return "mysql"
             
-#[...] button click
+    #[...] button click
     def getBasesButton_OnClick(self):
+        if self.isBusy():
+            self.busyDialog()
+            return
         wD = self.webData()
         wD['task'] = "bases"
         if self.ui.radioOrdinalPosition.isChecked():
@@ -654,93 +682,87 @@ class EnemaForm(QtGui.QMainWindow):
             wD['dbName'] = ",'" + str(self.ui.dbListComboBox.currentText()) + "'"
         self.ui.progressBar.setValue(0)
         self.ui.progressBar.show()
-        self.t = ErrorBased(wD, self.qstrings)
-        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
-        self.t.progressSignal.connect(self.updatePb, type=QtCore.Qt.QueuedConnection)
-        self.t.start()
-                
-#Updating main progressBar
-    @QtCore.pyqtSlot(int, bool)
-    def updatePb(self, pbMax, hidePb):
-        if hidePb:
+        self.qthread = ErrorBased(wD, self.qstrings)
+        self.connectAndStart()
+        
+        
+    #Updating main progressBar
+    def updatePb(self, pbMax, taskDone):
+        if taskDone:
             self.ui.progressBar.hide()
             return
         self.ui.progressBar.setMaximum(pbMax)
         self.ui.progressBar.setValue(self.ui.progressBar.value() + 1)
         
-#Get Tables button click      
+    #Get Tables button click      
     def tablesButton_OnClick(self):
+        if self.isBusy():
+            self.busyDialog()
+            return
         wD = self.webData()
         wD['task'] = 'tables'
         if self.ui.radioOrdinalPosition.isChecked():
             self.showInfoMsg("ordinal_position method valid only for columns.")
             return
+        if len(self.ui.lineUrl.text()) < 6 or not ("http" in self.ui.lineUrl.text()):
+            return
         self.ui.listOfTables.clear()
         self.ui.totalLabel.setText("0")
         self.ui.progressBar.setValue(0)
         self.ui.progressBar.show()
-        self.t = ErrorBased(wD, self.qstrings)
-        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)    
-        self.t.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
-        self.t.tblCountSignal.connect(self.setTblCount)
-        self.t.tblSignal.connect(self.addTable, type=QtCore.Qt.QueuedConnection)
-        self.t.progressSignal.connect(self.updatePb, type=QtCore.Qt.QueuedConnection)
-        self.t.start()
+        self.qthread = ErrorBased(wD, self.qstrings)
+        self.connectAndStart()
         
-#Add db to listBox
-    @QtCore.pyqtSlot(str)
+    #Add db to listBox
     def addBase(self, db_name):
         self.ui.dbListComboBox.addItem(db_name)
 
-#Set label value to count of tables in current db
-    @QtCore.pyqtSlot(str)
+    #Set label value to count of tables in current db
     def setTblCount(self, tblCount):
         self.ui.totalLabel.setText(tblCount)
 
-#Add table to ListWidget
-    @QtCore.pyqtSlot(str)
+    #Add table to ListWidget
     def addTable(self, table_name):
         self.ui.listOfTables.addItem(table_name)
             
-#Count button click
+    #Count button click
     def countButton_OnClick(self):
+        if self.isBusy():
+            self.busyDialog()
+            return
         wD = self.webData()
         wD['task'] = 'count'
         if not self.ui.listOfTables.currentItem():
             return
-        self.t = ErrorBased(wD, self.qstrings)       
-        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.msgSignal.connect(self.showInfoMsg)
-        self.t.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
-        self.t.start()
+        self.qthread = ErrorBased(wD, self.qstrings)
+        self.connectAndStart()
+
         
-#Show or Hide log field
+    #Show or Hide log field
     def logButton_OnClick(self):
-        if self.ui.logButton.text() == "show log":
+        if self.ui.logButton.text() == "Show log":
             self.setFixedSize(1112, 618)
             self.resize(1112, 618)
-            self.ui.logButton.setText("hide log")
+            self.ui.logButton.setText("Hide log")
         else:
             self.setFixedSize(591, 618)
             self.resize(591, 618)
-            self.ui.logButton.setText("show log")
+            self.ui.logButton.setText("Show log")
         
-#Cleaning log
+    #Cleaning log
     def clearLogButton_OnClick(self):
         self.ui.logTxtEdit.clear()
 
-#Show Informational MessageBox:
-    @QtCore.pyqtSlot(str)
+    #Show Informational MessageBox:
     def showInfoMsg(self, msg):
         QtGui.QMessageBox.information(self, "Enema", msg, 1, 0)
 
 #==============================COLUMNS=BLOCK=========================================#    
-#Get columns button click       
+    #Get columns button click       
     def getColumnsButton_OnClick(self):
+        if self.isBusy():
+            self.busyDialog()
+            return
         wD = self.webData()
         wD['task'] = 'columns'
         if self.ui.treeOfTables.topLevelItemCount() < 1:
@@ -751,33 +773,33 @@ class EnemaForm(QtGui.QMainWindow):
         for table in range(self.ui.treeOfTables.topLevelItemCount()):
             tables.append(self.ui.treeOfTables.topLevelItem(table).text(0))
         wD['tables'] = tables
-        self.t = ErrorBased(wD, self.qstrings)
-        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
-        self.t.columnSignal.connect(self.addColumn)
-        self.t.progressSignal.connect(self.updatePb)
-        self.t.start()
+        self.qthread = ErrorBased(wD, self.qstrings)
+        self.connectAndStart()
                 
-#Adding columns to TreeWidget
-    @QtCore.pyqtSlot(str, int)
+    #Adding columns to TreeWidget
     def addColumn(self, column_name, i):
         column = QtGui.QTreeWidgetItem()
         column.setText(0, column_name)
         self.ui.treeOfTables.topLevelItem(i).addChild(column)
     
-#Clear button click
+    #Clear button click
     def cleanThreeButton_OnClick(self):
         self.ui.treeOfTables.clear()
 
 #==================================DUMP-BLOCK===========================================# 
-#GO button click        
+    #GO button click        
     def dmpButton_OnClick(self):
+        if self.isBusy():
+            self.busyDialog()
+            return
+        if len(self.ui.lineUrl.text()) < 6 or not ("http" in self.ui.lineUrl.text()):
+            return
+        if len(self.ui.lineTable.text()) < 1\
+        or len(self.ui.lineColumns.text()) < 1\
+        or len(self.ui.lineKey.text()) < 1:
+            return
         wD = self.webData()
         wD['task'] = 'dump'
-        self.ui.tabWidget.setTabEnabled(0, False)
-        self.ui.tabWidget.setTabEnabled(2, False)
-        self.ui.tabWidget.setTabEnabled(3, False)
         self.ui.tableWidget.clear()
         #Building table
         self.ui.tableWidget.setColumnCount(len(wD['columns']))
@@ -786,17 +808,12 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.progressBarDump.setValue(0)
         self.ui.progressBarDump.show()
         self.ui.progressBarDump.setMaximum(self.ui.tableWidget.rowCount() * len(wD['columns']))
-        self.t = ErrorBased(wD, self.qstrings)
-        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.rowDataSignal.connect(self.addRowData, type=QtCore.Qt.QueuedConnection)
-        self.t.progressSignal.connect(self.updatePbDump, type=QtCore.Qt.QueuedConnection)
-        self.t.start()          
+        self.qthread = ErrorBased(wD, self.qstrings)
+        self.connectAndStart()    
 
-#Updating Dump progressBar
-    @QtCore.pyqtSlot(int, bool)
-    def updatePbDump(self, pbMax, hidePb):
-        if hidePb:
+    #Updating Dump progressBar
+    def updatePbDump(self, pbMax, taskDone):
+        if taskDone:
             self.ui.progressBarDump.hide()
             self.ui.tabWidget.setTabEnabled(0, True)
             self.ui.tabWidget.setTabEnabled(2, True)
@@ -804,116 +821,27 @@ class EnemaForm(QtGui.QMainWindow):
             return
         self.ui.progressBarDump.setValue(self.ui.progressBarDump.value() + 1)
         
-#Add row data
-    @QtCore.pyqtSlot(int, int, str)
+    #Add row data
     def addRowData(self,  tNum, num,  rowData):
         rData = QtGui.QTableWidgetItem()
         rData.setText(rowData)
         self.ui.tableWidget.setItem((tNum - int(self.ui.lineFrom.text()) - 1), num, rData)
-
-#Update current position:
-
-    @QtCore.pyqtSlot(str)
-    def addPosition(self, position):
-        self.ui.label_23.setText(position)
         
-#=============================XP_CMDSHELL=BLOCK=======================================# 
-#Press Enter in lineCmd
-    def lineCmd_OnPressEnter(self):
-        wD = self.webData()
-        wD['task'] = "cmd"
-        self.ui.lineCmd.clear()
-        self.ui.cmdOutput.clear()
-        self.ui.progressBar.setValue(0)
-        self.ui.progressBarCmd.setMaximum(0)
-        self.ui.progressBarCmd.show()
-        self.t = ErrorBased(wD, self.qstrings)
-        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.cmdSignal.connect(self.cmdOutputAppend, type=QtCore.Qt.QueuedConnection)
-        self.t.progressSignal.connect(self.updatePbCmd, type=QtCore.Qt.QueuedConnection)
-        self.t.start()
-
-#Updating CMD progressBar
-    @QtCore.pyqtSlot(int, bool)
-    def updatePbCmd(self, pbMax, hidePb):
-        if hidePb:
-            self.ui.progressBarCmd.hide()
-            return
-        self.ui.progressBarCmd.setMaximum(pbMax)
-        self.ui.progressBarCmd.setValue(self.ui.progressBarCmd.value() + 1)
-        
-#Add text to textOutput
-    @QtCore.pyqtSlot(int, str, bool, int)
-    def cmdOutputAppend(self, rowNum, string, build, rowsCount):
-        if build:
-            self.ui.cmdOutput.setRowCount(rowsCount)
-            return
-        rData = QtGui.QTableWidgetItem()
-        rData.setText(string)
-        self.ui.cmdOutput.setItem(rowNum, 0, rData)
-
-#Enable xp_cmdshell button click    
-    def enableXpcmdButton_OnClick(self):
-        wD = self.webData()
-        wD['task'] = "enable_cmd"
-        self.t = ErrorBased(wD, self.qstrings)
-        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.msgSignal.connect(self.showInfoMsg)
-        self.t.start()
-        
-#==============================UPLOAD/QUERY=BLOCK=================================#
-#FTP Upload button click        
-    def ftpButton_OnClick(self):
-        wD = self.webData()
-        wD['task'] = "ftp"
-        if self.ui.radioGet.isChecked():
-            wD['ftp_mode'] = 'get'
-        else:
-            wD['ftp_mode'] = 'send'
-        self.t = ErrorBased(wD, self.qstrings)
-        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.start()   
- 
-#Query button click    
+#==============================QUERY=BLOCK=================================#
+    #Query button click    
     def queryButton_OnClick(self):
+        if self.isBusy():
+            return
         wD = self.webData()
         wD['task'] = "query"
-        self.t = ErrorBased(wD, self.qstrings)
-        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.querySignal.connect(self.queryResult)
-        self.t.start()
+        self.qthread = ErrorBased(wD, self.qstrings)
+        self.connectAndStart()
 
-#Set query result
-    @QtCore.pyqtSlot(str)
+    #Set query result
     def queryResult(self, result):
         self.ui.queryOutput.setText(result)
-        
-#Enable OPENROWSET button click    
-    def openRowSetButton_OnClick(self):
-        wD = self.webData()
-        wD['task'] = "enable_openrowset"
-        self.t = ErrorBased(wD, self.qstrings)
-        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.msgSignal.connect(self.showInfoMsg)
-        self.t.start()
-        
-#Add user button click 
-    def addUserButton_OnClick(self):
-        wD = self.webData()
-        wD['task'] = "addSqlUser"
-        self.t = ErrorBased(wD, self.qstrings)
-        self.t.debugSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.reqLogSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        self.t.msgSignal.connect(self.showInfoMsg)
-        self.t.start()
-        
 #========================================END==========================================#
-    
+
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     mform = EnemaForm()

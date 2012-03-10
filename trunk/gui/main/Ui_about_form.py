@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Projects\enema\about_form.ui'
+# Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\main\about_form.ui'
 #
-# Created: Thu Feb  2 09:31:57 2012
-#      by: PyQt4 UI code generator 4.8.5
+# Created: Sat Mar 10 14:46:27 2012
+#      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -20,10 +20,54 @@ class Ui_AboutForm(object):
         AboutForm.resize(531, 419)
         AboutForm.setMinimumSize(QtCore.QSize(531, 419))
         AboutForm.setMaximumSize(QtCore.QSize(531, 419))
-        AboutForm.setWindowTitle(QtGui.QApplication.translate("AboutForm", "About", None, QtGui.QApplication.UnicodeUTF8))
         AboutForm.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
         self.textBrowser = QtGui.QTextBrowser(AboutForm)
         self.textBrowser.setGeometry(QtCore.QRect(10, 160, 511, 221))
+        self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
+        self.label_5 = QtGui.QLabel(AboutForm)
+        self.label_5.setGeometry(QtCore.QRect(130, 130, 311, 21))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setItalic(False)
+        self.label_5.setFont(font)
+        self.label_5.setObjectName(_fromUtf8("label_5"))
+        self.label = QtGui.QLabel(AboutForm)
+        self.label.setGeometry(QtCore.QRect(210, 10, 91, 51))
+        font = QtGui.QFont()
+        font.setPointSize(20)
+        self.label.setFont(font)
+        self.label.setObjectName(_fromUtf8("label"))
+        self.label_4 = QtGui.QLabel(AboutForm)
+        self.label_4.setGeometry(QtCore.QRect(220, 80, 111, 21))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setItalic(False)
+        self.label_4.setFont(font)
+        self.label_4.setObjectName(_fromUtf8("label_4"))
+        self.okButton = QtGui.QPushButton(AboutForm)
+        self.okButton.setGeometry(QtCore.QRect(210, 390, 91, 21))
+        self.okButton.setObjectName(_fromUtf8("okButton"))
+        self.label_2 = QtGui.QLabel(AboutForm)
+        self.label_2.setGeometry(QtCore.QRect(160, 60, 211, 16))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setItalic(False)
+        self.label_2.setFont(font)
+        self.label_2.setObjectName(_fromUtf8("label_2"))
+        self.versionLabel = QtGui.QLabel(AboutForm)
+        self.versionLabel.setGeometry(QtCore.QRect(130, 110, 101, 16))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setItalic(False)
+        self.versionLabel.setFont(font)
+        self.versionLabel.setObjectName(_fromUtf8("versionLabel"))
+
+        self.retranslateUi(AboutForm)
+        QtCore.QObject.connect(self.okButton, QtCore.SIGNAL(_fromUtf8("clicked()")), AboutForm.close)
+        QtCore.QMetaObject.connectSlotsByName(AboutForm)
+
+    def retranslateUi(self, AboutForm):
+        AboutForm.setWindowTitle(QtGui.QApplication.translate("AboutForm", "About", None, QtGui.QApplication.UnicodeUTF8))
         self.textBrowser.setHtml(QtGui.QApplication.translate("AboutForm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -649,70 +693,25 @@ class Ui_AboutForm(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Courier New,courier\'; font-size:8pt;\">copy of the Program in return for a fee.</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Courier New,courier\'; font-size:8pt;\"></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Courier New,courier\'; font-size:8pt;\">                     END OF TERMS AND CONDITIONS</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
-        self.label_5 = QtGui.QLabel(AboutForm)
-        self.label_5.setGeometry(QtCore.QRect(130, 130, 311, 21))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setItalic(False)
-        self.label_5.setFont(font)
         self.label_5.setText(QtGui.QApplication.translate("AboutForm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:12pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Mail me your ideas and bug reports to</span><span style=\" font-size:10pt;\"> </span><a href=\"mailto:shsmoker@gmail.com\"><span style=\" font-size:8pt; text-decoration: underline; color:#0000ff;\">shsmoker@gmail.com</span></a></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setObjectName(_fromUtf8("label_5"))
-        self.label = QtGui.QLabel(AboutForm)
-        self.label.setGeometry(QtCore.QRect(210, 10, 91, 51))
-        font = QtGui.QFont()
-        font.setPointSize(20)
-        self.label.setFont(font)
         self.label.setText(QtGui.QApplication.translate("AboutForm", "Enema", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setObjectName(_fromUtf8("label"))
-        self.label_4 = QtGui.QLabel(AboutForm)
-        self.label_4.setGeometry(QtCore.QRect(220, 80, 111, 21))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setItalic(False)
-        self.label_4.setFont(font)
         self.label_4.setText(QtGui.QApplication.translate("AboutForm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:12pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">© Kaeso</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setObjectName(_fromUtf8("label_4"))
-        self.okButton = QtGui.QPushButton(AboutForm)
-        self.okButton.setGeometry(QtCore.QRect(210, 390, 91, 21))
         self.okButton.setText(QtGui.QApplication.translate("AboutForm", "OK", None, QtGui.QApplication.UnicodeUTF8))
-        self.okButton.setObjectName(_fromUtf8("okButton"))
-        self.label_2 = QtGui.QLabel(AboutForm)
-        self.label_2.setGeometry(QtCore.QRect(160, 60, 211, 16))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setItalic(False)
-        self.label_2.setFont(font)
         self.label_2.setText(QtGui.QApplication.translate("AboutForm", "Powerfull SQL injection tool", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setObjectName(_fromUtf8("label_2"))
-        self.versionLabel = QtGui.QLabel(AboutForm)
-        self.versionLabel.setGeometry(QtCore.QRect(130, 110, 101, 16))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setItalic(False)
-        self.versionLabel.setFont(font)
         self.versionLabel.setText(QtGui.QApplication.translate("AboutForm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:12pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">version</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;\"></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.versionLabel.setObjectName(_fromUtf8("versionLabel"))
-
-        self.retranslateUi(AboutForm)
-        QtCore.QObject.connect(self.okButton, QtCore.SIGNAL(_fromUtf8("clicked()")), AboutForm.close)
-        QtCore.QMetaObject.connectSlotsByName(AboutForm)
-
-    def retranslateUi(self, AboutForm):
-        pass
 
 
 if __name__ == "__main__":
