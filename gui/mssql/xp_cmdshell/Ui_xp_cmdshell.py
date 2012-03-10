@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\mssql\xp_cmdshell\xp_cmdshell.ui'
+# Form implementation generated from reading ui file 'C:\Projects\enema\gui\mssql\xp_cmdshell\xp_cmdshell.ui'
 #
-# Created: Sat Mar 10 14:46:30 2012
+# Created: Sat Mar 10 16:33:41 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -79,7 +79,7 @@ class Ui_cmdshellWidget(object):
         QtCore.QMetaObject.connectSlotsByName(cmdshellWidget)
 
     def retranslateUi(self, cmdshellWidget):
-        cmdshellWidget.setWindowTitle(QtGui.QApplication.translate("cmdshellWidget", "Form", None, QtGui.QApplication.UnicodeUTF8))
+        cmdshellWidget.setWindowTitle(QtGui.QApplication.translate("cmdshellWidget", "xp_cmdshell", None, QtGui.QApplication.UnicodeUTF8))
         self.killButton.setText(QtGui.QApplication.translate("cmdshellWidget", "Kill", None, QtGui.QApplication.UnicodeUTF8))
         self.enableButton.setText(QtGui.QApplication.translate("cmdshellWidget", "Enabe xp_cmdshell", None, QtGui.QApplication.UnicodeUTF8))
         self.label_8.setText(QtGui.QApplication.translate("cmdshellWidget", "CMD>", None, QtGui.QApplication.UnicodeUTF8))
