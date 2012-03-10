@@ -815,9 +815,6 @@ class EnemaForm(QtGui.QMainWindow):
     def updatePbDump(self, pbMax, taskDone):
         if taskDone:
             self.ui.progressBarDump.hide()
-            self.ui.tabWidget.setTabEnabled(0, True)
-            self.ui.tabWidget.setTabEnabled(2, True)
-            self.ui.tabWidget.setTabEnabled(3, True)
             return
         self.ui.progressBarDump.setValue(self.ui.progressBarDump.value() + 1)
         
@@ -826,7 +823,6 @@ class EnemaForm(QtGui.QMainWindow):
         rData = QtGui.QTableWidgetItem()
         rData.setText(rowData)
         self.ui.tableWidget.setItem((tNum - int(self.ui.lineFrom.text()) - 1), num, rData)
-        
 #==============================QUERY=BLOCK=================================#
     #Query button click    
     def queryButton_OnClick(self):

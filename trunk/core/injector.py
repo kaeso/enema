@@ -296,33 +296,33 @@ class ErrorBased(QtCore.QThread):
         current_db = self.getCurrDb()
         if current_db == 'no_db':
             return
-        self.vars['cdb'] = current_db
         columns = self.vars['columns']
+        self.vars['cdb'] = current_db
         for num in range (len(columns)):
             tQueue = Queue()
             for tNum in range(self.vars['fromPos'] + 1, self.vars['toPos'] + 1):
                 tQueue.put(tNum)
-            for i in range(self.vars['threads']): 
-                self.vars['column'] = str(columns[num])
-                self.vars['num'] = str(tNum)
-                t = threading.Thread(target=self.doDump, args=(tNum, tQueue, self.vars))  
+            for i in range(self.vars['threads']):  
+                t = threading.Thread(target=self.doDump, args=(tNum, tQueue, str(columns[num]), num))  
                 t.start()
                 time.sleep(0.1)
             
 #Data dumping           
-    def doDump(self, tNum, tQueue, vars):
-        while not self.killed:
+    def doDump(self, tNum, tQueue, column, num):
+        while True:
             try:  
                 tNum = tQueue.get_nowait()
             except Exception:  
                 break
-            query = self.wq.buildQuery(self.dbType('data_dump'), vars)
-            rowData = self.wq.httpRequest(query, False, vars)
+            self.vars['column'] = column
+            self.vars['num'] = str(tNum)
+            query = self.wq.buildQuery(self.dbType('data_dump'), self.vars)
+            rowData = self.wq.httpRequest(query, False, self.vars)
             if rowData == "no_content":
                 rowData = "NULL"
-            self.rowDataSignal.emit(tNum, vars['num'], rowData)
+            self.rowDataSignal.emit(tNum, num, rowData)
             time.sleep(0.1)
             tQueue.task_done()
-            self.dumpProgressSignal.emit(0, False)
-        self.dumpProgressSignal.emit(0, True)
+            self.progressSignal.emit(0, False)
+        self.progressSignal.emit(0, True)
         

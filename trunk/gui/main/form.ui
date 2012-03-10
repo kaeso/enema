@@ -831,7 +831,7 @@ p, li { white-space: pre-wrap; }
        <locale language="English" country="UnitedStates"/>
       </property>
       <property name="text">
-       <string/>
+       <string>customers</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineTo">
@@ -863,7 +863,7 @@ p, li { white-space: pre-wrap; }
        <locale language="English" country="UnitedStates"/>
       </property>
       <property name="text">
-       <string/>
+       <string>id;username;password;email</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineFrom">
@@ -898,7 +898,7 @@ p, li { white-space: pre-wrap; }
        <locale language="English" country="UnitedStates"/>
       </property>
       <property name="text">
-       <string/>
+       <string>id</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_2">

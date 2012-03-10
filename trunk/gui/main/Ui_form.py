@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\main\form.ui'
+# Form implementation generated from reading ui file 'C:\Projects\enema\gui\main\form.ui'
 #
-# Created: Sat Mar 10 14:46:28 2012
+# Created: Sat Mar 10 17:05:35 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -238,7 +238,6 @@ class Ui_MainForm(object):
         self.lineTable = QtGui.QLineEdit(self.dumpTab)
         self.lineTable.setGeometry(QtCore.QRect(50, 10, 141, 20))
         self.lineTable.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
-        self.lineTable.setText(_fromUtf8(""))
         self.lineTable.setObjectName(_fromUtf8("lineTable"))
         self.lineTo = QtGui.QLineEdit(self.dumpTab)
         self.lineTo.setGeometry(QtCore.QRect(300, 40, 71, 20))
@@ -247,7 +246,6 @@ class Ui_MainForm(object):
         self.lineColumns = QtGui.QLineEdit(self.dumpTab)
         self.lineColumns.setGeometry(QtCore.QRect(260, 10, 321, 20))
         self.lineColumns.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
-        self.lineColumns.setText(_fromUtf8(""))
         self.lineColumns.setObjectName(_fromUtf8("lineColumns"))
         self.lineFrom = QtGui.QLineEdit(self.dumpTab)
         self.lineFrom.setEnabled(True)
@@ -257,7 +255,6 @@ class Ui_MainForm(object):
         self.lineKey = QtGui.QLineEdit(self.dumpTab)
         self.lineKey.setGeometry(QtCore.QRect(80, 40, 41, 20))
         self.lineKey.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
-        self.lineKey.setText(_fromUtf8(""))
         self.lineKey.setObjectName(_fromUtf8("lineKey"))
         self.label_2 = QtGui.QLabel(self.dumpTab)
         self.label_2.setGeometry(QtCore.QRect(10, 10, 51, 20))
@@ -442,8 +439,11 @@ class Ui_MainForm(object):
         self.label_19.setText(QtGui.QApplication.translate("MainForm", "Primary key:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_20.setText(QtGui.QApplication.translate("MainForm", "To:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_21.setText(QtGui.QApplication.translate("MainForm", "From:", None, QtGui.QApplication.UnicodeUTF8))
+        self.lineTable.setText(QtGui.QApplication.translate("MainForm", "customers", None, QtGui.QApplication.UnicodeUTF8))
         self.lineTo.setText(QtGui.QApplication.translate("MainForm", "10", None, QtGui.QApplication.UnicodeUTF8))
+        self.lineColumns.setText(QtGui.QApplication.translate("MainForm", "id;username;password;email", None, QtGui.QApplication.UnicodeUTF8))
         self.lineFrom.setText(QtGui.QApplication.translate("MainForm", "0", None, QtGui.QApplication.UnicodeUTF8))
+        self.lineKey.setText(QtGui.QApplication.translate("MainForm", "id", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("MainForm", "Table:", None, QtGui.QApplication.UnicodeUTF8))
         self.dmpButton.setText(QtGui.QApplication.translate("MainForm", "start", None, QtGui.QApplication.UnicodeUTF8))
         self.progressBarDump.setFormat(QtGui.QApplication.translate("MainForm", "%p%", None, QtGui.QApplication.UnicodeUTF8))
