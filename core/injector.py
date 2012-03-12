@@ -47,12 +47,29 @@ class ErrorBased(QtCore.QThread):
         
     def run(self):
         self.logSignal.emit("\n+++ TASK STARTED +++")
-        if self.vars['task'] == "tables": self.getTables()
-        elif self.vars['task'] == "count": self.getCountInTable()
-        elif self.vars['task'] == "bases" : self.getBases()
-        elif self.vars['task'] == "columns": self.getColumns()
-        elif self.vars['task'] == "query":self.runQuery()
-        elif self.vars['task'] == "dump": self.syncThreads()
+        
+        #Tables task
+        if self.vars['task'] == "tables":
+            self.getTables()
+        #Count in table task
+        elif self.vars['task'] == "count":
+            self.getCountInTable()
+        #Databases task    
+        elif self.vars['task'] == "bases" :
+            self.getBases()
+        #Columns task 
+        elif self.vars['task'] == "columns":
+            self.getColumns()
+        #Query task    
+        elif self.vars['task'] == "query":
+            self.runQuery()
+        #Dump task
+        elif self.vars['task'] == "dump":
+            self.syncThreads()
+            self.dumpProgressSignal.emit(0, True)
+        #Emiting Task Done    
+        self.progressSignal.emit(0, True)
+        
         self.logSignal.emit("\n*** TASK STOPPED ***")
         
     def kill(self):
@@ -70,7 +87,6 @@ class ErrorBased(QtCore.QThread):
             self.logSignal.emit(strValue)
             return
         self.logSignal.emit("\n - [x] 'no_content' returned by function " + strValue)
-        self.progressSignal.emit(0, True)
         
     #Current db type selected
     def dbType(self, todo):
@@ -111,7 +127,6 @@ class ErrorBased(QtCore.QThread):
                     break
                 self.vars['cdb'] += ",'" + db_name + "'"
                 self.dbSignal.emit(db_name)
-            self.progressSignal.emit(0, True)
         #not in (substring) method realisation
         else:
             query = self.wq.buildQuery(self.dbType('dbs_count'), self.vars)
@@ -143,7 +158,6 @@ class ErrorBased(QtCore.QThread):
             time.sleep(0.1)
             tQueue.task_done()
             self.progressSignal.emit(int(dbCount) - 1, False)
-        self.progressSignal.emit(0, True)
 
 #Getting tables
     def getTables(self):
@@ -171,7 +185,6 @@ class ErrorBased(QtCore.QThread):
                 current_table += ",'" + table_name + "'"
                 self.tblSignal.emit(table_name)
                 self.progressSignal.emit(int(tblCount), False)
-            self.progressSignal.emit(0, True)
         else:
             tQueue = Queue()
             for tNum in range(int(tblCount)):  
@@ -201,7 +214,6 @@ class ErrorBased(QtCore.QThread):
             time.sleep(0.1)
             tQueue.task_done()
             self.progressSignal.emit(int(tblCount) - 1, False)
-        self.progressSignal.emit(0, True)
         
 #Getitng columns
     def getColumns(self):
@@ -235,7 +247,6 @@ class ErrorBased(QtCore.QThread):
                     current_column += ",'" + column_name + "'"
                     self.columnSignal.emit(column_name, i)
                     self.progressSignal.emit(int(columnsInTable), False)
-            self.progressSignal.emit(0, True)
         #If not in (substring - MSSQL) or LIMIT(MySQL) method selected
         else:
             for i in range (self.vars['tblTreeCount']):
@@ -264,7 +275,6 @@ class ErrorBased(QtCore.QThread):
                         return
                     self.columnSignal.emit(column_name, i)
                     self.progressSignal.emit(int(columnsInTable), False)
-            self.progressSignal.emit(0, True)
             
 #Show rows count in selected table
     def getCountInTable(self):
@@ -309,7 +319,7 @@ class ErrorBased(QtCore.QThread):
             
 #Data dumping           
     def doDump(self, tNum, tQueue, column, num):
-        while True:
+        while not self.killed:
             try:  
                 tNum = tQueue.get_nowait()
             except Exception:  
@@ -323,6 +333,4 @@ class ErrorBased(QtCore.QThread):
             self.rowDataSignal.emit(tNum, num, rowData)
             time.sleep(0.1)
             tQueue.task_done()
-            self.progressSignal.emit(0, False)
-        self.progressSignal.emit(0, True)
-        
+            self.dumpProgressSignal.emit(0, False)

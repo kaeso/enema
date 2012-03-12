@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Projects\enema\gui\main\form.ui'
+# Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\main\form.ui'
 #
-# Created: Sat Mar 10 17:05:35 2012
+# Created: Sun Mar 11 11:07:11 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,13 +17,13 @@ except AttributeError:
 class Ui_MainForm(object):
     def setupUi(self, MainForm):
         MainForm.setObjectName(_fromUtf8("MainForm"))
-        MainForm.resize(591, 618)
+        MainForm.resize(591, 617)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainForm.sizePolicy().hasHeightForWidth())
         MainForm.setSizePolicy(sizePolicy)
-        MainForm.setMinimumSize(QtCore.QSize(591, 618))
+        MainForm.setMinimumSize(QtCore.QSize(591, 617))
         MainForm.setMaximumSize(QtCore.QSize(1112, 618))
         MainForm.setBaseSize(QtCore.QSize(0, 0))
         MainForm.setWindowTitle(_fromUtf8("Enema"))
@@ -176,6 +176,7 @@ class Ui_MainForm(object):
         self.getBasesButton.setGeometry(QtCore.QRect(550, 520, 31, 21))
         self.getBasesButton.setObjectName(_fromUtf8("getBasesButton"))
         self.textEdit = QtGui.QTextEdit(self.db_structureTab)
+        self.textEdit.setEnabled(False)
         self.textEdit.setGeometry(QtCore.QRect(10, 50, 571, 101))
         self.textEdit.setAcceptDrops(False)
         self.textEdit.setAcceptRichText(False)
@@ -433,7 +434,7 @@ class Ui_MainForm(object):
         self.groupBox_3.setTitle(QtGui.QApplication.translate("MainForm", "Query", None, QtGui.QApplication.UnicodeUTF8))
         self.queryButton.setText(QtGui.QApplication.translate("MainForm", "Query", None, QtGui.QApplication.UnicodeUTF8))
         self.radioSelect.setText(QtGui.QApplication.translate("MainForm", " SELECT TOP", None, QtGui.QApplication.UnicodeUTF8))
-        self.radioExec.setText(QtGui.QApplication.translate("MainForm", "STACKED QURY", None, QtGui.QApplication.UnicodeUTF8))
+        self.radioExec.setText(QtGui.QApplication.translate("MainForm", "STACKED QUERY", None, QtGui.QApplication.UnicodeUTF8))
         self.tabs.setTabText(self.tabs.indexOf(self.queryTab), QtGui.QApplication.translate("MainForm", "query", None, QtGui.QApplication.UnicodeUTF8))
         self.label_18.setText(QtGui.QApplication.translate("MainForm", "Columns:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_19.setText(QtGui.QApplication.translate("MainForm", "Primary key:", None, QtGui.QApplication.UnicodeUTF8))

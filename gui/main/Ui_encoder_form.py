@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\main\encoder_form.ui'
 #
-# Created: Sat Mar 10 14:46:28 2012
+# Created: Sun Mar 11 11:07:14 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -71,7 +71,7 @@ class Ui_EncoderForm(object):
         self.comboBox.setItemText(0, QtGui.QApplication.translate("EncoderForm", "MSSQL", None, QtGui.QApplication.UnicodeUTF8))
         self.comboBox.setItemText(1, QtGui.QApplication.translate("EncoderForm", "MySQL", None, QtGui.QApplication.UnicodeUTF8))
         self.comboBox.setItemText(2, QtGui.QApplication.translate("EncoderForm", "Base64", None, QtGui.QApplication.UnicodeUTF8))
-        self.isPlay.setText(QtGui.QApplication.translate("EncoderForm", "Play with letters", None, QtGui.QApplication.UnicodeUTF8))
+        self.isPlay.setText(QtGui.QApplication.translate("EncoderForm", "Random UpCase", None, QtGui.QApplication.UnicodeUTF8))
         self.decodeButton.setText(QtGui.QApplication.translate("EncoderForm", "Decode", None, QtGui.QApplication.UnicodeUTF8))
 
 
