@@ -153,7 +153,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Play with letters</string>
+    <string>Random UpCase</string>
    </property>
    <property name="checked">
     <bool>false</bool>

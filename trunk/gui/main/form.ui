@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>591</width>
-    <height>618</height>
+    <height>617</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>591</width>
-    <height>618</height>
+    <height>617</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -596,6 +596,9 @@
       </property>
      </widget>
      <widget class="QTextEdit" name="textEdit">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -742,7 +745,7 @@ p, li { white-space: pre-wrap; }
         </rect>
        </property>
        <property name="text">
-        <string>STACKED QURY</string>
+        <string>STACKED QUERY</string>
        </property>
       </widget>
      </widget>

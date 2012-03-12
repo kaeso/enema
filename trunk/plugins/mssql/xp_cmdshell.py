@@ -180,12 +180,10 @@ class Worker(QtCore.QThread):
         
         #Multithreadind
         tQueue = Queue()
-        threads = []
         for tNum in range(1, int(rowCount)):  
             tQueue.put(tNum)
         for i in range(self.vars['threads']):  
             t = threading.Thread(target=self.mtCmdOutput, args=(tNum, tQueue, rowCount)) 
-            threads.append(t)
             t.start()
             time.sleep(0.1)
             

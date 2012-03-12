@@ -248,7 +248,7 @@ class EnemaForm(QtGui.QMainWindow):
         #Loading settings if ini file exists
         if os.path.exists(configPath):
             settings = QtCore.QSettings(configPath, QtCore.QSettings.IniFormat)
-            #Etc
+            #query field
             self.ui.queryText.setText(settings.value('other/query', ''))
             #restoring widgets position
             widgetPosition = settings.value("GUI/mainWpos")
@@ -295,7 +295,8 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.menuAbout.triggered.connect(self.menuAbout_OnClick)
         #Db Type change
         self.ui.comboBox_3.currentIndexChanged.connect(self.dbTypeChanged)
-        
+        #Request method changed
+        self.ui.comboBox.currentIndexChanged.connect(self.methodChanged)
 #-+++++++++++PLUGIN-SIGNAL-CONNECTS++++++++++++#
         #ftp
         self.ui.actionFtp.triggered.connect(self.actionFtp_OnClick)
@@ -339,7 +340,9 @@ class EnemaForm(QtGui.QMainWindow):
     def closeEvent(self, event):
         #Saving main and log window position
         settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
+        settings.setValue("other/query", self.ui.queryText.toPlainText())
         settings.setValue('GUI/mainWpos', self.pos())
+        settings.sync()
         sys.exit(0)
 
     #Add text to log
@@ -433,6 +436,13 @@ class EnemaForm(QtGui.QMainWindow):
             self.killTask()
         else:
             return
+    
+    #Request method changed
+    def methodChanged(self):
+        if self.getMethod() == "POST":
+            self.ui.textEdit.setEnabled(True)
+        else:
+            self.ui.textEdit.setEnabled(False)
             
     #Db type changed event:
     def dbTypeChanged(self):
@@ -590,6 +600,8 @@ class EnemaForm(QtGui.QMainWindow):
 
     #Loading site settings
     def loadSiteSettings(self, filepath):
+        if len(filepath) < 1:
+            return
         settings = QtCore.QSettings(filepath, QtCore.QSettings.IniFormat)
         #Reading tables from config
         tables = settings.value('db_structure/tables', '').split('>>')
@@ -828,6 +840,7 @@ class EnemaForm(QtGui.QMainWindow):
     def queryButton_OnClick(self):
         if self.isBusy():
             return
+        self.ui.queryOutput.clear()
         wD = self.webData()
         wD['task'] = "query"
         self.qthread = ErrorBased(wD, self.qstrings)

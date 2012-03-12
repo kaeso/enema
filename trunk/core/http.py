@@ -122,7 +122,11 @@ class HTTP_Handler(QtCore.QObject):
                 data = data.replace(";[cmd]", "")
             data = data.replace("[sub]", query)
         data = data.split("&")
-        data = dict([s.split(':') for s in data])
+        try:
+            data = dict([s.split(':') for s in data])
+        except ValueError as err:
+            self.logSignal.emit("[x] Error. Can't prepare post data.\n\n[details]+ \n---\n" + str(err) + "\n---")
+            return "fail"
         for key, value in data.items():
             if value == "[empty]":
                 data[key] = ""
@@ -139,7 +143,7 @@ class HTTP_Handler(QtCore.QObject):
         data = request.unquote(data)
         if vars['method'] == "POST":
             postData = self.preparePostData(data, query, isCmd)
-            if postData is None:
+            if (postData is None or postData == "fail"):
                 return "no_content"
             if self.isCookieInjection(cookie):
                 cookie = self.buildUrl(cookie, query, isCmd, True)
