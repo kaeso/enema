@@ -716,8 +716,6 @@ class EnemaForm(QtGui.QMainWindow):
         if self.ui.radioOrdinalPosition.isChecked():
             self.showInfoMsg("ordinal_position method valid only for columns.")
             return
-        if len(self.ui.lineUrl.text()) < 6 or not ("http" in self.ui.lineUrl.text()):
-            return
         self.ui.listOfTables.clear()
         self.ui.totalLabel.setText("0")
         self.ui.progressBar.setValue(0)
@@ -803,8 +801,6 @@ class EnemaForm(QtGui.QMainWindow):
     def dmpButton_OnClick(self):
         if self.isBusy():
             self.busyDialog()
-            return
-        if len(self.ui.lineUrl.text()) < 6 or not ("http" in self.ui.lineUrl.text()):
             return
         if len(self.ui.lineTable.text()) < 1\
         or len(self.ui.lineColumns.text()) < 1\

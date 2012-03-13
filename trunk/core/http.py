@@ -105,6 +105,7 @@ class HTTP_Handler(QtCore.QObject):
     def preparePostData(self, data, query, isCmd):
         #Post data must be Var=value, otherwise function fails when trying to build dictionary.
         data = data.replace("=&",  "=[empty]&").replace("\n", "")
+        data = data.replace(":",  "[colon]")
         if len(data) < 3:
             self.logSignal.emit("No POST data specified.")
             return
@@ -125,11 +126,13 @@ class HTTP_Handler(QtCore.QObject):
         try:
             data = dict([s.split(':') for s in data])
         except ValueError as err:
-            self.logSignal.emit("[x] Error. Can't prepare post data.\n\n[details]+ \n---\n" + str(err) + "\n---")
+            self.logSignal.emit("[x] Error. Can't prepare post data.\n\n[details]: " + str(err))
             return "fail"
         for key, value in data.items():
             if value == "[empty]":
                 data[key] = ""
+            if "[colon]" in value:
+                data[key] = value.replace("[colon]", ":")
         urlEncoded = urlencode(data)
         postData = urlEncoded.encode(e_const.ENCODING)
         return postData
@@ -139,7 +142,7 @@ class HTTP_Handler(QtCore.QObject):
         urlOpener = request.build_opener()
         data = vars['data']
         cookie = vars['cookie']
-        data = data.replace("+",  " ").replace(":",  "").replace("%3D",  "[eq-urlhex]")
+        data = data.replace("+",  " ").replace("%3D",  "[eq-urlhex]")
         data = request.unquote(data)
         if vars['method'] == "POST":
             postData = self.preparePostData(data, query, isCmd)
@@ -170,6 +173,9 @@ class HTTP_Handler(QtCore.QObject):
                 if isinstance(uerr.reason, socket.timeout):
                     self.logSignal.emit("\n\n[HTTP Timeout]")
                     return "[---Timed out---]"
+            except ValueError as err:
+                self.logSignal.emit("\n[x] Can't start task.\n\n[reason]: " + str(err))
+                return "no_content"
         else:
             if self.isCookieInjection(cookie):
                 cookie = self.buildUrl(cookie, query, isCmd, True)
@@ -199,6 +205,9 @@ class HTTP_Handler(QtCore.QObject):
                 if isinstance(uerr.reason, socket.timeout):
                     self.logSignal.emit("\n\n[HTTP Timeout]")
                     return "[---Timed out---]"
+            except ValueError as err:
+                self.logSignal.emit("\n[x] Can't start task.\n\n[reason]: " + str(err))
+                return "no_content"
         if not isCmd:
             if e_const.QUOTED_CONTENT:
                 content = request.unquote(content)
