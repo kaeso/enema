@@ -27,7 +27,7 @@ from plugins.mssql.openrowset import OpenrowsetWidget
 #xp_cmdshell
 from plugins.mssql.xp_cmdshell import CmdShellWidget
 #---
-from core.injector import ErrorBased
+from core.injector import Injector
 from PyQt4 import QtCore, QtGui 
 from gui.main.Ui_form import Ui_MainForm
 from gui.main.Ui_encoder_form import Ui_EncoderForm
@@ -56,86 +56,180 @@ class QueryEditorForm(QtGui.QMainWindow):
             settings = QtCore.QSettings("settings/qstrings_custom.ini", QtCore.QSettings.IniFormat)
         else:
             settings = QtCore.QSettings("settings/qstrings.ini", QtCore.QSettings.IniFormat)
+            
         #MSSQL------------------------------------------------------------------
+        
+        #ERROR-BASED---
+        qstring_type = "mssql_error_based/"
         #bases
-        self.ui.q_ms_curr_db_name.setText(settings.value('mssql_error_based/curr_db_name', ''))
-        self.ui.q_ms_dbs_count.setText(settings.value('mssql_error_based/dbs_count', ''))
-        self.ui.q_ms_get_db_name.setText(settings.value('mssql_error_based/get_db_name', ''))
-        self.ui.q_ms_get_db_name2.setText(settings.value('mssql_error_based/get_db_name2', ''))
+        self.ui.q_ms_curr_db_name.setText(settings.value(qstring_type + 'curr_db_name', ''))
+        self.ui.q_ms_dbs_count.setText(settings.value(qstring_type + 'dbs_count', ''))
+        self.ui.q_ms_get_db_name.setText(settings.value(qstring_type + 'get_db_name', ''))
+        self.ui.q_ms_get_db_name2.setText(settings.value(qstring_type + 'get_db_name2', ''))
         #tables
-        self.ui.q_ms_tbls_count.setText(settings.value('mssql_error_based/tbls_count', ''))
-        self.ui.q_ms_get_tbl_name.setText(settings.value('mssql_error_based/get_tbl_name', ''))
-        self.ui.q_ms_get_tbl_name2.setText(settings.value('mssql_error_based/get_tbl_name2', ''))
+        self.ui.q_ms_tbls_count.setText(settings.value(qstring_type + 'tbls_count', ''))
+        self.ui.q_ms_get_tbl_name.setText(settings.value(qstring_type + 'get_tbl_name', ''))
+        self.ui.q_ms_get_tbl_name2.setText(settings.value(qstring_type + 'get_tbl_name2', ''))
         #columns
-        self.ui.q_ms_get_column_name.setText(settings.value('mssql_error_based/get_column_name', ''))
-        self.ui.q_ms_columns_count.setText(settings.value('mssql_error_based/columns_count', ''))
-        self.ui.q_ms_get_column_name2.setText(settings.value('mssql_error_based/get_column_name2', ''))
-        self.ui.q_ms_get_column_name3.setText(settings.value('mssql_error_based/get_column_name3', ''))      
+        self.ui.q_ms_get_column_name.setText(settings.value(qstring_type + 'get_column_name', ''))
+        self.ui.q_ms_columns_count.setText(settings.value(qstring_type + 'columns_count', ''))
+        self.ui.q_ms_get_column_name2.setText(settings.value(qstring_type + 'get_column_name2', ''))
+        self.ui.q_ms_get_column_name3.setText(settings.value(qstring_type + 'get_column_name3', ''))      
         #xp_cmdshell
-        self.ui.q_ms_exec_cmdshell.setText(settings.value('mssql_error_based/exec_cmdshell', ''))
-        self.ui.q_ms_get_row.setText(settings.value('mssql_error_based/get_row', ''))
+        self.ui.q_ms_exec_cmdshell.setText(settings.value(qstring_type + 'exec_cmdshell', ''))
+        self.ui.q_ms_get_row.setText(settings.value(qstring_type + 'get_row', ''))
         #etc
-        self.ui.q_ms_rows_count.setText(settings.value('mssql_error_based/rows_count', ''))
-        self.ui.q_ms_query.setText(settings.value('mssql_error_based/query', ''))
-        self.ui.q_ms_data_dump.setText(settings.value('mssql_error_based/data_dump', ''))
-        #MySQL------------------------------------------------------------------
+        self.ui.q_ms_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
+        self.ui.q_ms_query.setText(settings.value(qstring_type + 'query', ''))
+        self.ui.q_ms_data_dump.setText(settings.value(qstring_type + 'data_dump', ''))
+
+        #UNION-BASED---
+        qstring_type = "mssql_union_based/"
         #bases
-        self.ui.q_my_curr_db_name.setText(settings.value('mysql_error_based/curr_db_name', ''))
-        self.ui.q_my_dbs_count.setText(settings.value('mysql_error_based/dbs_count', ''))
-        self.ui.q_my_get_db_name2.setText(settings.value('mysql_error_based/get_db_name2', ''))
+        self.ui.q_union_ms_curr_db_name.setText(settings.value(qstring_type + 'curr_db_name', ''))
+        self.ui.q_union_ms_dbs_count.setText(settings.value(qstring_type + 'dbs_count', ''))
+        self.ui.q_union_ms_get_db_name.setText(settings.value(qstring_type + 'get_db_name', ''))
+        self.ui.q_union_ms_get_db_name2.setText(settings.value(qstring_type + 'get_db_name2', ''))
         #tables
-        self.ui.q_my_tbls_count.setText(settings.value('mysql_error_based/tbls_count', ''))
-        self.ui.q_my_get_tbl_name2.setText(settings.value('mysql_error_based/get_tbl_name2', ''))
+        self.ui.q_union_ms_tbls_count.setText(settings.value(qstring_type + 'tbls_count', ''))
+        self.ui.q_union_ms_get_tbl_name.setText(settings.value(qstring_type + 'get_tbl_name', ''))
+        self.ui.q_union_ms_get_tbl_name2.setText(settings.value(qstring_type + 'get_tbl_name2', ''))
         #columns
-        self.ui.q_my_columns_count.setText(settings.value('mysql_error_based/columns_count', ''))
-        self.ui.q_my_get_column_name2.setText(settings.value('mysql_error_based/get_column_name2', ''))
-        self.ui.q_my_get_column_name3.setText(settings.value('mysql_error_based/get_column_name3', ''))      
+        self.ui.q_union_ms_get_column_name.setText(settings.value(qstring_type + 'get_column_name', ''))
+        self.ui.q_union_ms_columns_count.setText(settings.value(qstring_type + 'columns_count', ''))
+        self.ui.q_union_ms_get_column_name2.setText(settings.value(qstring_type + 'get_column_name2', ''))
+        self.ui.q_union_ms_get_column_name3.setText(settings.value(qstring_type + 'get_column_name3', ''))      
         #etc
-        self.ui.q_my_rows_count.setText(settings.value('mysql_error_based/rows_count', ''))
-        self.ui.q_my_query.setText(settings.value('mysql_error_based/query', ''))
+        self.ui.q_union_ms_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
+        self.ui.q_union_ms_query.setText(settings.value(qstring_type + 'query', ''))
+        self.ui.q_union_ms_data_dump.setText(settings.value(qstring_type + 'data_dump', ''))
+
+        #MySQL------------------------------------------------------------------
+        
+        #ERROR-BASED----
+        qstring_type = "mysql_error_based/"
+        #bases
+        self.ui.q_my_curr_db_name.setText(settings.value(qstring_type + 'curr_db_name', ''))
+        self.ui.q_my_dbs_count.setText(settings.value(qstring_type + 'dbs_count', ''))
+        self.ui.q_my_get_db_name2.setText(settings.value(qstring_type + 'get_db_name2', ''))
+        #tables
+        self.ui.q_my_tbls_count.setText(settings.value(qstring_type + 'tbls_count', ''))
+        self.ui.q_my_get_tbl_name2.setText(settings.value(qstring_type + 'get_tbl_name2', ''))
+        #columns
+        self.ui.q_my_columns_count.setText(settings.value(qstring_type + 'columns_count', ''))
+        self.ui.q_my_get_column_name2.setText(settings.value(qstring_type + 'get_column_name2', ''))
+        self.ui.q_my_get_column_name3.setText(settings.value(qstring_type + 'get_column_name3', ''))      
+        #etc
+        self.ui.q_my_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
+        self.ui.q_my_query.setText(settings.value(qstring_type + 'query', ''))
+        
+        #UNION-Based---
+        qstring_type = "mysql_union_based/"
+        #bases
+        self.ui.q_union_my_curr_db_name.setText(settings.value(qstring_type + 'curr_db_name', ''))
+        self.ui.q_union_my_dbs_count.setText(settings.value(qstring_type + 'dbs_count', ''))
+        self.ui.q_union_my_get_db_name2.setText(settings.value(qstring_type + 'get_db_name2', ''))
+        #tables
+        self.ui.q_union_my_tbls_count.setText(settings.value(qstring_type + 'tbls_count', ''))
+        self.ui.q_union_my_get_tbl_name2.setText(settings.value(qstring_type + 'get_tbl_name2', ''))
+        #columns
+        self.ui.q_union_my_columns_count.setText(settings.value(qstring_type + 'columns_count', ''))
+        self.ui.q_union_my_get_column_name2.setText(settings.value(qstring_type + 'get_column_name2', ''))
+        self.ui.q_union_my_get_column_name3.setText(settings.value(qstring_type + 'get_column_name3', ''))      
+        #etc
+        self.ui.q_union_my_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
+        self.ui.q_union_my_query.setText(settings.value(qstring_type + 'query', ''))
         #---------------------------------------------------------------------------
         
     def qsSave_OnClick(self):
         #Saving customised querys
         settings = QtCore.QSettings("settings/qstrings_custom.ini", QtCore.QSettings.IniFormat)
+        
         #MSSQL------------------------------------------------------------------
+        
+        #ERROR-BASED---
+        qstring_type = "mssql_error_based/"
         #bases
-        settings.setValue('mssql_error_based/curr_db_name', self.ui.q_ms_curr_db_name.text())
-        settings.setValue('mssql_error_based/dbs_count', self.ui.q_ms_dbs_count.text())
-        settings.setValue('mssql_error_based/get_db_name', self.ui.q_ms_get_db_name.text())
-        settings.setValue('mssql_error_based/get_db_name2', self.ui.q_ms_get_db_name2.text())
+        settings.setValue(qstring_type + 'curr_db_name', self.ui.q_ms_curr_db_name.text())
+        settings.setValue(qstring_type + 'dbs_count', self.ui.q_ms_dbs_count.text())
+        settings.setValue(qstring_type + 'get_db_name', self.ui.q_ms_get_db_name.text())
+        settings.setValue(qstring_type + 'get_db_name2', self.ui.q_ms_get_db_name2.text())
         #tables
-        settings.setValue('mssql_error_based/tbls_count', self.ui.q_ms_tbls_count.text())
-        settings.setValue('mssql_error_based/get_tbl_name', self.ui.q_ms_get_tbl_name.text())
-        settings.setValue('mssql_error_based/get_tbl_name2', self.ui.q_ms_get_tbl_name2.text())
+        settings.setValue(qstring_type + 'tbls_count', self.ui.q_ms_tbls_count.text())
+        settings.setValue(qstring_type + 'get_tbl_name', self.ui.q_ms_get_tbl_name.text())
+        settings.setValue(qstring_type + 'get_tbl_name2', self.ui.q_ms_get_tbl_name2.text())
         #columns
-        settings.setValue('mssql_error_based/get_column_name', self.ui.q_ms_get_column_name.text())
-        settings.setValue('mssql_error_based/columns_count', self.ui.q_ms_columns_count.text())
-        settings.setValue('mssql_error_based/get_column_name2', self.ui.q_ms_get_column_name2.text())
-        settings.setValue('mssql_error_based/get_column_name3', self.ui.q_ms_get_column_name3.text())    
+        settings.setValue(qstring_type + 'get_column_name', self.ui.q_ms_get_column_name.text())
+        settings.setValue(qstring_type + 'columns_count', self.ui.q_ms_columns_count.text())
+        settings.setValue(qstring_type + 'get_column_name2', self.ui.q_ms_get_column_name2.text())
+        settings.setValue(qstring_type + 'get_column_name3', self.ui.q_ms_get_column_name3.text())    
         #xp_cmdshell
-        settings.setValue('mssql_error_based/exec_cmdshell', self.ui.q_ms_exec_cmdshell.text())
-        settings.setValue('mssql_error_based/get_row', self.ui.q_ms_get_row.text())
+        settings.setValue(qstring_type + 'exec_cmdshell', self.ui.q_ms_exec_cmdshell.text())
+        settings.setValue(qstring_type + 'get_row', self.ui.q_ms_get_row.text())
         #etc
-        settings.setValue('mssql_error_based/rows_count', self.ui.q_ms_rows_count.text())
-        settings.setValue('mssql_error_based/query', self.ui.q_ms_query.text())
-        settings.setValue('mssql_error_based/data_dump', self.ui.q_ms_data_dump.text())
-        #MySQL------------------------------------------------------------------
+        settings.setValue(qstring_type + 'rows_count', self.ui.q_ms_rows_count.text())
+        settings.setValue(qstring_type + 'query', self.ui.q_ms_query.text())
+        settings.setValue(qstring_type + 'data_dump', self.ui.q_ms_data_dump.text())
+        
+        #UNION-BASED---
+        qstring_type = "mssql_union_based/"
         #bases
-        settings.setValue('mysql_error_based/curr_db_name', self.ui.q_my_curr_db_name.text())
-        settings.setValue('mysql_error_based/dbs_count', self.ui.q_my_dbs_count.text())
-        settings.setValue('mysql_error_based/get_db_name2', self.ui.q_my_get_db_name2.text())
+        settings.setValue(qstring_type + 'curr_db_name', self.ui.q_union_ms_curr_db_name.text())
+        settings.setValue(qstring_type + 'dbs_count', self.ui.q_union_ms_dbs_count.text())
+        settings.setValue(qstring_type + 'get_db_name', self.ui.q_union_ms_get_db_name.text())
+        settings.setValue(qstring_type + 'get_db_name2', self.ui.q_union_ms_get_db_name2.text())
         #tables
-        settings.setValue('mysql_error_based/tbls_count', self.ui.q_my_tbls_count.text())
-        settings.setValue('mysql_error_based/get_tbl_name2', self.ui.q_my_get_tbl_name2.text())
+        settings.setValue(qstring_type + 'tbls_count', self.ui.q_union_ms_tbls_count.text())
+        settings.setValue(qstring_type + 'get_tbl_name', self.ui.q_union_ms_get_tbl_name.text())
+        settings.setValue(qstring_type + 'get_tbl_name2', self.ui.q_union_ms_get_tbl_name2.text())
         #columns
-        settings.setValue('mysql_error_based/columns_count', self.ui.q_my_columns_count.text())
-        settings.setValue('mysql_error_based/get_column_name2', self.ui.q_my_get_column_name2.text())
-        settings.setValue('mysql_error_based/get_column_name3', self.ui.q_my_get_column_name3.text())    
+        settings.setValue(qstring_type + 'get_column_name', self.ui.q_union_ms_get_column_name.text())
+        settings.setValue(qstring_type + 'columns_count', self.ui.q_union_ms_columns_count.text())
+        settings.setValue(qstring_type + 'get_column_name2', self.ui.q_union_ms_get_column_name2.text())
+        settings.setValue(qstring_type + 'get_column_name3', self.ui.q_union_ms_get_column_name3.text())    
         #etc
-        settings.setValue('mysql_error_based/rows_count', self.ui.q_my_rows_count.text())
-        settings.setValue('mysql_error_based/query', self.ui.q_my_query.text())
+        settings.setValue(qstring_type + 'rows_count', self.ui.q_union_ms_rows_count.text())
+        settings.setValue(qstring_type + 'query', self.ui.q_union_ms_query.text())
+        settings.setValue(qstring_type + 'data_dump', self.ui.q_union_ms_data_dump.text())
+        
+        #MySQL------------------------------------------------------------------
+        
+        #ERROR-BASED---
+        qstring_type = "mysql_error_based/"
+        #bases
+        settings.setValue(qstring_type + 'curr_db_name', self.ui.q_my_curr_db_name.text())
+        settings.setValue(qstring_type + 'dbs_count', self.ui.q_my_dbs_count.text())
+        settings.setValue(qstring_type + 'get_db_name2', self.ui.q_my_get_db_name2.text())
+        #tables
+        settings.setValue(qstring_type + 'tbls_count', self.ui.q_my_tbls_count.text())
+        settings.setValue(qstring_type + 'get_tbl_name2', self.ui.q_my_get_tbl_name2.text())
+        #columns
+        settings.setValue(qstring_type + 'columns_count', self.ui.q_my_columns_count.text())
+        settings.setValue(qstring_type + 'get_column_name2', self.ui.q_my_get_column_name2.text())
+        settings.setValue(qstring_type + 'get_column_name3', self.ui.q_my_get_column_name3.text())    
+        #etc
+        settings.setValue(qstring_type + 'rows_count', self.ui.q_my_rows_count.text())
+        settings.setValue(qstring_type + 'query', self.ui.q_my_query.text())
+        
+        #UNION-BASED---
+        qstring_type = "mysql_union_based/"
+        #bases
+        settings.setValue(qstring_type + 'curr_db_name', self.ui.q_union_my_curr_db_name.text())
+        settings.setValue(qstring_type + 'dbs_count', self.ui.q_union_my_dbs_count.text())
+        settings.setValue(qstring_type + 'get_db_name2', self.ui.q_union_my_get_db_name2.text())
+        #tables
+        settings.setValue(qstring_type + 'tbls_count', self.ui.q_union_my_tbls_count.text())
+        settings.setValue(qstring_type + 'get_tbl_name2', self.ui.q_union_my_get_tbl_name2.text())
+        #columns
+        settings.setValue(qstring_type + 'columns_count', self.ui.q_union_my_columns_count.text())
+        settings.setValue(qstring_type + 'get_column_name2', self.ui.q_union_my_get_column_name2.text())
+        settings.setValue(qstring_type + 'get_column_name3', self.ui.q_union_my_get_column_name3.text())    
+        #etc
+        settings.setValue(qstring_type + 'rows_count', self.ui.q_union_my_rows_count.text())
+        settings.setValue(qstring_type + 'query', self.ui.q_union_my_query.text())
+        
         #---------------------------------------------------------------------------
+        
         settings.sync()
         self.logSignal.emit("[+] Customised query strings saved to: " + os.path.abspath("settings/qstrings_custom.ini"))
         self.qstringsChanged.emit()
@@ -227,7 +321,7 @@ class AboutForm(QtGui.QWidget):
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         #Set current program version
-        self.ui.versionLabel.setText("Version: 1.5")
+        self.ui.versionLabel.setText("Version: 1.53")
 
 #Main form GUI class
 class EnemaForm(QtGui.QMainWindow):
@@ -259,9 +353,8 @@ class EnemaForm(QtGui.QMainWindow):
         #Query strings loading
         self.readQstrings()
         
-        
-        #self.errBased.setVars(None, None)
-#SIGNAL CONNECTIONS--------------------------------------------------------------------------
+#------------------------------------------------SIGNAL-CONNECTIONS------------------------------------------------------#
+
         #Query changed in editor
         self.qeditor_frm.qstringsChanged.connect(self.readQstrings)
         #DB_STRUCTURE-TAB
@@ -297,7 +390,9 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.comboBox_3.currentIndexChanged.connect(self.dbTypeChanged)
         #Request method changed
         self.ui.comboBox.currentIndexChanged.connect(self.methodChanged)
+        
 #-+++++++++++PLUGIN-SIGNAL-CONNECTS++++++++++++#
+
         #ftp
         self.ui.actionFtp.triggered.connect(self.actionFtp_OnClick)
         #add_user
@@ -306,7 +401,9 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.actionOpenrowset.triggered.connect(self.actionOpenrowset_OnClick)
         #xp_cmdshell
         self.ui.actionXp_cmdshell.triggered.connect(self.actionXp_cmdshell_OnClick)
+        
 #++++++++++++PLUGIN+SLOTS++++++++++++#
+
     #ftp    
     def actionFtp_OnClick(self):
         self.pluginWidget = FtpWidget(self.webData(), self.qstrings['mssql_error_based']['exec_cmdshell'], self)
@@ -330,31 +427,15 @@ class EnemaForm(QtGui.QMainWindow):
     
     
     def actionXp_cmdshell_OnClick(self):
-        self.pluginWidget = CmdShellWidget(self.webData(), self.qstrings['mssql_error_based'], self)
+        self.pluginWidget = CmdShellWidget(self.webData(), self.qstrings, self)
         self.pluginWidget.logSignal.connect(self.addLog)
         self.pluginWidget.show()
         self.pluginWidget.activateWindow()
-#+++++++++++++++++++++++++++++++#
+        
+#++++++++++++++++++++++++++++++++++++++++#
 
-    #When form closing
-    def closeEvent(self, event):
-        #Saving main and log window position
-        settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
-        settings.setValue("other/query", self.ui.queryText.toPlainText())
-        settings.setValue('GUI/mainWpos', self.pos())
-        settings.sync()
-        sys.exit(0)
+#------------------------------------------------GENERAL-FUNCTIONS------------------------------------------------------#
 
-    #Add text to log
-    def addLog(self, logStr):
-        #Autoclean log when blocks more than 3000
-        if self.ui.logTxtEdit.document().blockCount() > 3000:
-            self.ui.logTxtEdit.clear()
-        self.ui.logTxtEdit.append("\n" + logStr)
-        #Autoscrolling
-        sb = self.ui.logTxtEdit.verticalScrollBar()
-        sb.setValue(sb.maximum())
-    
     #Get user defined parametes from GUI
     def webData(self):
         if not self.ui.listOfTables.currentItem():
@@ -381,27 +462,13 @@ class EnemaForm(QtGui.QMainWindow):
               'data' : self.ui.textEdit.toPlainText(), 
               'cookie' :  self.ui.lineCookie.text(), 
               'db_type' : self.getDbType(), 
+              'inj_type' : self.getInjectionType(), 
               'table' : self.ui.lineTable.text(), 
               'key' : self.ui.lineKey.text(), 
               'columns' : self.ui.lineColumns.text().split(";"), 
               'fromPos' : int(self.ui.lineFrom.text()), 
               'toPos' :  int(self.ui.lineTo.text())}
         return wD
-
-    #Sending kill flag to qthread
-    def killTask(self):
-        try:
-            self.qthread.kill()
-        except AttributeError:
-            return
-
-    #Is program busy at this moment
-    def isBusy(self):
-        try:
-            if self.qthread.isRunning():
-                return True
-        except AttributeError:
-            return False
 
     #Connecting to signals and starting thread
     def connectAndStart(self):
@@ -427,6 +494,42 @@ class EnemaForm(QtGui.QMainWindow):
         self.qthread.tblSignal.connect(self.addTable, type=QtCore.Qt.QueuedConnection)
         #Starting QThread
         self.qthread.start()
+        
+    #Getting request method
+    def getMethod(self):
+        if str(self.ui.comboBox.currentText()) == "POST":
+            return "POST"
+        else:
+            return "GET"
+ 
+    #Getting request method
+    def getDbType(self):
+        if str(self.ui.comboBox_3.currentText()) == "MSSQL":
+            return "mssql"
+        else:
+            return "mysql"
+
+    #Getting request method
+    def getInjectionType(self):
+        if str(self.ui.comboInjType.currentText()) == "ERROR":
+            return "error-based"
+        else:
+            return "union-based"
+            
+    #Sending kill flag to qthread
+    def killTask(self):
+        try:
+            self.qthread.kill()
+        except AttributeError:
+            return
+
+    #Is program busy at this moment
+    def isBusy(self):
+        try:
+            if self.qthread.isRunning():
+                return True
+        except AttributeError:
+            return False
 
     #Show busy dialog
     def busyDialog(self):
@@ -436,30 +539,9 @@ class EnemaForm(QtGui.QMainWindow):
             self.killTask()
         else:
             return
-    
-    #Request method changed
-    def methodChanged(self):
-        if self.getMethod() == "POST":
-            self.ui.textEdit.setEnabled(True)
-        else:
-            self.ui.textEdit.setEnabled(False)
             
-    #Db type changed event:
-    def dbTypeChanged(self):
-        if self.getDbType() == "mysql":
-            self.ui.radioNotInSubstring.setText("LIMIT")
-            self.ui.radioNotInSubstring.setChecked(True)
-            self.ui.radioNotInArray.hide()
-            self.ui.tabs.setTabEnabled(3, False)
-            self.ui.menuMssql.setEnabled(False)
-        else:
-            self.ui.tabs.setTabEnabled(3, True)
-            self.ui.radioNotInSubstring.setText("not in(substring)")
-            self.ui.radioNotInArray.show()
-            self.ui.radioNotInArray.setChecked(True)
-            self.ui.menuMssql.setEnabled(True)
-            
-#================================MENU=SAVE=BLOCK======================================#
+#------------------------------------------------[MENU]SAVE-SLOTS/FUNCTIONS------------------------------------------------------#
+
     #Click on menu save tables
     def saveTables_OnClick(self):
         filePath = QtGui.QFileDialog.getSaveFileName(self, "Save tables",
@@ -542,6 +624,7 @@ class EnemaForm(QtGui.QMainWindow):
         settings.setValue('db_structure/data', self.ui.textEdit.toPlainText())
         settings.setValue('db_structure/cookies', self.ui.lineCookie.text())
         settings.setValue('db_structure/db_type', self.ui.comboBox_3.currentIndex())
+        settings.setValue('db_structure/inj_type', self.ui.comboInjType.currentIndex())
         settings.setValue('db_structure/pattern', self.ui.lineMP.text())
         settings.setValue('db_structure/symbol', self.ui.lineMS.text())
         settings.setValue('db_structure/tables', tables)
@@ -557,7 +640,8 @@ class EnemaForm(QtGui.QMainWindow):
         settings.setValue('dump/to', self.ui.lineTo.text())
         settings.sync()
         
-#================================MENU=LOAD=BLOCK======================================#
+#------------------------------------------------[MENU]LOAD-SLOTS/FUNCTIONS------------------------------------------------------#
+
     #Click on menu load tables
     def loadTables_OnClick(self):
         filePath = QtGui.QFileDialog.getOpenFileName(self, "Load tables", 
@@ -622,6 +706,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.textEdit.setText(settings.value('db_structure/data', ''))
         self.ui.lineCookie.setText(settings.value('db_structure/cookies', ''))
         self.ui.comboBox_3.setCurrentIndex(int(settings.value('db_structure/db_type', 0)))
+        self.ui.comboInjType.setCurrentIndex(int(settings.value('db_structure/inj_type', 0)))
         self.ui.lineMP.setText(settings.value('db_structure/pattern', ''))
         self.ui.lineMS.setText(settings.value('db_structure/symbol', '~'))
         self.ui.dbListComboBox.setCurrentIndex(int(settings.value('db_structure/current_db', 0)))
@@ -634,7 +719,8 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.lineFrom.setText(settings.value('dump/from', '0'))
         self.ui.lineTo.setText(settings.value('dump/to', '10'))
         
-#================================MENU=TOOLS======================================#
+#------------------------------------------------[MENU]TOOLS-SLOTS------------------------------------------------------#
+
     def menuEncoder_OnClick(self):
         self.enc_frm.show()
         self.enc_frm.activateWindow()
@@ -655,25 +741,22 @@ class EnemaForm(QtGui.QMainWindow):
             cfgparser.read_file(open(defaultPath))
         self.qstrings = cfgparser
     
-#================================MENU=ABOUT======================================#
+#------------------------------------------------[MENU]ABOUT-SLOTS------------------------------------------------------#
+
     def menuAbout_OnClick(self):
         self.about_frm.show()
         self.about_frm.activateWindow()
 
-#=================================DB/TABLES=BLOCK================================#
-    #Getting request method
-    def getMethod(self):
-        if str(self.ui.comboBox.currentText()) == "POST":
-            return "POST"
-        else:
-            return "GET"
- 
-    #Getting request method
-    def getDbType(self):
-        if str(self.ui.comboBox_3.currentText()) == "MSSQL":
-            return "mssql"
-        else:
-            return "mysql"
+#------------------------------------------------MAIN-EVENTS------------------------------------------------------#
+
+    #When form closing
+    def closeEvent(self, event):
+        #Saving main and log window position
+        settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
+        settings.setValue("other/query", self.ui.queryText.toPlainText())
+        settings.setValue('GUI/mainWpos', self.pos())
+        settings.sync()
+        sys.exit(0)
             
     #[...] button click
     def getBasesButton_OnClick(self):
@@ -694,17 +777,8 @@ class EnemaForm(QtGui.QMainWindow):
             wD['dbName'] = ",'" + str(self.ui.dbListComboBox.currentText()) + "'"
         self.ui.progressBar.setValue(0)
         self.ui.progressBar.show()
-        self.qthread = ErrorBased(wD, self.qstrings)
+        self.qthread = Injector(wD, self.qstrings)
         self.connectAndStart()
-        
-        
-    #Updating main progressBar
-    def updatePb(self, pbMax, taskDone):
-        if taskDone:
-            self.ui.progressBar.hide()
-            return
-        self.ui.progressBar.setMaximum(pbMax)
-        self.ui.progressBar.setValue(self.ui.progressBar.value() + 1)
         
     #Get Tables button click      
     def tablesButton_OnClick(self):
@@ -720,34 +794,23 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.totalLabel.setText("0")
         self.ui.progressBar.setValue(0)
         self.ui.progressBar.show()
-        self.qthread = ErrorBased(wD, self.qstrings)
+        self.qthread = Injector(wD, self.qstrings)
         self.connectAndStart()
-        
-    #Add db to listBox
-    def addBase(self, db_name):
-        self.ui.dbListComboBox.addItem(db_name)
-
-    #Set label value to count of tables in current db
-    def setTblCount(self, tblCount):
-        self.ui.totalLabel.setText(tblCount)
-
-    #Add table to ListWidget
-    def addTable(self, table_name):
-        self.ui.listOfTables.addItem(table_name)
             
     #Count button click
     def countButton_OnClick(self):
         if self.isBusy():
             self.busyDialog()
             return
+        self.ui.progressBar.setMaximum(0)
+        self.ui.progressBar.show()
         wD = self.webData()
         wD['task'] = 'count'
         if not self.ui.listOfTables.currentItem():
             return
-        self.qthread = ErrorBased(wD, self.qstrings)
+        self.qthread = Injector(wD, self.qstrings)
         self.connectAndStart()
 
-        
     #Show or Hide log field
     def logButton_OnClick(self):
         if self.ui.logButton.text() == "Show log":
@@ -758,16 +821,7 @@ class EnemaForm(QtGui.QMainWindow):
             self.setFixedSize(591, 618)
             self.resize(591, 618)
             self.ui.logButton.setText("Show log")
-        
-    #Cleaning log
-    def clearLogButton_OnClick(self):
-        self.ui.logTxtEdit.clear()
 
-    #Show Informational MessageBox:
-    def showInfoMsg(self, msg):
-        QtGui.QMessageBox.information(self, "Enema", msg, 1, 0)
-
-#==============================COLUMNS=BLOCK=========================================#    
     #Get columns button click       
     def getColumnsButton_OnClick(self):
         if self.isBusy():
@@ -783,21 +837,31 @@ class EnemaForm(QtGui.QMainWindow):
         for table in range(self.ui.treeOfTables.topLevelItemCount()):
             tables.append(self.ui.treeOfTables.topLevelItem(table).text(0))
         wD['tables'] = tables
-        self.qthread = ErrorBased(wD, self.qstrings)
+        self.qthread = Injector(wD, self.qstrings)
         self.connectAndStart()
-                
-    #Adding columns to TreeWidget
-    def addColumn(self, column_name, i):
-        column = QtGui.QTreeWidgetItem()
-        column.setText(0, column_name)
-        self.ui.treeOfTables.topLevelItem(i).addChild(column)
-    
+        
     #Clear button click
     def cleanThreeButton_OnClick(self):
         self.ui.treeOfTables.clear()
 
-#==================================DUMP-BLOCK===========================================# 
-    #GO button click        
+    #Cleaning log
+    def clearLogButton_OnClick(self):
+        self.ui.logTxtEdit.clear()
+
+    #Query button click (query tab)
+    def queryButton_OnClick(self):
+        if self.isBusy():
+            self.busyDialog()
+            return
+        self.ui.progressBar.setMaximum(0)
+        self.ui.progressBar.show()
+        self.ui.queryOutput.clear()
+        wD = self.webData()
+        wD['task'] = "query"
+        self.qthread = Injector(wD, self.qstrings)
+        self.connectAndStart()
+        
+    #GO button click (dump tab)        
     def dmpButton_OnClick(self):
         if self.isBusy():
             self.busyDialog()
@@ -816,36 +880,91 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.progressBarDump.setValue(0)
         self.ui.progressBarDump.show()
         self.ui.progressBarDump.setMaximum(self.ui.tableWidget.rowCount() * len(wD['columns']))
-        self.qthread = ErrorBased(wD, self.qstrings)
-        self.connectAndStart()    
+        self.qthread = Injector(wD, self.qstrings)
+        self.connectAndStart()
+        
+#------------------------------------------------MAIN-SLOTS------------------------------------------------------#
 
-    #Updating Dump progressBar
+    #Request method changed
+    def methodChanged(self):
+        if self.getMethod() == "POST":
+            self.ui.textEdit.setEnabled(True)
+        else:
+            self.ui.textEdit.setEnabled(False)
+            
+    #Db type changed
+    def dbTypeChanged(self):
+        if self.getDbType() == "mysql":
+            self.ui.radioNotInSubstring.setText("LIMIT")
+            self.ui.radioNotInSubstring.setChecked(True)
+            self.ui.radioNotInArray.hide()
+            self.ui.tabs.setTabEnabled(3, False)
+            self.ui.menuMssql.setEnabled(False)
+        else:
+            self.ui.tabs.setTabEnabled(3, True)
+            self.ui.radioNotInSubstring.setText("not in(substring)")
+            self.ui.radioNotInArray.show()
+            self.ui.radioNotInArray.setChecked(True)
+            self.ui.menuMssql.setEnabled(True)
+            
+    #Add text to log
+    def addLog(self, logStr):
+        #Autoclean log when blocks more than 3000
+        if self.ui.logTxtEdit.document().blockCount() > 3000:
+            self.ui.logTxtEdit.clear()
+        self.ui.logTxtEdit.append("\n" + logStr)
+        #Autoscrolling
+        sb = self.ui.logTxtEdit.verticalScrollBar()
+        sb.setValue(sb.maximum())
+        
+    #Updating main progressBar
+    def updatePb(self, pbMax, taskDone):
+        if taskDone:
+            self.ui.progressBar.hide()
+            return
+        self.ui.progressBar.setMaximum(pbMax)
+        self.ui.progressBar.setValue(self.ui.progressBar.value() + 1)
+
+    #Updating dump progressBar (dump tab)
     def updatePbDump(self, pbMax, taskDone):
         if taskDone:
             self.ui.progressBarDump.hide()
             return
         self.ui.progressBarDump.setValue(self.ui.progressBarDump.value() + 1)
         
-    #Add row data
+    #Add row data (dump tab)
     def addRowData(self,  tNum, num,  rowData):
         rData = QtGui.QTableWidgetItem()
         rData.setText(rowData)
         self.ui.tableWidget.setItem((tNum - int(self.ui.lineFrom.text()) - 1), num, rData)
-#==============================QUERY=BLOCK=================================#
-    #Query button click    
-    def queryButton_OnClick(self):
-        if self.isBusy():
-            return
-        self.ui.queryOutput.clear()
-        wD = self.webData()
-        wD['task'] = "query"
-        self.qthread = ErrorBased(wD, self.qstrings)
-        self.connectAndStart()
+        
+    #Add db to listBox
+    def addBase(self, db_name):
+        self.ui.dbListComboBox.addItem(db_name)
 
-    #Set query result
+    #Set label value to count of tables in current db
+    def setTblCount(self, tblCount):
+        self.ui.totalLabel.setText(tblCount)
+
+    #Add table to ListWidget
+    def addTable(self, table_name):
+        self.ui.listOfTables.addItem(table_name)
+    
+    #Adding columns to TreeWidget
+    def addColumn(self, column_name, i):
+        column = QtGui.QTreeWidgetItem()
+        column.setText(0, column_name)
+        self.ui.treeOfTables.topLevelItem(i).addChild(column)
+
+    #Show Informational MessageBox:
+    def showInfoMsg(self, msg):
+        QtGui.QMessageBox.information(self, "Enema", msg, 1, 0)
+
+    #Set query result (query tab)
     def queryResult(self, result):
         self.ui.queryOutput.setText(result)
-#========================================END==========================================#
+        
+#------------------------------------------------END------------------------------------------------------#
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)

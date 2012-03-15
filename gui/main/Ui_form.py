@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\main\form.ui'
+# Form implementation generated from reading ui file 'C:\Projects\enema\gui\main\form.ui'
 #
-# Created: Sun Mar 11 11:07:11 2012
+# Created: Thu Mar 15 21:22:19 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -87,7 +87,7 @@ class Ui_MainForm(object):
         self.lineTimeout.setGeometry(QtCore.QRect(60, 180, 41, 20))
         self.lineTimeout.setObjectName(_fromUtf8("lineTimeout"))
         self.comboBox_3 = QtGui.QComboBox(self.groupBox)
-        self.comboBox_3.setGeometry(QtCore.QRect(10, 20, 81, 21))
+        self.comboBox_3.setGeometry(QtCore.QRect(10, 20, 71, 21))
         self.comboBox_3.setObjectName(_fromUtf8("comboBox_3"))
         self.comboBox_3.addItem(_fromUtf8(""))
         self.comboBox_3.addItem(_fromUtf8(""))
@@ -114,6 +114,11 @@ class Ui_MainForm(object):
         self.killButton = QtGui.QToolButton(self.groupBox)
         self.killButton.setGeometry(QtCore.QRect(40, 270, 91, 21))
         self.killButton.setObjectName(_fromUtf8("killButton"))
+        self.comboInjType = QtGui.QComboBox(self.groupBox)
+        self.comboInjType.setGeometry(QtCore.QRect(90, 20, 71, 21))
+        self.comboInjType.setObjectName(_fromUtf8("comboInjType"))
+        self.comboInjType.addItem(_fromUtf8(""))
+        self.comboInjType.addItem(_fromUtf8(""))
         self.lineUrl = QtGui.QLineEdit(self.db_structureTab)
         self.lineUrl.setGeometry(QtCore.QRect(40, 10, 471, 20))
         self.lineUrl.setObjectName(_fromUtf8("lineUrl"))
@@ -391,6 +396,7 @@ class Ui_MainForm(object):
         self.tabs.setCurrentIndex(0)
         self.comboBox.setCurrentIndex(0)
         self.comboBox_3.setCurrentIndex(0)
+        self.comboInjType.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainForm)
 
     def retranslateUi(self, MainForm):
@@ -413,7 +419,9 @@ class Ui_MainForm(object):
         self.logButton.setText(QtGui.QApplication.translate("MainForm", "Show log", None, QtGui.QApplication.UnicodeUTF8))
         self.isRndUpper.setText(QtGui.QApplication.translate("MainForm", "Random UpCase", None, QtGui.QApplication.UnicodeUTF8))
         self.killButton.setText(QtGui.QApplication.translate("MainForm", "Kill task", None, QtGui.QApplication.UnicodeUTF8))
-        self.lineUrl.setText(QtGui.QApplication.translate("MainForm", "http://192.168.1.35/Default.aspx?db=mssql&id=1 and 1=[sub];[cmd]--", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboInjType.setItemText(0, QtGui.QApplication.translate("MainForm", "ERROR", None, QtGui.QApplication.UnicodeUTF8))
+        self.comboInjType.setItemText(1, QtGui.QApplication.translate("MainForm", "UNION", None, QtGui.QApplication.UnicodeUTF8))
+        self.lineUrl.setText(QtGui.QApplication.translate("MainForm", "http://192.168.1.50/Default.asp?id=-1 or 1=[sub];[cmd]--", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("MainForm", "URL:", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("MainForm", "Tables total:", None, QtGui.QApplication.UnicodeUTF8))
         self.totalLabel.setText(QtGui.QApplication.translate("MainForm", "0", None, QtGui.QApplication.UnicodeUTF8))

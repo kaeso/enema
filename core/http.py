@@ -38,29 +38,33 @@ class HTTP_Handler(QtCore.QObject):
             return True
 
     #SET variables in string to valid value 
-    def buildQuery(self, query, vars):
+    def buildQuery(self, query, vars, args=None):
         ms =  core.txtproc.strToSqlChar(vars['ms'], vars['db_type'])
         try:
-                if vars['db_type'] == "mysql" and (vars['task'] =='tables' or vars['task'] =='columns'):
-                    vars['cdb'] = core.txtproc.strToSqlChar(vars['cdb'], vars['db_type'])
+            if vars['db_type'] == "mysql" and (vars['task'] =='tables' or vars['task'] =='columns'):
+                args['cdb'] = core.txtproc.strToSqlChar(args['cdb'], vars['db_type'])
         except Exception:
             pass
         if vars is None:
             vars = {}
+        if args is None:
+            args = {}
         query_vars = {
         '${MS}' : ms, 
-        '${current_db}' : vars.setdefault('cdb'), 
-        '${current_table}' : vars.setdefault('ctbl'),  
-        '${num}' : vars.setdefault('num'), 
-        '${current_column}' : vars.setdefault('ccol'),
-        '${ordinal_position,}' : vars.setdefault('num'), 
+        #Args---
+        '${current_db}' : args.setdefault('cdb'), 
+        '${current_table}' : args.setdefault('ctbl'),  
+        '${num}' : args.setdefault('num'), 
+        '${current_column}' : args.setdefault('ccol'),
+        '${ordinal_position,}' : args.setdefault('num'), 
+        '${column}' : args.setdefault('column'), 
+        #Vars---
         '${selected_table}' : vars.setdefault('selected_table'), 
         '${cmd}' : vars.setdefault('cmd'), 
         '${query_cmd}' : vars.setdefault('query_cmd'), 
         '${login}' : vars.setdefault('login'), 
         '${password}' : vars.setdefault('password'), 
         '${key}' : vars.setdefault('key'),
-        '${column}' : vars.setdefault('column'), 
         '${table}' : vars.setdefault('table'), 
         '${hex}' : vars.setdefault('hex'), } 
         for key in query_vars:
@@ -79,7 +83,7 @@ class HTTP_Handler(QtCore.QObject):
             if "[cmd]" in strVar:
                 strVar = strVar.replace("[cmd]", query)
                 if "[sub]" in strVar:
-                    strVar = strVar.replace("[sub]", "1")
+                    strVar = strVar.replace("[sub]", "null")
         else:
             if "[cmd]" in strVar:
                 strVar = strVar.replace(";[cmd]", "")

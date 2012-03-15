@@ -107,6 +107,13 @@ class Worker(QtCore.QThread):
             
     def run(self):
         self.logSignal.emit("+++ [" + PLUGIN_NAME + "]: TASK STARTED +++")
+        #--------Task----------
+        self.addUserTask()
+        #-----------------------
+        self.taskDoneSignal.emit()
+        self.logSignal.emit("*** [" + PLUGIN_NAME + "]: TASK DONE ***")
+        
+    def addUserTask(self):
         if self.vars['type'] == "sql":
             #Adding sql user
             self.vars['hex'] = core.txtproc.strToHex("master..sp_addlogin '" + self.vars['username']\
@@ -131,7 +138,3 @@ class Worker(QtCore.QThread):
             + self.vars['username'] + " /ADD'", True)
             query = self.wq.buildQuery(self.qstring, self.vars)
             self.wq.httpRequest(query, True, self.vars)
-            
-        self.logSignal.emit("*** [" + PLUGIN_NAME + "]: TASK DONE ***")
-        self.taskDoneSignal.emit()
-        

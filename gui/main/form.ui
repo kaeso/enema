@@ -256,7 +256,7 @@
         <rect>
          <x>10</x>
          <y>20</y>
-         <width>81</width>
+         <width>71</width>
          <height>21</height>
         </rect>
        </property>
@@ -368,6 +368,29 @@
         <string>Kill task</string>
        </property>
       </widget>
+      <widget class="QComboBox" name="comboInjType">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>20</y>
+         <width>71</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>ERROR</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>UNION</string>
+        </property>
+       </item>
+      </widget>
      </widget>
      <widget class="QLineEdit" name="lineUrl">
       <property name="geometry">
@@ -379,7 +402,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>http://192.168.1.35/Default.aspx?db=mssql&amp;id=1 and 1=[sub];[cmd]--</string>
+       <string>http://192.168.1.50/Default.asp?id=-1 or 1=[sub];[cmd]--</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_4">

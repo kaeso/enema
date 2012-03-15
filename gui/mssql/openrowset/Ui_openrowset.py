@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\mssql\openrowset\openrowset.ui'
+# Form implementation generated from reading ui file 'C:\Projects\enema\gui\mssql\openrowset\openrowset.ui'
 #
-# Created: Sat Mar 10 14:46:30 2012
+# Created: Thu Mar 15 21:22:23 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -60,7 +60,7 @@ class Ui_OpenrowsetWidget(object):
         self.label_5.setGeometry(QtCore.QRect(10, 50, 31, 20))
         self.label_5.setObjectName(_fromUtf8("label_5"))
         self.enableButton = QtGui.QPushButton(self.groupBox)
-        self.enableButton.setGeometry(QtCore.QRect(480, 50, 81, 20))
+        self.enableButton.setGeometry(QtCore.QRect(420, 50, 141, 20))
         self.enableButton.setObjectName(_fromUtf8("enableButton"))
         self.groupBox_2 = QtGui.QGroupBox(OpenrowsetWidget)
         self.groupBox_2.setGeometry(QtCore.QRect(10, 100, 571, 511))
@@ -127,7 +127,7 @@ class Ui_OpenrowsetWidget(object):
         self.driverBox.setItemText(1, QtGui.QApplication.translate("OpenrowsetWidget", "SQLoleDb", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("OpenrowsetWidget", "Driver:", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("OpenrowsetWidget", "db:", None, QtGui.QApplication.UnicodeUTF8))
-        self.enableButton.setText(QtGui.QApplication.translate("OpenrowsetWidget", "Enable", None, QtGui.QApplication.UnicodeUTF8))
+        self.enableButton.setText(QtGui.QApplication.translate("OpenrowsetWidget", "Enable openrowset", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_2.setTitle(QtGui.QApplication.translate("OpenrowsetWidget", "Query", None, QtGui.QApplication.UnicodeUTF8))
         self.queryRun.setText(QtGui.QApplication.translate("OpenrowsetWidget", "Run", None, QtGui.QApplication.UnicodeUTF8))
         self.labelSelect_2.setText(QtGui.QApplication.translate("OpenrowsetWidget", "FROM", None, QtGui.QApplication.UnicodeUTF8))

