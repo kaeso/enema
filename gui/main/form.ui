@@ -209,7 +209,7 @@
       <widget class="QSpinBox" name="threadBox">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>30</x>
          <y>180</y>
          <width>41</width>
          <height>20</height>
@@ -228,9 +228,9 @@
       <widget class="QLabel" name="label_5">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>30</x>
          <y>160</y>
-         <width>131</width>
+         <width>91</width>
          <height>20</height>
         </rect>
        </property>
@@ -241,14 +241,14 @@
       <widget class="QLineEdit" name="lineTimeout">
        <property name="geometry">
         <rect>
-         <x>60</x>
+         <x>80</x>
          <y>180</y>
          <width>41</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>30</string>
+        <string>60</string>
        </property>
       </widget>
       <widget class="QComboBox" name="comboBox_3">
@@ -277,7 +277,7 @@
       <widget class="QLineEdit" name="lineMS">
        <property name="geometry">
         <rect>
-         <x>110</x>
+         <x>90</x>
          <y>140</y>
          <width>21</width>
          <height>20</height>
@@ -319,7 +319,7 @@
       <widget class="QLineEdit" name="lineMP">
        <property name="geometry">
         <rect>
-         <x>110</x>
+         <x>90</x>
          <y>110</y>
          <width>51</width>
          <height>20</height>
@@ -345,7 +345,7 @@
       <widget class="QCheckBox" name="isRndUpper">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>30</x>
          <y>210</y>
          <width>131</width>
          <height>17</height>
