@@ -391,7 +391,7 @@ class EnemaForm(QtGui.QMainWindow):
         #Request method changed
         self.ui.comboBox.currentIndexChanged.connect(self.methodChanged)
         #Url edit finished
-        self.ui.lineUrl.editingFinished.connect(self.txtChanged)
+        self.ui.lineUrl.editingFinished.connect(self.urlEditFinished)
         
 #-+++++++++++PLUGIN-SIGNAL-CONNECTS++++++++++++#
 
@@ -949,8 +949,9 @@ class EnemaForm(QtGui.QMainWindow):
 
     #Set label value to count of tables in current db
     def setTblCount(self, tblCount):
-        self.ui.totalLabel.setText(tblCount)
-
+        if type(tblCount) is int:
+            self.ui.totalLabel.setText(str(tblCount))
+            
     #Add table to ListWidget
     def addTable(self, table_name):
         self.ui.listOfTables.addItem(table_name)

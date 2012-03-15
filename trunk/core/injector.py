@@ -33,7 +33,7 @@ class Injector(QtCore.QThread):
     columnSignal = QtCore.pyqtSignal(str, int)
     rowDataSignal = QtCore.pyqtSignal(int, int, str)
     querySignal = QtCore.pyqtSignal(str)
-    tblCountSignal = QtCore.pyqtSignal(str)
+    tblCountSignal = QtCore.pyqtSignal(int)
     tblSignal = QtCore.pyqtSignal(str)
     #----------------------------------------#
     
@@ -176,7 +176,11 @@ class Injector(QtCore.QThread):
         if tblCount == "no_content": 
             self.logger(sys._getframe().f_code.co_name + "() -> tblCount", False)
             return
-        self.tblCountSignal.emit(tblCount)
+        try:
+            self.tblCountSignal.emit(int(tblCount))
+        except ValueError as err:
+            self.logger("\nSomething wrong. Check server request and response...\n\n[details]: " + str(err), True)
+            return
         if self.vars['notInArray']:
             current_table = ""
             while not self.killed:
