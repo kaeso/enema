@@ -177,14 +177,14 @@
    <widget class="QPushButton" name="enableButton">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>420</x>
       <y>50</y>
-      <width>81</width>
+      <width>141</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>Enable</string>
+     <string>Enable openrowset</string>
     </property>
    </widget>
   </widget>
