@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Projects\enema\gui\main\form.ui'
 #
-# Created: Thu Mar 15 21:22:19 2012
+# Created: Thu Mar 15 22:59:19 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -75,16 +75,16 @@ class Ui_MainForm(object):
         self.radioNotInSubstring.setChecked(False)
         self.radioNotInSubstring.setObjectName(_fromUtf8("radioNotInSubstring"))
         self.threadBox = QtGui.QSpinBox(self.groupBox)
-        self.threadBox.setGeometry(QtCore.QRect(10, 180, 41, 20))
+        self.threadBox.setGeometry(QtCore.QRect(30, 180, 41, 20))
         self.threadBox.setMinimum(1)
         self.threadBox.setMaximum(100)
         self.threadBox.setProperty("value", 10)
         self.threadBox.setObjectName(_fromUtf8("threadBox"))
         self.label_5 = QtGui.QLabel(self.groupBox)
-        self.label_5.setGeometry(QtCore.QRect(10, 160, 131, 20))
+        self.label_5.setGeometry(QtCore.QRect(30, 160, 91, 20))
         self.label_5.setObjectName(_fromUtf8("label_5"))
         self.lineTimeout = QtGui.QLineEdit(self.groupBox)
-        self.lineTimeout.setGeometry(QtCore.QRect(60, 180, 41, 20))
+        self.lineTimeout.setGeometry(QtCore.QRect(80, 180, 41, 20))
         self.lineTimeout.setObjectName(_fromUtf8("lineTimeout"))
         self.comboBox_3 = QtGui.QComboBox(self.groupBox)
         self.comboBox_3.setGeometry(QtCore.QRect(10, 20, 71, 21))
@@ -92,7 +92,7 @@ class Ui_MainForm(object):
         self.comboBox_3.addItem(_fromUtf8(""))
         self.comboBox_3.addItem(_fromUtf8(""))
         self.lineMS = QtGui.QLineEdit(self.groupBox)
-        self.lineMS.setGeometry(QtCore.QRect(110, 140, 21, 20))
+        self.lineMS.setGeometry(QtCore.QRect(90, 140, 21, 20))
         self.lineMS.setMaxLength(1)
         self.lineMS.setObjectName(_fromUtf8("lineMS"))
         self.label_22 = QtGui.QLabel(self.groupBox)
@@ -102,14 +102,14 @@ class Ui_MainForm(object):
         self.label_23.setGeometry(QtCore.QRect(10, 110, 101, 20))
         self.label_23.setObjectName(_fromUtf8("label_23"))
         self.lineMP = QtGui.QLineEdit(self.groupBox)
-        self.lineMP.setGeometry(QtCore.QRect(110, 110, 51, 20))
+        self.lineMP.setGeometry(QtCore.QRect(90, 110, 51, 20))
         self.lineMP.setText(_fromUtf8(""))
         self.lineMP.setObjectName(_fromUtf8("lineMP"))
         self.logButton = QtGui.QToolButton(self.groupBox)
         self.logButton.setGeometry(QtCore.QRect(40, 240, 91, 21))
         self.logButton.setObjectName(_fromUtf8("logButton"))
         self.isRndUpper = QtGui.QCheckBox(self.groupBox)
-        self.isRndUpper.setGeometry(QtCore.QRect(10, 210, 131, 17))
+        self.isRndUpper.setGeometry(QtCore.QRect(30, 210, 131, 17))
         self.isRndUpper.setObjectName(_fromUtf8("isRndUpper"))
         self.killButton = QtGui.QToolButton(self.groupBox)
         self.killButton.setGeometry(QtCore.QRect(40, 270, 91, 21))
@@ -410,7 +410,7 @@ class Ui_MainForm(object):
         self.radioNotInArray.setText(QtGui.QApplication.translate("MainForm", "not in(array)", None, QtGui.QApplication.UnicodeUTF8))
         self.radioNotInSubstring.setText(QtGui.QApplication.translate("MainForm", "not in(substring)", None, QtGui.QApplication.UnicodeUTF8))
         self.label_5.setText(QtGui.QApplication.translate("MainForm", "Threads / Timeout:", None, QtGui.QApplication.UnicodeUTF8))
-        self.lineTimeout.setText(QtGui.QApplication.translate("MainForm", "30", None, QtGui.QApplication.UnicodeUTF8))
+        self.lineTimeout.setText(QtGui.QApplication.translate("MainForm", "60", None, QtGui.QApplication.UnicodeUTF8))
         self.comboBox_3.setItemText(0, QtGui.QApplication.translate("MainForm", "MSSQL", None, QtGui.QApplication.UnicodeUTF8))
         self.comboBox_3.setItemText(1, QtGui.QApplication.translate("MainForm", "MySQL", None, QtGui.QApplication.UnicodeUTF8))
         self.lineMS.setText(QtGui.QApplication.translate("MainForm", "~", None, QtGui.QApplication.UnicodeUTF8))

@@ -390,6 +390,8 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.comboBox_3.currentIndexChanged.connect(self.dbTypeChanged)
         #Request method changed
         self.ui.comboBox.currentIndexChanged.connect(self.methodChanged)
+        #Url edit finished
+        self.ui.lineUrl.editingFinished.connect(self.txtChanged)
         
 #-+++++++++++PLUGIN-SIGNAL-CONNECTS++++++++++++#
 
@@ -403,7 +405,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.actionXp_cmdshell.triggered.connect(self.actionXp_cmdshell_OnClick)
         
 #++++++++++++PLUGIN+SLOTS++++++++++++#
-
+        
     #ftp    
     def actionFtp_OnClick(self):
         self.pluginWidget = FtpWidget(self.webData(), self.qstrings['mssql_error_based']['exec_cmdshell'], self)
@@ -884,7 +886,10 @@ class EnemaForm(QtGui.QMainWindow):
         self.connectAndStart()
         
 #------------------------------------------------MAIN-SLOTS------------------------------------------------------#
-
+    #URL editing finished
+    def urlEditFinished(self):
+        self.ui.dbListComboBox.clear()
+        
     #Request method changed
     def methodChanged(self):
         if self.getMethod() == "POST":
