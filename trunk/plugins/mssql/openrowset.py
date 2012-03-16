@@ -16,7 +16,7 @@
 import os
 import core.txtproc
 import pyodbc
-import e_const
+import core.e_const
 from core.http import HTTP_Handler
 from PyQt4 import QtCore, QtGui
 
@@ -200,7 +200,7 @@ class Worker(QtCore.QThread):
         self.logSignal.emit(logStr)
     
     def sqlErrorDesc(self, errMsg, errStr):
-        enc = e_const.ENCODING
+        enc = core.e_const.ENCODING
         errStr = str(errStr).encode(enc).decode(enc)
         fullStr = errMsg + errStr
         self.logSignal.emit(fullStr)
