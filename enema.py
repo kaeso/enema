@@ -77,8 +77,8 @@ class QueryEditorForm(QtGui.QMainWindow):
         self.ui.q_ms_get_column_name3.setText(settings.value(qstring_type + 'get_column_name3', ''))      
         #xp_cmdshell
         self.ui.q_ms_exec_cmdshell.setText(settings.value(qstring_type + 'exec_cmdshell', ''))
-        self.ui.q_ms_get_row.setText(settings.value(qstring_type + 'get_row', ''))
         #etc
+        self.ui.q_ms_get_row.setText(settings.value(qstring_type + 'get_row', ''))
         self.ui.q_ms_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
         self.ui.q_ms_query.setText(settings.value(qstring_type + 'query', ''))
         self.ui.q_ms_data_dump.setText(settings.value(qstring_type + 'data_dump', ''))
@@ -100,6 +100,7 @@ class QueryEditorForm(QtGui.QMainWindow):
         self.ui.q_union_ms_get_column_name2.setText(settings.value(qstring_type + 'get_column_name2', ''))
         self.ui.q_union_ms_get_column_name3.setText(settings.value(qstring_type + 'get_column_name3', ''))      
         #etc
+        self.ui.q_union_ms_get_row.setText(settings.value(qstring_type + 'get_row', ''))
         self.ui.q_union_ms_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
         self.ui.q_union_ms_query.setText(settings.value(qstring_type + 'query', ''))
         self.ui.q_union_ms_data_dump.setText(settings.value(qstring_type + 'data_dump', ''))
@@ -165,8 +166,8 @@ class QueryEditorForm(QtGui.QMainWindow):
         settings.setValue(qstring_type + 'get_column_name3', self.ui.q_ms_get_column_name3.text())    
         #xp_cmdshell
         settings.setValue(qstring_type + 'exec_cmdshell', self.ui.q_ms_exec_cmdshell.text())
-        settings.setValue(qstring_type + 'get_row', self.ui.q_ms_get_row.text())
         #etc
+        settings.setValue(qstring_type + 'get_row', self.ui.q_ms_get_row.text())
         settings.setValue(qstring_type + 'rows_count', self.ui.q_ms_rows_count.text())
         settings.setValue(qstring_type + 'query', self.ui.q_ms_query.text())
         settings.setValue(qstring_type + 'data_dump', self.ui.q_ms_data_dump.text())
@@ -188,6 +189,7 @@ class QueryEditorForm(QtGui.QMainWindow):
         settings.setValue(qstring_type + 'get_column_name2', self.ui.q_union_ms_get_column_name2.text())
         settings.setValue(qstring_type + 'get_column_name3', self.ui.q_union_ms_get_column_name3.text())    
         #etc
+        settings.setValue(qstring_type + 'get_row', self.ui.q_union_ms_get_row.text())
         settings.setValue(qstring_type + 'rows_count', self.ui.q_union_ms_rows_count.text())
         settings.setValue(qstring_type + 'query', self.ui.q_union_ms_query.text())
         settings.setValue(qstring_type + 'data_dump', self.ui.q_union_ms_data_dump.text())
