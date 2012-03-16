@@ -14,12 +14,12 @@
 """
 
 import base64
-import e_const
+import core.e_const
 import random
 
 #Convert string to base64:
 def base64proc(string, mode):
-    encoding = e_const.ENCODING
+    encoding = core.e_const.ENCODING
     if mode == "enc":
         readyStr = base64.b64encode(bytes(string, encoding))
     else:
