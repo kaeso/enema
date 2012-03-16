@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Projects\enema\gui\main\query_editor.ui'
 #
-# Created: Thu Mar 15 21:22:16 2012
+# Created: Fri Mar 16 11:41:02 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -459,31 +459,18 @@ class Ui_QueryEditorForm(object):
         self.label_33.setFont(font)
         self.label_33.setObjectName(_fromUtf8("label_33"))
         self.label_34 = QtGui.QLabel(self.tab_21)
-        self.label_34.setGeometry(QtCore.QRect(10, 210, 291, 20))
+        self.label_34.setGeometry(QtCore.QRect(10, 160, 291, 20))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.label_34.setFont(font)
         self.label_34.setObjectName(_fromUtf8("label_34"))
         self.q_union_ms_get_row = QtGui.QLineEdit(self.tab_21)
-        self.q_union_ms_get_row.setGeometry(QtCore.QRect(10, 230, 841, 21))
+        self.q_union_ms_get_row.setGeometry(QtCore.QRect(10, 180, 841, 21))
         font = QtGui.QFont()
         font.setPointSize(9)
         self.q_union_ms_get_row.setFont(font)
         self.q_union_ms_get_row.setText(_fromUtf8(""))
         self.q_union_ms_get_row.setObjectName(_fromUtf8("q_union_ms_get_row"))
-        self.q_union_ms_exec_cmdshell = QtGui.QLineEdit(self.tab_21)
-        self.q_union_ms_exec_cmdshell.setGeometry(QtCore.QRect(10, 180, 841, 20))
-        font = QtGui.QFont()
-        font.setPointSize(9)
-        self.q_union_ms_exec_cmdshell.setFont(font)
-        self.q_union_ms_exec_cmdshell.setText(_fromUtf8(""))
-        self.q_union_ms_exec_cmdshell.setObjectName(_fromUtf8("q_union_ms_exec_cmdshell"))
-        self.label_35 = QtGui.QLabel(self.tab_21)
-        self.label_35.setGeometry(QtCore.QRect(10, 160, 291, 20))
-        font = QtGui.QFont()
-        font.setPointSize(10)
-        self.label_35.setFont(font)
-        self.label_35.setObjectName(_fromUtf8("label_35"))
         self.tabWidget_4.addTab(self.tab_21, _fromUtf8(""))
         self.qeTabWidget_3.addTab(self.tab_22, _fromUtf8(""))
         self.qeTabWidget.addTab(self.tab, _fromUtf8(""))
@@ -858,7 +845,6 @@ class Ui_QueryEditorForm(object):
         self.label_32.setText(QtGui.QApplication.translate("QueryEditorForm", "------run query------", None, QtGui.QApplication.UnicodeUTF8))
         self.label_33.setText(QtGui.QApplication.translate("QueryEditorForm", "------data dump------", None, QtGui.QApplication.UnicodeUTF8))
         self.label_34.setText(QtGui.QApplication.translate("QueryEditorForm", "------get row from temp table------", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_35.setText(QtGui.QApplication.translate("QueryEditorForm", "------exec xp_cmdshell------", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget_4.setTabText(self.tabWidget_4.indexOf(self.tab_21), QtGui.QApplication.translate("QueryEditorForm", "etc", None, QtGui.QApplication.UnicodeUTF8))
         self.qeTabWidget_3.setTabText(self.qeTabWidget_3.indexOf(self.tab_22), QtGui.QApplication.translate("QueryEditorForm", "Union-Based", None, QtGui.QApplication.UnicodeUTF8))
         self.qeTabWidget.setTabText(self.qeTabWidget.indexOf(self.tab), QtGui.QApplication.translate("QueryEditorForm", "mssql", None, QtGui.QApplication.UnicodeUTF8))

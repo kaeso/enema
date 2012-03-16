@@ -1223,7 +1223,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>210</y>
+            <y>160</y>
             <width>291</width>
             <height>20</height>
            </rect>
@@ -1241,7 +1241,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>230</y>
+            <y>180</y>
             <width>841</width>
             <height>21</height>
            </rect>
@@ -1253,42 +1253,6 @@
           </property>
           <property name="text">
            <string/>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="q_union_ms_exec_cmdshell">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>180</y>
-            <width>841</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>9</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_35">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>160</y>
-            <width>291</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>------exec xp_cmdshell------</string>
           </property>
          </widget>
         </widget>
