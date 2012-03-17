@@ -13,21 +13,20 @@
     GNU General Public License for more details.
 """
 
-import base64
-import core.e_const
 import random
+import base64
+from core.e_const import ENCODING
 
 #Convert string to base64:
 def base64proc(string, mode):
-    encoding = core.e_const.ENCODING
     if mode == "enc":
-        readyStr = base64.b64encode(bytes(string, encoding))
+        readyStr = base64.b64encode(bytes(string, ENCODING))
     else:
         try:
-            readyStr = base64.b64decode(bytes(string, encoding))
+            readyStr = base64.b64decode(bytes(string, ENCODING))
         except Exception:
             return " - invalid string - "
-    return str(readyStr, encoding)
+    return str(readyStr, ENCODING)
     
 #Convert string to HEX:
 def strToHex(string, isCmdHex):

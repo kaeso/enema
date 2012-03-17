@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\main\form.ui'
+# Form implementation generated from reading ui file 'C:\Projects\enema\gui\main\form.ui'
 #
-# Created: Sat Mar 17 18:01:42 2012
+# Created: Sat Mar 17 19:42:36 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -352,6 +352,8 @@ class Ui_MainForm(object):
         self.actionOpenrowset.setObjectName(_fromUtf8("actionOpenrowset"))
         self.actionXp_cmdshell = QtGui.QAction(MainForm)
         self.actionXp_cmdshell.setObjectName(_fromUtf8("actionXp_cmdshell"))
+        self.actionCheckUpdates = QtGui.QAction(MainForm)
+        self.actionCheckUpdates.setObjectName(_fromUtf8("actionCheckUpdates"))
         self.menuSave.addAction(self.saveTables)
         self.menuSave.addAction(self.saveColumns)
         self.menuSave.addAction(self.saveBases)
@@ -364,6 +366,7 @@ class Ui_MainForm(object):
         self.menuLoad.addAction(self.lsSettings)
         self.menuTools.addAction(self.menuEncoder)
         self.menuTools.addAction(self.qEditor)
+        self.menuHelp.addAction(self.actionCheckUpdates)
         self.menuHelp.addAction(self.menuAbout)
         self.menuMssql.addAction(self.actionFtp)
         self.menuMssql.addAction(self.actionAdd_user)
@@ -471,6 +474,7 @@ class Ui_MainForm(object):
         self.actionAdd_user.setText(QtGui.QApplication.translate("MainForm", "add_user", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOpenrowset.setText(QtGui.QApplication.translate("MainForm", "openrowset", None, QtGui.QApplication.UnicodeUTF8))
         self.actionXp_cmdshell.setText(QtGui.QApplication.translate("MainForm", "xp_cmdshell", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCheckUpdates.setText(QtGui.QApplication.translate("MainForm", "Check for updates", None, QtGui.QApplication.UnicodeUTF8))
 
 
 if __name__ == "__main__":

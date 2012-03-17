@@ -27,14 +27,16 @@ from plugins.mssql.openrowset import OpenrowsetWidget
 #xp_cmdshell
 from plugins.mssql.xp_cmdshell import CmdShellWidget
 #---
+from core.e_const import ENCODING
 from core.injector import Injector
+from urllib import request
 from PyQt4 import QtCore, QtGui 
 from gui.main.Ui_form import Ui_MainForm
 from gui.main.Ui_encoder_form import Ui_EncoderForm
 from gui.main.Ui_about_form import Ui_AboutForm
 from gui.main.Ui_query_editor import Ui_QueryEditorForm
 
-VERSION = "1.53"
+VERSION = "1.50"
 
 #Query editor form GUI class
 class QueryEditorForm(QtGui.QMainWindow):
@@ -325,6 +327,37 @@ class AboutForm(QtGui.QWidget):
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
 
+
+#Version check thread
+class CheckUpdates(QtCore.QThread):
+
+    versionInfoSignal = QtCore.pyqtSignal(bool, float)
+        
+    def __init__(self):
+        QtCore.QThread.__init__(self)
+    
+    def run(self):
+        updateCheckUrl = "http://enema.googlecode.com/svn/trunk/enema.py"
+        urlOpener = request.build_opener()
+        response = urlOpener.open(updateCheckUrl, None, 30)
+        content = response.read()
+        try:
+            content = content.decode(ENCODING)
+        except:
+            return
+        fromStr = content.find("VERSION = \"")
+        fromStr += 11
+        toStr = content.find("\"", fromStr, len(content))
+        try:
+            fetched_version = float(content[fromStr:toStr])
+        except:
+            return
+        if fetched_version > float(VERSION):
+            self.versionInfoSignal.emit(True, fetched_version)
+        else:
+            self.versionInfoSignal.emit(False, fetched_version)
+            
+            
 #Main form GUI class
 class EnemaForm(QtGui.QMainWindow):
     
@@ -373,7 +406,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.progressBar.hide()
         self.ui.progressBarDump.hide()
         
-        #Forms / widgets
+        #Subforms
         self.qeditor_frm = QueryEditorForm(self)
         self.enc_frm = EncoderForm(self)
         self.about_frm = AboutForm(self)
@@ -442,6 +475,8 @@ class EnemaForm(QtGui.QMainWindow):
         #Tray icon
         self.actionQuit.triggered.connect(self.trayQuit_Clicked)
         self.sysTray.activated.connect(self.trayActivated)
+        #Check for updates clicked
+        self.ui.actionCheckUpdates.triggered.connect(self.checkUpdates)
         
 #-+++++++++++PLUGIN-SIGNAL-CONNECTS++++++++++++#
 
@@ -794,11 +829,29 @@ class EnemaForm(QtGui.QMainWindow):
         self.qstrings = cfgparser
     
 #------------------------------------------------[MENU]ABOUT-SLOTS------------------------------------------------------#
-
+    #Checking for new version
+    def checkUpdates(self):
+        self.updates = CheckUpdates()
+        self.updates.versionInfoSignal.connect(self.updatesDialog)
+        self.updates.start()
+        
+    #Show about form
     def menuAbout_OnClick(self):
         self.about_frm.show()
         self.about_frm.activateWindow()
 
+    #Show updates dialog
+    def updatesDialog(self, updatesFound, version):
+        if updatesFound:
+            clicked = QtGui.QMessageBox.information(self, "Enema", "New version available (" + str(version) + "). Visit download page?",\
+                                            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+            if clicked == QtGui.QMessageBox.Yes:
+                QtGui.QDesktopServices.openUrl(QtCore.QUrl("http://code.google.com/p/enema/downloads/list"))
+            else:
+                return
+        else:
+            self.showInfoMsg("Your version is already the latest (" + str(version) + ").")
+            
 #------------------------------------------------MAIN-EVENTS------------------------------------------------------#
 
     #Tray icon clicked
@@ -1038,7 +1091,7 @@ class EnemaForm(QtGui.QMainWindow):
     #Set query result (query tab)
     def queryResult(self, result):
         self.ui.queryOutput.setText(result)
-        
+            
 #------------------------------------------------END------------------------------------------------------#
 
 if __name__ == "__main__":
