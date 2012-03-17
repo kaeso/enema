@@ -14,7 +14,6 @@
 """
 
 import sys
-import core.e_const
 import socket
 import core.txtproc
 from PyQt4 import QtCore
@@ -23,7 +22,9 @@ from urllib import request
 from urllib.error import HTTPError
 from urllib.error import URLError
 from urllib.parse import urlencode
-
+from core.e_const import ENCODING
+from core.e_const import USER_AGENT
+from core.e_const import QUOTED_CONTENT
 
 class HTTP_Handler(QtCore.QObject):
 
@@ -138,7 +139,7 @@ class HTTP_Handler(QtCore.QObject):
             if "[colon]" in value:
                 data[key] = value.replace("[colon]", ":")
         urlEncoded = urlencode(data)
-        postData = urlEncoded.encode(core.e_const.ENCODING)
+        postData = urlEncoded.encode(ENCODING)
         return postData
 
     #Http request main function:
@@ -154,13 +155,13 @@ class HTTP_Handler(QtCore.QObject):
                 return "no_content"
             if self.isCookieInjection(cookie):
                 cookie = self.buildUrl(cookie, query, isCmd, True)
-            reqLog = "\n[POST] " + vars['url'] + "\n+data+:\n{\n" + postData.decode(core.e_const.ENCODING)\
+            reqLog = "\n[POST] " + vars['url'] + "\n+data+:\n{\n" + postData.decode(ENCODING)\
                         + "\n}"
             if len(cookie) > 0:
                 reqLog += "\nCookie:" + cookie
-                urlOpener.addheaders = [('User-Agent', core.e_const.USER_AGENT), ('Cookie', cookie)]
+                urlOpener.addheaders = [('User-Agent', USER_AGENT), ('Cookie', cookie)]
             else:
-                urlOpener.addheaders = [('User-Agent', core.e_const.USER_AGENT)]
+                urlOpener.addheaders = [('User-Agent', USER_AGENT)]
             try:
                 self.logSignal.emit(reqLog)
                 response = urlOpener.open(vars['url'], postData, vars['timeOut'])
@@ -190,9 +191,9 @@ class HTTP_Handler(QtCore.QObject):
             reqLog = "\n[GET] " + get_url
             if len(cookie) > 0:
                 reqLog += "\nCookie: " + cookie
-                urlOpener.addheaders = [('User-Agent', core.e_const.USER_AGENT), ('Cookie', cookie)]
+                urlOpener.addheaders = [('User-Agent', USER_AGENT), ('Cookie', cookie)]
             else:
-                urlOpener.addheaders = [('User-Agent', core.e_const.USER_AGENT)]
+                urlOpener.addheaders = [('User-Agent', USER_AGENT)]
             try:
                 self.logSignal.emit(reqLog)
                 response = urlOpener.open(get_url, None, vars['timeOut'])
@@ -213,10 +214,10 @@ class HTTP_Handler(QtCore.QObject):
                 self.logSignal.emit("\n[x] Can't start task.\n\n[reason]: " + str(err))
                 return "no_content"
         if not isCmd:
-            if core.e_const.QUOTED_CONTENT:
+            if QUOTED_CONTENT:
                 content = request.unquote(content)
             try:
-                content = content.decode(core.e_const.ENCODING)
+                content = content.decode(ENCODING)
             except:
                 return "no_content"
             db_data = self.contentParse(content, vars['mp'], vars['ms'])

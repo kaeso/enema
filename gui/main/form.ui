@@ -1126,6 +1126,7 @@ p, li { white-space: pre-wrap; }
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionCheckUpdates"/>
     <addaction name="menuAbout"/>
    </widget>
    <widget class="QMenu" name="menuPlugins">
@@ -1228,6 +1229,11 @@ p, li { white-space: pre-wrap; }
   <action name="actionXp_cmdshell">
    <property name="text">
     <string>xp_cmdshell</string>
+   </property>
+  </action>
+  <action name="actionCheckUpdates">
+   <property name="text">
+    <string>Check for updates</string>
    </property>
   </action>
  </widget>
