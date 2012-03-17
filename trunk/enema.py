@@ -36,7 +36,7 @@ from gui.main.Ui_encoder_form import Ui_EncoderForm
 from gui.main.Ui_about_form import Ui_AboutForm
 from gui.main.Ui_query_editor import Ui_QueryEditorForm
 
-VERSION = "1.50"
+VERSION = "1.54"
 
 #Query editor form GUI class
 class QueryEditorForm(QtGui.QMainWindow):
