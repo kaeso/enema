@@ -79,7 +79,7 @@
     </property>
     <widget class="QWidget" name="db_structureTab">
      <attribute name="title">
-      <string>db structure</string>
+      <string>Structure</string>
      </attribute>
      <widget class="QComboBox" name="comboBox">
       <property name="geometry">
@@ -686,7 +686,7 @@ p, li { white-space: pre-wrap; }
     </widget>
     <widget class="QWidget" name="queryTab">
      <attribute name="title">
-      <string>query</string>
+      <string>Query</string>
      </attribute>
      <widget class="QGroupBox" name="groupBox_3">
       <property name="geometry">
@@ -775,7 +775,7 @@ p, li { white-space: pre-wrap; }
     </widget>
     <widget class="QWidget" name="dumpTab">
      <attribute name="title">
-      <string>dump</string>
+      <string>Dump</string>
      </attribute>
      <widget class="QLabel" name="label_18">
       <property name="geometry">
@@ -1108,7 +1108,7 @@ p, li { white-space: pre-wrap; }
    </widget>
    <widget class="QMenu" name="menuLoad">
     <property name="title">
-     <string>Load</string>
+     <string>Open</string>
     </property>
     <addaction name="loadTables"/>
     <addaction name="loadBases"/>
@@ -1159,21 +1159,6 @@ p, li { white-space: pre-wrap; }
     <string>Columns</string>
    </property>
   </action>
-  <action name="actionLoad_tables">
-   <property name="text">
-    <string>Load tables</string>
-   </property>
-  </action>
-  <action name="actionLoad_columns">
-   <property name="text">
-    <string>Load columns</string>
-   </property>
-  </action>
-  <action name="actionLoad_tables_2">
-   <property name="text">
-    <string>Load tables</string>
-   </property>
-  </action>
   <action name="loadTables">
    <property name="text">
     <string>Tables</string>
@@ -1184,19 +1169,9 @@ p, li { white-space: pre-wrap; }
     <string>Encoder</string>
    </property>
   </action>
-  <action name="menuDump">
-   <property name="text">
-    <string>Dump</string>
-   </property>
-  </action>
   <action name="saveBases">
    <property name="text">
     <string>Bases</string>
-   </property>
-  </action>
-  <action name="actionAll">
-   <property name="text">
-    <string>All</string>
    </property>
   </action>
   <action name="loadBases">
@@ -1214,29 +1189,20 @@ p, li { white-space: pre-wrap; }
     <string>Dump to csv</string>
    </property>
   </action>
-  <action name="save_cmdshell">
-   <property name="text">
-    <string>xp_cmdshell output</string>
-   </property>
-  </action>
   <action name="ssSettings">
    <property name="text">
     <string>Site settings</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="lsSettings">
    <property name="text">
     <string>Site settings</string>
    </property>
-  </action>
-  <action name="lpSettings">
-   <property name="text">
-    <string>Program settings</string>
-   </property>
-  </action>
-  <action name="spSettings">
-   <property name="text">
-    <string>Program settings</string>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
   <action name="qEditor">

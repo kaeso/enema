@@ -34,6 +34,8 @@ from gui.main.Ui_encoder_form import Ui_EncoderForm
 from gui.main.Ui_about_form import Ui_AboutForm
 from gui.main.Ui_query_editor import Ui_QueryEditorForm
 
+VERSION = "1.53"
+
 #Query editor form GUI class
 class QueryEditorForm(QtGui.QMainWindow):
     
@@ -322,24 +324,67 @@ class AboutForm(QtGui.QWidget):
         self.ui = Ui_AboutForm()
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
-        #Set current program version
-        self.ui.versionLabel.setText("Version: 1.53")
 
 #Main form GUI class
 class EnemaForm(QtGui.QMainWindow):
     
     
     def __init__(self):
-        QtGui.QMainWindow.__init__(self)
+        QtGui.QMainWindow.__init__(self, None, QtCore.Qt.WindowTitleHint)
         self.ui = Ui_MainForm()
         self.ui.setupUi(self)
+        #Setting fixed form size
         self.setFixedSize(591, 618)
+        #Tray icon
+        trayIcon = QtGui.QIcon()
+        trayIcon.addPixmap(QtGui.QPixmap("gui/resources/icons/tray.png"))
+        #-----------------TAB-ICONS-----------------
+        #db structure tab icon
+        db_structureIcon = QtGui.QIcon()
+        db_structureIcon.addPixmap(QtGui.QPixmap("gui/resources/icons/db_structure.png"))
+        #Query tab
+        queryIcon = QtGui.QIcon()
+        queryIcon.addPixmap(QtGui.QPixmap("gui/resources/icons/query.png"))
+        #Dump tab icon
+        dumpIcon = QtGui.QIcon()
+        dumpIcon.addPixmap(QtGui.QPixmap("gui/resources/icons/dump.png"))
+        
+        self.setWindowIcon(trayIcon)
+        self.ui.tabs.setTabIcon(0, db_structureIcon)
+        self.ui.tabs.setTabIcon(1, queryIcon)
+        self.ui.tabs.setTabIcon(2, dumpIcon)
+
+        #Tray menu
+        self.actionQuit = QtGui.QAction(self)
+        self.actionQuit.setObjectName("actionQuit")
+        self.actionQuit.setText("Quit")
+        self.trayMenu = QtGui.QMenu()
+        self.trayMenu.setObjectName("trayMenu")
+        self.trayMenu.addAction(self.ui.menuEncoder)
+        self.trayMenu.addSeparator()
+        self.trayMenu.addAction(self.actionQuit)
+        #System tray icon
+        self.sysTray=QtGui.QSystemTrayIcon(trayIcon, self)
+        self.sysTray.setToolTip("Enema " + VERSION)
+        self.sysTray.setContextMenu(self.trayMenu)
+        if self.sysTray.isSystemTrayAvailable():
+            self.sysTray.show()
+            
         self.ui.progressBar.hide()
         self.ui.progressBarDump.hide()
+        
         #Forms / widgets
         self.qeditor_frm = QueryEditorForm(self)
         self.enc_frm = EncoderForm(self)
         self.about_frm = AboutForm(self)
+        
+        #Show only one minimising message per program launch
+        self.firstHide = True
+        
+        #Set current program version and logo
+        self.about_frm.ui.versionLabel.setText("Version: " + VERSION)
+        self.about_frm.ui.logoLabel.setPixmap(QtGui.QPixmap("gui/resources/logo.png"))
+        
         configPath = "settings/enema.ini"
         #Loading settings if ini file exists
         if os.path.exists(configPath):
@@ -394,6 +439,9 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.comboBox.currentIndexChanged.connect(self.methodChanged)
         #Url edit finished
         self.ui.lineUrl.editingFinished.connect(self.urlEditFinished)
+        #Tray icon
+        self.actionQuit.triggered.connect(self.trayQuit_Clicked)
+        self.sysTray.activated.connect(self.trayActivated)
         
 #-+++++++++++PLUGIN-SIGNAL-CONNECTS++++++++++++#
 
@@ -574,9 +622,9 @@ class EnemaForm(QtGui.QMainWindow):
                                                      ("CSV files (*.csv)"))
         self.writeToFile(filePath,  "csv")
         
-    #Click on menu save settings
+    #Click on menu save site settings
     def saveSiteSettings_OnClick(self):
-        filePath = QtGui.QFileDialog.getSaveFileName(self, "Save xp_cmdshell output",
+        filePath = QtGui.QFileDialog.getSaveFileName(self, "Save site settings",
                                                      QtCore.QDir.homePath(),
                                                      ("INI files (*.ini)"))
         self.saveSiteSettings(filePath)
@@ -662,7 +710,7 @@ class EnemaForm(QtGui.QMainWindow):
         
     #Click on menu load site settings  
     def loadSiteSettings_OnClick(self):
-        filePath = QtGui.QFileDialog.getOpenFileName(self, "Load bases", 
+        filePath = QtGui.QFileDialog.getOpenFileName(self, "Load site settings", 
                                                      QtCore.QDir.homePath(),
                                                      ("INI files (*.ini)"))
         self.loadSiteSettings(filePath)
@@ -753,14 +801,33 @@ class EnemaForm(QtGui.QMainWindow):
 
 #------------------------------------------------MAIN-EVENTS------------------------------------------------------#
 
-    #When form closing
-    def closeEvent(self, event):
+    #Tray icon clicked
+    def trayActivated(self, reason):
+        if reason == QtGui.QSystemTrayIcon.DoubleClick:
+            if self.isHidden():
+                self.show()
+            else:
+                self.hide()
+        
+    #Tray menu "Quit" clicked
+    def trayQuit_Clicked(self):
         #Saving main and log window position
         settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
         settings.setValue("other/query", self.ui.queryText.toPlainText())
         settings.setValue('GUI/mainWpos', self.pos())
         settings.sync()
         sys.exit(0)
+        
+    #When form closing
+    def closeEvent(self, event):
+        if self.sysTray.isSystemTrayAvailable():
+            self.hide()
+            if self.firstHide:
+                self.sysTray.showMessage("Enema", "I'll wait here...", QtGui.QSystemTrayIcon.Information)
+                self.firstHide = False
+            event.ignore()
+        else:
+            sys.exit(0)
             
     #[...] button click
     def getBasesButton_OnClick(self):
