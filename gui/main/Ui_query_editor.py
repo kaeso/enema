@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Projects\enema\gui\main\query_editor.ui'
+# Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\main\query_editor.ui'
 #
-# Created: Fri Mar 16 11:41:02 2012
+# Created: Mon Mar 19 16:22:12 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!

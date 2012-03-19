@@ -27,13 +27,10 @@ class Injector(QtCore.QThread):
     #---------------Signals---------------#
     logSignal = QtCore.pyqtSignal(str)
     progressSignal = QtCore.pyqtSignal(int, bool)
-    dumpProgressSignal = QtCore.pyqtSignal(int, bool)
-    msgSignal = QtCore.pyqtSignal(str)
     dbSignal = QtCore.pyqtSignal(str)
     columnSignal = QtCore.pyqtSignal(str, int)
     rowDataSignal = QtCore.pyqtSignal(int, int, str)
     querySignal = QtCore.pyqtSignal(str)
-    tblCountSignal = QtCore.pyqtSignal(int)
     tblSignal = QtCore.pyqtSignal(str)
     #----------------------------------------#
     
@@ -51,22 +48,22 @@ class Injector(QtCore.QThread):
         #Tables task
         if self.vars['task'] == "tables":
             self.getTables()
-        #Count in table task
-        elif self.vars['task'] == "count":
-            self.getCountInTable()
+            
         #Databases task    
-        elif self.vars['task'] == "bases" :
+        if self.vars['task'] == "bases" :
             self.getBases()
+            
         #Columns task 
-        elif self.vars['task'] == "columns":
+        if self.vars['task'] == "columns":
             self.getColumns()
+            
         #Query task    
-        elif self.vars['task'] == "query":
+        if self.vars['task'] == "query":
             self.runQuery()
+            
         #Dump task
-        elif self.vars['task'] == "dump":
+        if self.vars['task'] == "dump":
             self.syncThreads()
-            self.dumpProgressSignal.emit(0, True)
             
         self.progressSignal.emit(0, True)
          
@@ -177,9 +174,9 @@ class Injector(QtCore.QThread):
             self.logger(sys._getframe().f_code.co_name + "() -> tblCount", False)
             return
         try:
-            self.tblCountSignal.emit(int(tblCount))
+            tblCount = int(tblCount)
         except ValueError as err:
-            self.logger("\nSomething wrong. Check server request and response...\n\n[details]: " + str(err), True)
+            self.logger("\n[x] Something wrong. Check server request and response...\n\n[details]: " + str(err), True)
             return
         if self.vars['notInArray']:
             current_table = ""
@@ -194,11 +191,11 @@ class Injector(QtCore.QThread):
                     break
                 current_table += ",'" + table_name + "'"
                 self.tblSignal.emit(table_name)
-                self.progressSignal.emit(int(tblCount), False)
+                self.progressSignal.emit(tblCount, False)
         else:
             tQueue = Queue()
             threads = []
-            for tNum in range(int(tblCount)):  
+            for tNum in range(tblCount):  
                 tQueue.put(tNum)
             for i in range(self.vars['threads']):  
                 t = threading.Thread(target=self.mtTables, args=(tNum, tQueue, tblCount, current_db)) 
@@ -284,20 +281,6 @@ class Injector(QtCore.QThread):
                         return
                     self.columnSignal.emit(column_name, i)
                     self.progressSignal.emit(int(columnsInTable), False)
-            
-    #Show rows count in selected table
-    def getCountInTable(self):
-        current_db = self.getCurrDb()
-        if current_db == 'no_db':
-            return
-        self.vars['cdb'] = current_db
-        query = self.wq.buildQuery(self.dbType('rows_count'), self.vars, {'cdb' : current_db})
-        rowsInTable = self.wq.httpRequest(query, False, self.vars)
-        if rowsInTable == "no_content":
-            self.logger(sys._getframe().f_code.co_name + "() -> rowsInTable", False)
-            return
-        msg = (rowsInTable + " rows in " + self.vars['selected_table'])
-        self.msgSignal.emit(msg)
         
     #Run Query     
     def runQuery(self):
@@ -341,5 +324,6 @@ class Injector(QtCore.QThread):
             if rowData == "no_content":
                 rowData = "NULL"
             self.rowDataSignal.emit(tNum, num, rowData)
+            self.progressSignal.emit(-1, False)
             time.sleep(0.1)
             tQueue.task_done()

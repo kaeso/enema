@@ -47,7 +47,7 @@ class CmdShellWidget(QtGui.QWidget):
         configPath = "settings/enema.ini"
         if os.path.exists(configPath):
             settings = QtCore.QSettings(configPath, QtCore.QSettings.IniFormat)
-            self.move(settings.value("GUI/mainWpos"))
+            self.move(settings.value("Main/window_position"))
         #---
 
     def emitLog(self, logStr):

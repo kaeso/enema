@@ -741,7 +741,7 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="versionLabel">
    <property name="geometry">
     <rect>
-     <x>210</x>
+     <x>220</x>
      <y>130</y>
      <width>101</width>
      <height>16</height>
@@ -749,7 +749,7 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="font">
     <font>
-     <pointsize>12</pointsize>
+     <pointsize>10</pointsize>
      <italic>false</italic>
     </font>
    </property>

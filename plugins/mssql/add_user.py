@@ -18,7 +18,7 @@ import core.txtproc
 from core.http import HTTP_Handler
 from PyQt4 import QtCore, QtGui
 
-from gui.mssql.addUser.Ui_addUser import Ui_addUserWidget
+from gui.mssql.add_user.Ui_add_user import Ui_addUserWidget
 
 PLUGIN_NAME = "ADD_USER"
 
@@ -43,7 +43,7 @@ class AddUserWidget(QtGui.QWidget):
             settings = QtCore.QSettings(configPath, QtCore.QSettings.IniFormat)
             self.ui.lineUsername.setText(settings.value('ADD_USER/username', ''))
             self.ui.linePassword.setText(settings.value('ADD_USER/password', ''))
-            self.move(settings.value("GUI/mainWpos"))
+            self.move(settings.value("Main/window_position"))
         #---
         
     def emitLog(self, logStr):

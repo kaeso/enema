@@ -46,12 +46,12 @@ class OpenrowsetWidget(QtGui.QWidget):
         configPath = "settings/enema.ini"
         if os.path.exists(configPath):
             settings = QtCore.QSettings(configPath, QtCore.QSettings.IniFormat)
-            self.ui.driverBox.setCurrentIndex(int(settings.value('OPENROWSET/driver', 0)))
+            self.ui.driverBox.setCurrentIndex(settings.value('OPENROWSET/driver', 0, int))
             self.ui.lineIP.setText(settings.value('OPENROWSET/ip', ''))
             self.ui.lineUsername.setText(settings.value('OPENROWSET/username', ''))
             self.ui.linePassword.setText(settings.value('OPENROWSET/password', ''))
             self.ui.lineDB.setText(settings.value('OPENROWSET/database', ''))
-            self.move(settings.value("GUI/mainWpos"))
+            self.move(settings.value("Main/window_position"))
         #---
 
     def isCmdShell(self):

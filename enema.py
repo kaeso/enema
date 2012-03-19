@@ -21,22 +21,24 @@ import configparser
 #ftp
 from plugins.mssql.ftp import FtpWidget
 #add_user
-from plugins.mssql.addUser import AddUserWidget
+from plugins.mssql.add_user import AddUserWidget
 #openrowset
 from plugins.mssql.openrowset import OpenrowsetWidget
 #xp_cmdshell
 from plugins.mssql.xp_cmdshell import CmdShellWidget
-#---
+
 from core.e_const import ENCODING
 from core.injector import Injector
 from urllib import request
 from PyQt4 import QtCore, QtGui 
-from gui.main.Ui_form import Ui_MainForm
-from gui.main.Ui_encoder_form import Ui_EncoderForm
-from gui.main.Ui_about_form import Ui_AboutForm
+
+from gui.main.Ui_main import Ui_MainForm
+from gui.main.Ui_preferences import Ui_preferencesWidget
+from gui.main.Ui_encoder import Ui_EncoderForm
+from gui.main.Ui_about import Ui_AboutForm
 from gui.main.Ui_query_editor import Ui_QueryEditorForm
 
-VERSION = "1.54"
+VERSION = "1.55"
 
 #Query editor form GUI class
 class QueryEditorForm(QtGui.QMainWindow):
@@ -45,7 +47,7 @@ class QueryEditorForm(QtGui.QMainWindow):
     logSignal = QtCore.pyqtSignal(str)
     
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent, QtCore.Qt.Tool)
+        QtGui.QWidget.__init__(self, parent, QtCore.Qt.WindowTitleHint)
         self.ui = Ui_QueryEditorForm()
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
@@ -313,7 +315,8 @@ class EncoderForm(QtGui.QWidget):
             self.ui.radioChar.setEnabled(True)
             self.ui.radioHex.setEnabled(True)
             self.ui.isUrlencoded.setEnabled(True)
-        
+
+
 #About form GUI class
 class AboutForm(QtGui.QWidget):
     
@@ -328,6 +331,26 @@ class AboutForm(QtGui.QWidget):
         self.setWindowModality(QtCore.Qt.ApplicationModal)
 
 
+#Preferences widget
+class PreferencesForm(QtGui.QMainWindow):
+    
+    
+    def __init__(self, parent=None):
+        QtGui.QWidget.__init__(self, parent, QtCore.Qt.WindowTitleHint)
+        self.ui = Ui_preferencesWidget()
+        self.ui.setupUi(self)
+        self.setWindowModality(QtCore.Qt.ApplicationModal)
+    
+    def closeEvent(self, event):
+        settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
+        settings.setValue('Main/match_symbol', self.ui.lineMS.text())
+        settings.setValue('Main/match_pattern', self.ui.lineMP.text())
+        settings.setValue('Main/threads', self.ui.threadBox.value())
+        settings.setValue('Main/timeout', self.ui.lineTimeout.text())
+        settings.setValue('Main/rnd_upcase', self.ui.isRndUpper.isChecked())
+        settings.sync()
+        
+        
 #Version check thread
 class CheckUpdates(QtCore.QThread):
 
@@ -356,8 +379,8 @@ class CheckUpdates(QtCore.QThread):
             self.versionInfoSignal.emit(True, fetched_version)
         else:
             self.versionInfoSignal.emit(False, fetched_version)
-            
-            
+
+
 #Main form GUI class
 class EnemaForm(QtGui.QMainWindow):
     
@@ -366,26 +389,17 @@ class EnemaForm(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self, None, QtCore.Qt.WindowTitleHint)
         self.ui = Ui_MainForm()
         self.ui.setupUi(self)
-        #Setting fixed form size
-        self.setFixedSize(591, 618)
-        #Tray icon
-        trayIcon = QtGui.QIcon()
-        trayIcon.addPixmap(QtGui.QPixmap("gui/resources/icons/tray.png"))
-        #-----------------TAB-ICONS-----------------
-        #db structure tab icon
-        db_structureIcon = QtGui.QIcon()
-        db_structureIcon.addPixmap(QtGui.QPixmap("gui/resources/icons/db_structure.png"))
-        #Query tab
-        queryIcon = QtGui.QIcon()
-        queryIcon.addPixmap(QtGui.QPixmap("gui/resources/icons/query.png"))
-        #Dump tab icon
-        dumpIcon = QtGui.QIcon()
-        dumpIcon.addPixmap(QtGui.QPixmap("gui/resources/icons/dump.png"))
         
+        #Setting fixed form size
+        self.setFixedSize(591, 624)
+        #-----------------ICONS-----------------  
+        #Tray and window icon
+        trayIcon = QtGui.QIcon("gui/resources/icons/tray.png")
         self.setWindowIcon(trayIcon)
-        self.ui.tabs.setTabIcon(0, db_structureIcon)
-        self.ui.tabs.setTabIcon(1, queryIcon)
-        self.ui.tabs.setTabIcon(2, dumpIcon)
+        #Tab icons
+        self.ui.tabs.setTabIcon(0, QtGui.QIcon("gui/resources/icons/db_structure.png"))
+        self.ui.tabs.setTabIcon(1, QtGui.QIcon("gui/resources/icons/query.png"))
+        self.ui.tabs.setTabIcon(2, QtGui.QIcon("gui/resources/icons/dump.png"))
 
         #Tray menu
         self.actionQuit = QtGui.QAction(self)
@@ -404,12 +418,13 @@ class EnemaForm(QtGui.QMainWindow):
             self.sysTray.show()
             
         self.ui.progressBar.hide()
-        self.ui.progressBarDump.hide()
+        self.ui.radioOrdinalPosition.setVisible(False)
         
         #Subforms
         self.qeditor_frm = QueryEditorForm(self)
         self.enc_frm = EncoderForm(self)
         self.about_frm = AboutForm(self)
+        self.preferences_frm = PreferencesForm(self)
         
         #Show only one minimising message per program launch
         self.firstHide = True
@@ -423,13 +438,19 @@ class EnemaForm(QtGui.QMainWindow):
         if os.path.exists(configPath):
             settings = QtCore.QSettings(configPath, QtCore.QSettings.IniFormat)
             #query field
-            self.ui.queryText.setText(settings.value('other/query', ''))
+            self.ui.queryText.setText(settings.value('Main/query', ''))
+            self.preferences_frm.ui.lineMS.setText(settings.value('Main/match_symbol', '~'))
+            self.preferences_frm.ui.lineMP.setText(settings.value('Main/match_pattern', ''))
+            self.preferences_frm.ui.threadBox.setValue(settings.value('Main/threads', 5, int))
+            self.preferences_frm.ui.lineTimeout.setText(settings.value('Main/timeout', '60'))
+            self.preferences_frm.ui.isRndUpper.setChecked(settings.value('Main/rnd_upcase', False, bool))
             #restoring widgets position
-            widgetPosition = settings.value("GUI/mainWpos")
+            widgetPosition = settings.value("Main/window_position")
             self.move(widgetPosition)
             self.enc_frm.move(widgetPosition)
             self.qeditor_frm.move(widgetPosition)
             self.about_frm.move(widgetPosition)
+            self.preferences_frm.move(widgetPosition)
         #Query strings loading
         self.readQstrings()
         
@@ -437,48 +458,61 @@ class EnemaForm(QtGui.QMainWindow):
 
         #Query changed in editor
         self.qeditor_frm.qstringsChanged.connect(self.readQstrings)
+        
         #DB_STRUCTURE-TAB
-        self.ui.getBasesButton.clicked.connect(self.getBasesButton_OnClick)
-        self.ui.tablesButton.clicked.connect(self.tablesButton_OnClick)
-        self.ui.countButton.clicked.connect(self.countButton_OnClick)
-        self.ui.getColumnsButton.clicked.connect(self.getColumnsButton_OnClick)
-        self.ui.cleanThreeButton.clicked.connect(self.cleanThreeButton_OnClick)
+        self.ui.runButton.clicked.connect(self.runButton_OnClick)
+        self.ui.cleanColumnsButton.clicked.connect(self.cleanColumnsButton_OnClick)
+        self.ui.radioTables.toggled.connect(self.radioTables_Toggled)
+        self.ui.radioColumns.toggled.connect(self.radioColumns_Toggled)
+        self.ui.radioBases.toggled.connect(self.radioBases_Toggled)
         self.ui.logButton.clicked.connect(self.logButton_OnClick)
         self.ui.clearLogButton.clicked.connect(self.clearLogButton_OnClick)
         self.ui.killButton.clicked.connect(self.killTask)
         self.ui.killDumpButton.clicked.connect(self.killTask)
+        
         #DUMP-TAB
         self.ui.dmpButton.clicked.connect(self.dmpButton_OnClick)
+        
         #QUERY-TAB
         self.ui.queryButton.clicked.connect(self.queryButton_OnClick)
+        
         #Save Menu 
         self.ui.saveTables.triggered.connect(self.saveTables_OnClick)
         self.ui.saveColumns.triggered.connect(self.saveColumns_OnClick)
         self.ui.saveBases.triggered.connect(self.saveBases_OnClick)
         self.ui.csvExport.triggered.connect(self.csvExport_OnClick)
         self.ui.ssSettings.triggered.connect(self.saveSiteSettings_OnClick)
+        
         #Load Menu
         self.ui.loadTables.triggered.connect(self.loadTables_OnClick)
         self.ui.loadBases.triggered.connect(self.loadBases_OnClick)
         self.ui.lsSettings.triggered.connect(self.loadSiteSettings_OnClick)
+        
         #Tools Menu
         self.ui.menuEncoder.triggered.connect(self.menuEncoder_OnClick)
         self.ui.qEditor.triggered.connect(self.queryEditor_OnClick)
+        self.ui.actionPreferences.triggered.connect(self.preferences_OnClick)
+        
         #Help menu
         self.ui.menuAbout.triggered.connect(self.menuAbout_OnClick)
+        
         #Db Type change
-        self.ui.comboBox_3.currentIndexChanged.connect(self.dbTypeChanged)
+        self.ui.dbTypeBox.currentIndexChanged.connect(self.dbTypeChanged)
+        
         #Request method changed
         self.ui.comboBox.currentIndexChanged.connect(self.methodChanged)
+        
         #Url edit finished
         self.ui.lineUrl.editingFinished.connect(self.urlEditFinished)
+        
         #Tray icon
         self.actionQuit.triggered.connect(self.trayQuit_Clicked)
         self.sysTray.activated.connect(self.trayActivated)
+        
         #Check for updates clicked
         self.ui.actionCheckUpdates.triggered.connect(self.checkUpdates)
         
-#-+++++++++++PLUGIN-SIGNAL-CONNECTS++++++++++++#
+#--------------------------------------------[MENU]PLUGINS-SIGNAL-CONNECTS-------------------------------------------------#
 
         #ftp
         self.ui.actionFtp.triggered.connect(self.actionFtp_OnClick)
@@ -489,7 +523,7 @@ class EnemaForm(QtGui.QMainWindow):
         #xp_cmdshell
         self.ui.actionXp_cmdshell.triggered.connect(self.actionXp_cmdshell_OnClick)
         
-#++++++++++++PLUGIN+SLOTS++++++++++++#
+#------------------------------------------------[MENU]PLUGIN-MENU-SLOTS------------------------------------------------------#
         
     #ftp    
     def actionFtp_OnClick(self):
@@ -518,8 +552,6 @@ class EnemaForm(QtGui.QMainWindow):
         self.pluginWidget.logSignal.connect(self.addLog)
         self.pluginWidget.show()
         self.pluginWidget.activateWindow()
-        
-#++++++++++++++++++++++++++++++++++++++++#
 
 #------------------------------------------------GENERAL-FUNCTIONS------------------------------------------------------#
 
@@ -532,11 +564,11 @@ class EnemaForm(QtGui.QMainWindow):
         wD = {
               'url' : self.ui.lineUrl.text(), 
               'method' : self.getMethod() , 
-              'mp' : self.ui.lineMP.text(), 
-              'ms' : self.ui.lineMS.text(), 
-              'threads' : int(self.ui.threadBox.value()), 
-              'timeOut' : int(self.ui.lineTimeout.text()), 
-              'isRandomUpCase' : self.ui.isRndUpper.isChecked(), 
+              'mp' : self.preferences_frm.ui.lineMP.text(), 
+              'ms' : self.preferences_frm.ui.lineMS.text(), 
+              'threads' : self.preferences_frm.ui.threadBox.value(), 
+              'timeOut' : int(self.preferences_frm.ui.lineTimeout.text()), 
+              'isRandomUpCase' : self.preferences_frm.ui.isRndUpper.isChecked(), 
               'dbListCount' : self.ui.dbListComboBox.count(),
               'dbName' : str(self.ui.dbListComboBox.currentText()), 
               'notInArray' : self.ui.radioNotInArray.isChecked(),
@@ -561,24 +593,25 @@ class EnemaForm(QtGui.QMainWindow):
     def connectAndStart(self):
         #logSignal
         self.qthread.logSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
+        
         #progressSignal
         self.qthread.progressSignal.connect(self.updatePb, type=QtCore.Qt.QueuedConnection)
-        #dumpProgressSignal
-        self.qthread.dumpProgressSignal.connect(self.updatePbDump, type=QtCore.Qt.QueuedConnection)
-        #msgSignal
-        self.qthread.msgSignal.connect(self.showInfoMsg, type=QtCore.Qt.QueuedConnection)
+        
         #dbSignal
         self.qthread.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
+
         #columnSignal
         self.qthread.columnSignal.connect(self.addColumn, type=QtCore.Qt.QueuedConnection)
+        
         #rowDataSignal
         self.qthread.rowDataSignal.connect(self.addRowData, type=QtCore.Qt.QueuedConnection)
+        
         #querySignal
         self.qthread.querySignal.connect(self.queryResult, type=QtCore.Qt.QueuedConnection)
-        #tblCountSignal
-        self.qthread.tblCountSignal.connect(self.setTblCount, type=QtCore.Qt.QueuedConnection)
+        
         #tblSignal
         self.qthread.tblSignal.connect(self.addTable, type=QtCore.Qt.QueuedConnection)
+        
         #Starting QThread
         self.qthread.start()
         
@@ -591,7 +624,7 @@ class EnemaForm(QtGui.QMainWindow):
  
     #Getting request method
     def getDbType(self):
-        if str(self.ui.comboBox_3.currentText()) == "MSSQL":
+        if str(self.ui.dbTypeBox.currentText()) == "MSSQL":
             return "mssql"
         else:
             return "mysql"
@@ -627,7 +660,7 @@ class EnemaForm(QtGui.QMainWindow):
         else:
             return
             
-#------------------------------------------------[MENU]SAVE-SLOTS/FUNCTIONS------------------------------------------------------#
+#------------------------------------------------[MENU]SAVE/FUNCTIONS------------------------------------------------------#
 
     #Click on menu save tables
     def saveTables_OnClick(self):
@@ -710,15 +743,11 @@ class EnemaForm(QtGui.QMainWindow):
         settings.setValue('db_structure/method', self.ui.comboBox.currentIndex())
         settings.setValue('db_structure/data', self.ui.textEdit.toPlainText())
         settings.setValue('db_structure/cookies', self.ui.lineCookie.text())
-        settings.setValue('db_structure/db_type', self.ui.comboBox_3.currentIndex())
+        settings.setValue('db_structure/db_type', self.ui.dbTypeBox.currentIndex())
         settings.setValue('db_structure/inj_type', self.ui.comboInjType.currentIndex())
-        settings.setValue('db_structure/pattern', self.ui.lineMP.text())
-        settings.setValue('db_structure/symbol', self.ui.lineMS.text())
         settings.setValue('db_structure/tables', tables)
         settings.setValue('db_structure/bases', bases)
         settings.setValue('db_structure/current_db', self.ui.dbListComboBox.currentIndex())
-        settings.setValue('db_structure/threads', self.ui.threadBox.value())
-        settings.setValue('db_structure/timeout', self.ui.lineTimeout.text())
         #dump tab settings
         settings.setValue('dump/table', self.ui.lineTable.text())
         settings.setValue('dump/columns', self.ui.lineColumns.text())
@@ -760,7 +789,6 @@ class EnemaForm(QtGui.QMainWindow):
                 self.ui.listOfTables.clear()
                 for line in buff:
                     self.ui.listOfTables.addItem(line)
-                self.ui.totalLabel.setText(str(self.ui.listOfTables.count()))
             else:
                 self.ui.dbListComboBox.clear()
                 for line in buff:
@@ -780,7 +808,6 @@ class EnemaForm(QtGui.QMainWindow):
         for tbl in tables:
             if tbl !='':
                 self.ui.listOfTables.addItem(tbl)
-        self.ui.totalLabel.setText(str(self.ui.listOfTables.count()))
         #Reading bases from config
         bases = settings.value('db_structure/bases', '').split('>>')
         self.ui.dbListComboBox.clear()
@@ -789,15 +816,15 @@ class EnemaForm(QtGui.QMainWindow):
                 self.ui.dbListComboBox.addItem(db)
         #db_strucure tab settings
         self.ui.lineUrl.setText(settings.value('db_structure/url', ''))
-        self.ui.comboBox.setCurrentIndex(int(settings.value('db_structure/method', 0)))
+        self.ui.comboBox.setCurrentIndex(settings.value('db_structure/method', 0, int))
         self.ui.textEdit.setText(settings.value('db_structure/data', ''))
         self.ui.lineCookie.setText(settings.value('db_structure/cookies', ''))
-        self.ui.comboBox_3.setCurrentIndex(int(settings.value('db_structure/db_type', 0)))
-        self.ui.comboInjType.setCurrentIndex(int(settings.value('db_structure/inj_type', 0)))
+        self.ui.dbTypeBox.setCurrentIndex(settings.value('db_structure/db_type', 0, int))
+        self.ui.comboInjType.setCurrentIndex(settings.value('db_structure/inj_type', 0, int))
         self.ui.lineMP.setText(settings.value('db_structure/pattern', ''))
         self.ui.lineMS.setText(settings.value('db_structure/symbol', '~'))
-        self.ui.dbListComboBox.setCurrentIndex(int(settings.value('db_structure/current_db', 0)))
-        self.ui.threadBox.setValue(int(settings.value('db_structure/threads', 10)))
+        self.ui.dbListComboBox.setCurrentIndex(settings.value('db_structure/current_db', 0, int))
+        self.ui.threadBox.setValue(settings.value('db_structure/threads', 10), int)
         self.ui.lineTimeout.setText(settings.value('db_structure/timeout', '30'))
         #dump tab settings
         self.ui.lineTable.setText(settings.value('dump/table', ''))
@@ -817,6 +844,10 @@ class EnemaForm(QtGui.QMainWindow):
         self.qeditor_frm.show()
         self.qeditor_frm.activateWindow()
         
+    def preferences_OnClick(self):
+        self.preferences_frm.show()
+        self.preferences_frm.activateWindow()
+        
     #Reading default or custom query strings
     def readQstrings(self):
         cfgparser = configparser.ConfigParser()
@@ -829,6 +860,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.qstrings = cfgparser
     
 #------------------------------------------------[MENU]ABOUT-SLOTS------------------------------------------------------#
+
     #Checking for new version
     def checkUpdates(self):
         self.updates = CheckUpdates()
@@ -850,138 +882,82 @@ class EnemaForm(QtGui.QMainWindow):
             else:
                 return
         else:
-            self.showInfoMsg("Your version is already the latest (" + str(version) + ").")
+            QtGui.QMessageBox.information(self, "Enema", "Your version is already the latest (" + str(version) + ").", 1, 0)
             
-#------------------------------------------------MAIN-EVENTS------------------------------------------------------#
+#----------------------------------------------BUTTONS-EVENTS----------------------------------------------------#
 
-    #Tray icon clicked
-    def trayActivated(self, reason):
-        if reason == QtGui.QSystemTrayIcon.DoubleClick:
-            if self.isHidden():
-                self.show()
+    #Run Task button    
+    def runButton_OnClick(self):
+        if self.isBusy():
+            self.busyDialog()
+            return
+        wD = self.webData()
+        
+        #Tables task
+        if self.ui.radioTables.isChecked():
+            wD['task'] = 'tables'
+            self.ui.listOfTables.clear()
+            
+        #Columns task
+        if self.ui.radioColumns.isChecked():
+            wD['task'] = 'columns'
+            if self.ui.treeOfTables.topLevelItemCount() < 1:
+                QtGui.QMessageBox.information(self, "Enema", "Drag and drop table from left field to right.", 1, 0)
+                return
+            tables = []
+            for table in range(self.ui.treeOfTables.topLevelItemCount()):
+                #Cleaning columns in tables
+                for i in range(self.ui.treeOfTables.topLevelItem(table).childCount()):
+                    self.ui.treeOfTables.topLevelItem(table).takeChildren()
+                tables.append(self.ui.treeOfTables.topLevelItem(table).text(0))
+            wD['tables'] = tables
+
+        #Bases task
+        if self.ui.radioBases.isChecked():
+            wD['task'] = "bases"
+            if self.ui.dbListComboBox.count() < 1:
+                wD['dbName'] = ""
+            elif self.ui.dbListComboBox.count() > 1:
+                self.ui.dbListComboBox.clear()
+                wD['dbName'] = ""
             else:
-                self.hide()
+                wD['dbName'] = ",'" + str(self.ui.dbListComboBox.currentText()) + "'"
         
-    #Tray menu "Quit" clicked
-    def trayQuit_Clicked(self):
-        #Saving main and log window position
-        settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
-        settings.setValue("other/query", self.ui.queryText.toPlainText())
-        settings.setValue('GUI/mainWpos', self.pos())
-        settings.sync()
-        sys.exit(0)
-        
-    #When form closing
-    def closeEvent(self, event):
-        if self.sysTray.isSystemTrayAvailable():
-            self.hide()
-            if self.firstHide:
-                self.sysTray.showMessage("Enema", "I'll wait here...", QtGui.QSystemTrayIcon.Information)
-                self.firstHide = False
-            event.ignore()
-        else:
-            sys.exit(0)
-            
-    #[...] button click
-    def getBasesButton_OnClick(self):
-        if self.isBusy():
-            self.busyDialog()
-            return
-        wD = self.webData()
-        wD['task'] = "bases"
-        if self.ui.radioOrdinalPosition.isChecked():
-            self.showInfoMsg("ordinal_position method valid only for columns.")
-            return
-        if self.ui.dbListComboBox.count() < 1:
-            wD['dbName'] = ""
-        elif self.ui.dbListComboBox.count() > 1:
-            self.ui.dbListComboBox.clear()
-            wD['dbName'] = ""
-        else:
-            wD['dbName'] = ",'" + str(self.ui.dbListComboBox.currentText()) + "'"
+        #Show progress bar, connect to signals and start task
         self.ui.progressBar.setValue(0)
         self.ui.progressBar.show()
         self.qthread = Injector(wD, self.qstrings)
         self.connectAndStart()
-        
-    #Get Tables button click      
-    def tablesButton_OnClick(self):
-        if self.isBusy():
-            self.busyDialog()
-            return
-        wD = self.webData()
-        wD['task'] = 'tables'
-        if self.ui.radioOrdinalPosition.isChecked():
-            self.showInfoMsg("ordinal_position method valid only for columns.")
-            return
-        self.ui.listOfTables.clear()
-        self.ui.totalLabel.setText("0")
-        self.ui.progressBar.setValue(0)
-        self.ui.progressBar.show()
-        self.qthread = Injector(wD, self.qstrings)
-        self.connectAndStart()
-            
-    #Count button click
-    def countButton_OnClick(self):
-        if self.isBusy():
-            self.busyDialog()
-            return
-        self.ui.progressBar.setMaximum(0)
-        self.ui.progressBar.show()
-        wD = self.webData()
-        wD['task'] = 'count'
-        if not self.ui.listOfTables.currentItem():
-            return
-        self.qthread = Injector(wD, self.qstrings)
-        self.connectAndStart()
-
-    #Show or Hide log field
-    def logButton_OnClick(self):
-        if self.ui.logButton.text() == "Show log":
-            self.setFixedSize(1112, 618)
-            self.resize(1112, 618)
-            self.ui.logButton.setText("Hide log")
-        else:
-            self.setFixedSize(591, 618)
-            self.resize(591, 618)
-            self.ui.logButton.setText("Show log")
-
-    #Get columns button click       
-    def getColumnsButton_OnClick(self):
-        if self.isBusy():
-            self.busyDialog()
-            return
-        wD = self.webData()
-        wD['task'] = 'columns'
-        if self.ui.treeOfTables.topLevelItemCount() < 1:
-            return
-        self.ui.progressBar.setValue(0)
-        self.ui.progressBar.show()
-        tables = []
-        for table in range(self.ui.treeOfTables.topLevelItemCount()):
-            tables.append(self.ui.treeOfTables.topLevelItem(table).text(0))
-        wD['tables'] = tables
-        self.qthread = Injector(wD, self.qstrings)
-        self.connectAndStart()
-        
-    #Clear button click
-    def cleanThreeButton_OnClick(self):
+    
+    #Cleaning right field
+    def cleanColumnsButton_OnClick(self):
         self.ui.treeOfTables.clear()
-
+        
     #Cleaning log
     def clearLogButton_OnClick(self):
         self.ui.logTxtEdit.clear()
 
+    #Show or Hide log field
+    def logButton_OnClick(self):
+        if self.ui.logButton.text() == "Show log":
+            self.setFixedSize(1112, 624)
+            self.resize(1112, 624)
+            self.ui.logButton.setText("Hide log")
+        else:
+            self.setFixedSize(591, 624)
+            self.resize(591, 624)
+            self.ui.logButton.setText("Show log")
+            
     #Query button click (query tab)
     def queryButton_OnClick(self):
         if self.isBusy():
             self.busyDialog()
             return
-        self.ui.progressBar.setMaximum(0)
-        self.ui.progressBar.show()
-        self.ui.queryOutput.clear()
         wD = self.webData()
         wD['task'] = "query"
+        self.ui.queryOutput.clear()
+        self.ui.progressBar.setMaximum(0)
+        self.ui.progressBar.show()
         self.qthread = Injector(wD, self.qstrings)
         self.connectAndStart()
         
@@ -1001,13 +977,59 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.tableWidget.setColumnCount(len(wD['columns']))
         self.ui.tableWidget.setHorizontalHeaderLabels(wD['columns'])
         self.ui.tableWidget.setRowCount(wD['toPos'] - wD['fromPos'])
-        self.ui.progressBarDump.setValue(0)
-        self.ui.progressBarDump.show()
-        self.ui.progressBarDump.setMaximum(self.ui.tableWidget.rowCount() * len(wD['columns']))
+        self.ui.progressBar.setValue(0)
+        self.ui.progressBar.show()
+        self.ui.progressBar.setMaximum(self.ui.tableWidget.rowCount() * len(wD['columns']))
         self.qthread = Injector(wD, self.qstrings)
         self.connectAndStart()
         
-#------------------------------------------------MAIN-SLOTS------------------------------------------------------#
+#----------------------------------------------MAIN-EVENTS----------------------------------------------------#
+
+    #When form closing
+    def closeEvent(self, event):
+        if self.sysTray.isSystemTrayAvailable():
+            self.hide()
+            if self.firstHide:
+                self.sysTray.showMessage("Enema", "I'll wait here...", QtGui.QSystemTrayIcon.Information)
+                self.firstHide = False
+            event.ignore()
+        else:
+            sys.exit(0)
+            
+    #Tables radio checked
+    def radioTables_Toggled(self):
+        if self.ui.radioTables.isChecked():
+            self.ui.radioNotInArray.setChecked(True)
+            self.ui.radioOrdinalPosition.setVisible(False)
+    
+    #Columns radio checked
+    def radioColumns_Toggled(self):
+        if self.ui.radioColumns.isChecked():
+            self.ui.radioOrdinalPosition.setVisible(True)
+     
+    #Bases radio checked     
+    def radioBases_Toggled(self):
+        if self.ui.radioBases.isChecked():
+            self.ui.radioNotInArray.setChecked(True)
+            self.ui.radioOrdinalPosition.setVisible(False)
+        
+    #Tray icon clicked
+    def trayActivated(self, reason):
+        if reason == QtGui.QSystemTrayIcon.DoubleClick:
+            if self.isHidden():
+                self.show()
+            else:
+                self.hide()
+        
+    #Tray menu "Quit" clicked
+    def trayQuit_Clicked(self):
+        #Saving main and log window position
+        settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
+        settings.setValue("Main/query", self.ui.queryText.toPlainText())
+        settings.setValue('Main/window_position', self.pos())
+        settings.sync()
+        sys.exit(0)
+        
     #URL editing finished
     def urlEditFinished(self):
         self.ui.dbListComboBox.clear()
@@ -1033,7 +1055,9 @@ class EnemaForm(QtGui.QMainWindow):
             self.ui.radioNotInArray.show()
             self.ui.radioNotInArray.setChecked(True)
             self.ui.menuMssql.setEnabled(True)
-            
+
+#------------------------------------------------INJECTOR-SLOTS------------------------------------------------------#
+
     #Add text to log
     def addLog(self, logStr):
         #Autoclean log when blocks more than 3000
@@ -1049,15 +1073,9 @@ class EnemaForm(QtGui.QMainWindow):
         if taskDone:
             self.ui.progressBar.hide()
             return
-        self.ui.progressBar.setMaximum(pbMax)
+        if pbMax >= 0:
+            self.ui.progressBar.setMaximum(pbMax)
         self.ui.progressBar.setValue(self.ui.progressBar.value() + 1)
-
-    #Updating dump progressBar (dump tab)
-    def updatePbDump(self, pbMax, taskDone):
-        if taskDone:
-            self.ui.progressBarDump.hide()
-            return
-        self.ui.progressBarDump.setValue(self.ui.progressBarDump.value() + 1)
         
     #Add row data (dump tab)
     def addRowData(self,  tNum, num,  rowData):
@@ -1068,11 +1086,6 @@ class EnemaForm(QtGui.QMainWindow):
     #Add db to listBox
     def addBase(self, db_name):
         self.ui.dbListComboBox.addItem(db_name)
-
-    #Set label value to count of tables in current db
-    def setTblCount(self, tblCount):
-        if type(tblCount) is int:
-            self.ui.totalLabel.setText(str(tblCount))
             
     #Add table to ListWidget
     def addTable(self, table_name):
@@ -1083,10 +1096,6 @@ class EnemaForm(QtGui.QMainWindow):
         column = QtGui.QTreeWidgetItem()
         column.setText(0, column_name)
         self.ui.treeOfTables.topLevelItem(i).addChild(column)
-
-    #Show Informational MessageBox:
-    def showInfoMsg(self, msg):
-        QtGui.QMessageBox.information(self, "Enema", msg, 1, 0)
 
     #Set query result (query tab)
     def queryResult(self, result):
