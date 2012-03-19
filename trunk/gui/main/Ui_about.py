@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\main\about_form.ui'
+# Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\main\about.ui'
 #
-# Created: Sat Mar 17 17:59:41 2012
+# Created: Mon Mar 19 16:22:14 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -49,9 +49,9 @@ class Ui_AboutForm(object):
         self.label_4.setFont(font)
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.versionLabel = QtGui.QLabel(AboutForm)
-        self.versionLabel.setGeometry(QtCore.QRect(210, 130, 101, 16))
+        self.versionLabel.setGeometry(QtCore.QRect(220, 130, 101, 16))
         font = QtGui.QFont()
-        font.setPointSize(12)
+        font.setPointSize(10)
         font.setItalic(False)
         self.versionLabel.setFont(font)
         self.versionLabel.setObjectName(_fromUtf8("versionLabel"))

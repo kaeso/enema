@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\mssql\ftp\ftp.ui'
 #
-# Created: Sat Mar 10 14:46:29 2012
+# Created: Mon Mar 19 16:22:13 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!

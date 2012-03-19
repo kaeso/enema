@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\mssql\addUser\addUser_widget.ui'
+# Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\mssql\add_user\add_user.ui'
 #
-# Created: Wed Mar  7 19:23:07 2012
+# Created: Mon Mar 19 16:22:15 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
