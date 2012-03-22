@@ -133,9 +133,17 @@ class Injector(QtCore.QThread):
             dbCount = self.wq.httpRequest(query, False, self.vars)
             if dbCount == "no_content":
                 self.logger(sys._getframe().f_code.co_name + "() -> dbCount", False)
+                return
+            try:
+                dbCount = int(dbCount)
+            except ValueError as err:
+                self.logger("\n[x] Something wrong. Check server request and response...\n\n[details]: " + str(err), True)
+                return
+            if dbCount < 1:
+                return
             tQueue = Queue()
             threads = []
-            for tNum in range(int(dbCount)):  
+            for tNum in range(dbCount):  
                 tQueue.put(tNum)
             for i in range(self.vars['threads']):  
                 t = threading.Thread(target=self.mtBases, args=(tNum, tQueue, dbCount)) 
@@ -177,6 +185,8 @@ class Injector(QtCore.QThread):
             tblCount = int(tblCount)
         except ValueError as err:
             self.logger("\n[x] Something wrong. Check server request and response...\n\n[details]: " + str(err), True)
+            return
+        if tblCount < 1:
             return
         if self.vars['notInArray']:
             current_table = ""
@@ -253,7 +263,6 @@ class Injector(QtCore.QThread):
                     current_column += ",'" + column_name + "'"
                     self.columnSignal.emit(column_name, i)
                     self.progressSignal.emit(int(columnsInTable), False)
-        #If not in (substring - MSSQL) or LIMIT(MySQL) method selected
         else:
             for i in range (self.vars['tblTreeCount']):
                 current_table = core.txtproc.strToSqlChar(tables[i], self.vars['db_type'])
@@ -267,7 +276,7 @@ class Injector(QtCore.QThread):
                     if self.killed:
                         return
                     #If not in(substring) method selected:
-                    if self.vars['notInSubstring']:
+                    if (self.vars['notInSubstring'] or self.vars['LIMIT']):
                         query = self.wq.buildQuery(self.dbType('get_column_name2'), self.vars,\
                                            {'cdb' : current_db, 'ctbl' : current_table, 'num' : str(rowid)})
                     #If ordinal_position method selected:
@@ -299,9 +308,9 @@ class Injector(QtCore.QThread):
         if current_db == 'no_db':
             return
         columns = self.vars['columns']
-        tQueue = Queue()
         threads = []
         for num in range (len(columns)):
+            tQueue = Queue()
             for tNum in range(self.vars['fromPos'] + 1, self.vars['toPos'] + 1):
                 tQueue.put(tNum)
             for i in range(self.vars['threads']):  
@@ -309,8 +318,8 @@ class Injector(QtCore.QThread):
                 threads.append(t)
                 t.start()
                 time.sleep(0.1)
-            for thread in threads:
-                thread.join()
+        for thread in threads:
+            thread.join()
                 
     #Data dumping           
     def doDump(self, tNum, tQueue, current_db, column, num):

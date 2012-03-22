@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\main\main.ui'
+# Form implementation generated from reading ui file 'C:\Projects\enema\gui\main\main.ui'
 #
-# Created: Mon Mar 19 16:22:15 2012
+# Created: Thu Mar 22 22:55:23 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -129,15 +129,15 @@ class Ui_MainForm(object):
         self.groupBox.setSizePolicy(sizePolicy)
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.radioOrdinalPosition = QtGui.QRadioButton(self.groupBox)
-        self.radioOrdinalPosition.setGeometry(QtCore.QRect(30, 120, 101, 17))
+        self.radioOrdinalPosition.setGeometry(QtCore.QRect(30, 140, 101, 17))
         self.radioOrdinalPosition.setObjectName(_fromUtf8("radioOrdinalPosition"))
         self.radioNotInArray = QtGui.QRadioButton(self.groupBox)
         self.radioNotInArray.setGeometry(QtCore.QRect(30, 80, 111, 17))
-        self.radioNotInArray.setChecked(True)
+        self.radioNotInArray.setChecked(False)
         self.radioNotInArray.setObjectName(_fromUtf8("radioNotInArray"))
         self.radioNotInSubstring = QtGui.QRadioButton(self.groupBox)
         self.radioNotInSubstring.setGeometry(QtCore.QRect(30, 100, 111, 17))
-        self.radioNotInSubstring.setChecked(False)
+        self.radioNotInSubstring.setChecked(True)
         self.radioNotInSubstring.setObjectName(_fromUtf8("radioNotInSubstring"))
         self.dbTypeBox = QtGui.QComboBox(self.groupBox)
         self.dbTypeBox.setGeometry(QtCore.QRect(20, 20, 111, 21))
@@ -152,6 +152,10 @@ class Ui_MainForm(object):
         self.logButton = QtGui.QToolButton(self.groupBox)
         self.logButton.setGeometry(QtCore.QRect(30, 320, 91, 21))
         self.logButton.setObjectName(_fromUtf8("logButton"))
+        self.radioLimit = QtGui.QRadioButton(self.groupBox)
+        self.radioLimit.setEnabled(False)
+        self.radioLimit.setGeometry(QtCore.QRect(30, 120, 101, 17))
+        self.radioLimit.setObjectName(_fromUtf8("radioLimit"))
         self.tabs.addTab(self.db_structureTab, _fromUtf8(""))
         self.queryTab = QtGui.QWidget()
         self.queryTab.setObjectName(_fromUtf8("queryTab"))
@@ -376,6 +380,7 @@ class Ui_MainForm(object):
         self.comboInjType.setItemText(0, QtGui.QApplication.translate("MainForm", "ERROR-BASED", None, QtGui.QApplication.UnicodeUTF8))
         self.comboInjType.setItemText(1, QtGui.QApplication.translate("MainForm", "UNION-BASED", None, QtGui.QApplication.UnicodeUTF8))
         self.logButton.setText(QtGui.QApplication.translate("MainForm", "Show log", None, QtGui.QApplication.UnicodeUTF8))
+        self.radioLimit.setText(QtGui.QApplication.translate("MainForm", "LIMIT", None, QtGui.QApplication.UnicodeUTF8))
         self.tabs.setTabText(self.tabs.indexOf(self.db_structureTab), QtGui.QApplication.translate("MainForm", "Structure", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_3.setTitle(QtGui.QApplication.translate("MainForm", "Query", None, QtGui.QApplication.UnicodeUTF8))
         self.radioSelect.setText(QtGui.QApplication.translate("MainForm", " SELECT TOP", None, QtGui.QApplication.UnicodeUTF8))

@@ -418,7 +418,6 @@ class EnemaForm(QtGui.QMainWindow):
             self.sysTray.show()
             
         self.ui.progressBar.hide()
-        self.ui.radioOrdinalPosition.setVisible(False)
         
         #Subforms
         self.qeditor_frm = QueryEditorForm(self)
@@ -575,6 +574,7 @@ class EnemaForm(QtGui.QMainWindow):
               'notInSubstring' : self.ui.radioNotInSubstring.isChecked(),
               'ordinal_position' : self.ui.radioOrdinalPosition.isChecked(), 
               'selected_table' : currTable, 
+              'LIMIT' : self.ui.radioLimit.isChecked(), 
               'tblTreeCount' : self.ui.treeOfTables.topLevelItemCount(), 
               'query_cmd' : self.ui.queryText.toPlainText(), 
               'querySelect' : self.ui.radioSelect.isChecked(), 
@@ -631,7 +631,7 @@ class EnemaForm(QtGui.QMainWindow):
 
     #Getting request method
     def getInjectionType(self):
-        if str(self.ui.comboInjType.currentText()) == "ERROR":
+        if str(self.ui.comboInjType.currentText()) == "ERROR-BASED":
             return "error-based"
         else:
             return "union-based"
@@ -821,11 +821,11 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.lineCookie.setText(settings.value('db_structure/cookies', ''))
         self.ui.dbTypeBox.setCurrentIndex(settings.value('db_structure/db_type', 0, int))
         self.ui.comboInjType.setCurrentIndex(settings.value('db_structure/inj_type', 0, int))
-        self.ui.lineMP.setText(settings.value('db_structure/pattern', ''))
-        self.ui.lineMS.setText(settings.value('db_structure/symbol', '~'))
         self.ui.dbListComboBox.setCurrentIndex(settings.value('db_structure/current_db', 0, int))
-        self.ui.threadBox.setValue(settings.value('db_structure/threads', 10), int)
-        self.ui.lineTimeout.setText(settings.value('db_structure/timeout', '30'))
+        self.preferences_frm.ui.lineMP.setText(settings.value('db_structure/pattern', ''))
+        self.preferences_frm.ui.lineMS.setText(settings.value('db_structure/symbol', '~'))
+        self.preferences_frm.ui.threadBox.setValue(settings.value('db_structure/threads', 10, int))
+        self.preferences_frm.ui.lineTimeout.setText(settings.value('db_structure/timeout', '30'))
         #dump tab settings
         self.ui.lineTable.setText(settings.value('dump/table', ''))
         self.ui.lineColumns.setText(settings.value('dump/columns', ''))
@@ -995,24 +995,39 @@ class EnemaForm(QtGui.QMainWindow):
             event.ignore()
         else:
             sys.exit(0)
-            
+     
+    def sqlOptions(self):
+        if self.ui.radioColumns.isChecked():
+            self.ui.radioOrdinalPosition.setEnabled(True)
+        else:
+            self.ui.radioOrdinalPosition.setEnabled(False)
+        if self.getDbType() == "mysql":
+            self.ui.radioLimit.setEnabled(True)
+            self.ui.radioLimit.setChecked(True)
+            self.ui.radioNotInSubstring.setEnabled(False)
+            self.ui.radioNotInArray.setEnabled(False)
+        else:
+            self.ui.radioNotInSubstring.setEnabled(True)
+            self.ui.radioNotInSubstring.setChecked(True)
+            self.ui.radioNotInArray.setEnabled(True)
+            self.ui.radioLimit.setEnabled(False)
+
     #Tables radio checked
     def radioTables_Toggled(self):
         if self.ui.radioTables.isChecked():
-            self.ui.radioNotInArray.setChecked(True)
-            self.ui.radioOrdinalPosition.setVisible(False)
+            self.sqlOptions()
+
     
     #Columns radio checked
     def radioColumns_Toggled(self):
         if self.ui.radioColumns.isChecked():
-            self.ui.radioOrdinalPosition.setVisible(True)
-     
+            self.sqlOptions()
+                
     #Bases radio checked     
     def radioBases_Toggled(self):
         if self.ui.radioBases.isChecked():
-            self.ui.radioNotInArray.setChecked(True)
-            self.ui.radioOrdinalPosition.setVisible(False)
-        
+            self.sqlOptions()
+            
     #Tray icon clicked
     def trayActivated(self, reason):
         if reason == QtGui.QSystemTrayIcon.DoubleClick:
@@ -1044,18 +1059,10 @@ class EnemaForm(QtGui.QMainWindow):
     #Db type changed
     def dbTypeChanged(self):
         if self.getDbType() == "mysql":
-            self.ui.radioNotInSubstring.setText("LIMIT")
-            self.ui.radioNotInSubstring.setChecked(True)
-            self.ui.radioNotInArray.hide()
-            self.ui.tabs.setTabEnabled(3, False)
             self.ui.menuMssql.setEnabled(False)
         else:
-            self.ui.tabs.setTabEnabled(3, True)
-            self.ui.radioNotInSubstring.setText("not in(substring)")
-            self.ui.radioNotInArray.show()
-            self.ui.radioNotInArray.setChecked(True)
             self.ui.menuMssql.setEnabled(True)
-
+        self.sqlOptions()
 #------------------------------------------------INJECTOR-SLOTS------------------------------------------------------#
 
     #Add text to log
