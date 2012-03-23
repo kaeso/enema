@@ -31,21 +31,21 @@ For UNION-based sql injections you can use this url:
 http://site.com/vuln.aspx?id=1' union all select null,null,[sub],null--
 </code>
 
-What is *{{{[sub]}}}*? This variable tells to our program where inject SQL Substring.
+*{{{[sub]}}}* keyword indicates where inject SQL Substring.
 
 If database rights - sysadmin, you can use this urls:
 <code>
 http://site.com/vuln.aspx?id=1' and 1={{{[sub]}}};[cmd]--
 </code>
 
-What is *{{{[cmd]}}}*? This variable tells to our program where inject xp_cmdshell commands, declarations etc...
+*{{{[cmd]}}}* keywords indicates where inject xp_cmdshell  and other stacked queries.
 
-Why variable {{{[sub]}}} used too? - For retrieving xp_cmdshell output.
+In this example {{{[sub]}}} used too. It needs for fetching xp_cmdshell output.
 
-Also you can use only {{{[cmd]}}} variable if injection blind, and you not interested in results.
+Also you can use only {{{[cmd]}}} if you not interested in results or not output not available.
 
 ---------------
-===Blind_injection===
+===Blind injection===
 ---------------
 For today available in development version only (cause testing and improving).
 
@@ -87,7 +87,7 @@ Post data should be:
 username=' and 1[eq][sub]--&password=test123
 </code>
 
-What is *{{{[eq]}}}*? This is equal symbol - "=". This is important, use {{{[eq]}}} instead of "=" in user-defined post data, and use "%3b" instead of ";" in user-defined Cookie value.
+*{{{[eq]}}}* keyword means equal symbol - "=". This is important. Use {{{[eq]}}} instead of "=" in user-defined post data, and use *"%3b"* instead of ";" in user-defined Cookie value.
 
 For example Cookie string:
 <code>
