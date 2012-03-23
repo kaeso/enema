@@ -3,6 +3,8 @@
 
 [#SQL_injection_in_POST_requests,_Cookies]
 
+[#Blind_injection]
+
 [#Buttons_and_methods_on_tab_db_structure]
 
 [#Dump_tab]
@@ -18,14 +20,23 @@ Response:
 <code>
 Unclosed quotation mark after the character string '1'`
 </code>
-If injection type is Error-based then ready for injection string using Enema will be - _http://site.com/vuln.aspx?id=1' and 1={{{[sub]}}}--_
 
-For UNION-based sql injections you can use this url - _http://site.com/vuln.aspx?id=1' union all select null,null,{{{[sub]}}},null--_
+If injection type is Error-based then ready for injection string using Enema will be:
+<code>
+http://site.com/vuln.aspx?id=1' and 1=[sub]--
+</code>
+
+For UNION-based sql injections you can use this url:
+<code>
+http://site.com/vuln.aspx?id=1' union all select null,null,[sub],null--
+</code>
 
 What is *{{{[sub]}}}*? This variable tells to our program where inject SQL Substring.
 
 If database rights - sysadmin, you can use this urls:
-_http://site.com/vuln.aspx?id=1' and 1={{{[sub]}}};{{{[cmd]}}}--_
+<code>
+http://site.com/vuln.aspx?id=1' and 1={{{[sub]}}};[cmd]--
+</code>
 
 What is *{{{[cmd]}}}*? This variable tells to our program where inject xp_cmdshell commands, declarations etc...
 
@@ -34,55 +45,71 @@ Why variable {{{[sub]}}} used too? - For retrieving xp_cmdshell output.
 Also you can use only {{{[cmd]}}} variable if injection blind, and you not interested in results.
 
 ---------------
+===Blind_injection===
+---------------
+For today available in development version only (cause testing and improving).
+
+*{{{[blind]}}}* keyword indicates where insert blind query
+
+When this keyword in found in url, post data or cookies - enema enables options for blind attack on Query Tab.
+
+For time-based injection u can define custom delay. Then run test and look for normal and delayed responses (lag checking).
+
+*Multirows* - query can return more than 1 row.
+
+e. g. 
+<code>
+select top 50 login from users
+</code>
+<code>
+select login from users
+</code>
+
+---------------
 ===SQL injection in POST requests, Cookies===
 ---------------
 All the same, with a little correction.
-For example vulnerable script - _http://site.com/login.aspx_
+For example vulnerable script:
+<code>
+http://site.com/login.aspx
 Post data: _username=admin'&password=test123_
-
-`==> Unclosed quotation mark after the character string 'admin'`
+</code>
+<code>
+Unclosed quotation mark after the character string 'admin'`
+</code>
 
 1. Put _http://site.com/login.aspx_ to URL.
 
 2. Select method = _POST_.
 
-3. Post data should be - _username=' and 1{{{[eq]}}}{{{[sub]}}}--&password=test123_
+Post data should be:
+<code>
+username=' and 1[eq][sub]--&password=test123
+</code>
 
 What is *{{{[eq]}}}*? This is equal symbol - "=". This is important, use {{{[eq]}}} instead of "=" in user-defined post data, and use "%3b" instead of ";" in user-defined Cookie value.
 
-For example Cookie string - _session=12345; uid=32321; cartid=' and 1={{{[sub]}}}*%3b*{{{[cmd]}}}--; reffid=005541_
+For example Cookie string:
+<code>
+session=12345; uid=32321; cartid=' and 1={{{[sub]}}}*%3b*{{{[cmd]}}}--; reffid=005541
+</code>
 
 If variable {{{[sub]}}} or {{{[cmd]}}} found in cookies, then Enema perceives attack as injection in cookies.
+
 ---------------
-===Buttons and methods on tab db structure===
+===Methods on tab db structure===
 ---------------
-*Tables* - get tables from current database.
+*Tables* - fetch tables from current database.
 
-*Count* - select table and click. You will recieve number of rows in selected table.
+*Columns* - fetch columns from tables in right field. (Drag and drop table or tables from left field to right.)
 
-Drag table or tables from left field and drop it in right. *Columns* - get columns from all tables in right field.
+*Bases* - fetch basesfrom current database.
 
-*...* (button) - get databases
-
-*`Supported tables extraction methods:`*
-
-1. not in({{{[array]}}})
-
-2. not in({{{[substring]}}}) - *multithreaded*
-
-*`Supported columns extraction methods:`*
-
-1. not in({{{[array]}}})
-
-2. not in({{{[substring]}}}) - *multithreaded*
-
-3. by ordinal_position - *multithreaded*
-
-*`Supported database extraction methods:`*
-
-1. not in({{{[array]}}})
-
-2. not in({{{[substring]}}}) - *multithreaded*
+ * Supported fetching methods:
+   # not in({{{[array]}}})
+   # not in({{{[substring]}}}) - multithreaded
+   # by ordinal_position - multithreaded
+   # LIMIT - multithreaded
 
 Field "Match pattern" for exclusive cases only.
 Enema parsing sql data between "Match symbols", default match symbol is "~"
@@ -93,10 +120,14 @@ Enema parsing sql data between "Match symbols", default match symbol is "~"
 
 *Columns* - columns for dump. Can be separated by ";".
 
-*Primary key* - index number, something like CustomerID, or you can create your own table and insert data for dump. (_create table tmptbl (num int identity, sqldata varchar(8000) NULL, primary key (num)); insert into tmptbl select username + "|" + password + "|" + email from users_).
+*Primary key* - index number, something like CustomerID, or you can create your own table and insert data for dump.
+e.g.
+<code>
+create table tmptbl (num int identity, sqldata varchar(8000) NULL, primary key (num)); insert into tmptbl select username + "|" + password + "|" + email from users
+</code>
 
 *From* and *To* - dump from position to position. (integer)
 
-Dumper multithreaded. I successfuly tested it up to 50 threads. Your threads depend on your internet connection :)
+Dumper multithreaded. I successfuly tested it up to 50 threads. Your threads depend on your bandwidth speed :)
 
-*Important : Dumper creating thread pool for each column.*. It means if you defined 10 threads and dumping table with 3 columns, dumper will start 30 threads.
+*Important*: `Dumper starts thread pool for each column. It means if you defined 10 threads and dumping table with 3 columns, dumper will start 30 threads.`
