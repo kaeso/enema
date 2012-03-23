@@ -1,6 +1,6 @@
 """
     Enema module: GUI events (main)
-    Copyright (C) 2011 Kaeso
+    Copyright (C) 2011 Valeriy Bogachuk
     
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -842,6 +842,8 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.lineKey.setText(settings.value('dump/key', ''))
         self.ui.lineFrom.setText(settings.value('dump/from', '0'))
         self.ui.lineTo.setText(settings.value('dump/to', '10'))
+        
+        self.ui.tabs.setCurrentIndex(0)
         
 #------------------------------------------------[MENU]TOOLS-SLOTS------------------------------------------------------#
 

@@ -1,6 +1,6 @@
 """
     Enema plugin (mssql): Add sql/windows user
-    Copyright (C) 2011 Kaeso
+    Copyright (C) 2011 Valeriy Bogachuk
     
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
