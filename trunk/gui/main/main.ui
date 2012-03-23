@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>591</width>
+    <width>1121</width>
     <height>624</height>
    </rect>
   </property>
@@ -24,7 +24,7 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>1112</width>
+    <width>1121</width>
     <height>624</height>
    </size>
   </property>
@@ -114,7 +114,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>http://192.168.1.50/mssql.asp?id=-1 or 1=[sub];[cmd]--</string>
+       <string>http://192.168.1.50/mssql.asp?id=-1;[blind]--</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_4">
@@ -130,7 +130,7 @@
        <string>URL:</string>
       </property>
      </widget>
-     <widget class="QTextEdit" name="textEdit">
+     <widget class="QTextEdit" name="textData">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -318,7 +318,7 @@ p, li { white-space: pre-wrap; }
       <widget class="QRadioButton" name="radioColumns">
        <property name="geometry">
         <rect>
-         <x>80</x>
+         <x>90</x>
          <y>20</y>
          <width>71</width>
          <height>17</height>
@@ -331,7 +331,7 @@ p, li { white-space: pre-wrap; }
       <widget class="QRadioButton" name="radioBases">
        <property name="geometry">
         <rect>
-         <x>150</x>
+         <x>170</x>
          <y>20</y>
          <width>61</width>
          <height>17</height>
@@ -344,7 +344,7 @@ p, li { white-space: pre-wrap; }
       <widget class="QPushButton" name="runButton">
        <property name="geometry">
         <rect>
-         <x>210</x>
+         <x>260</x>
          <y>20</y>
          <width>91</width>
          <height>23</height>
@@ -352,19 +352,6 @@ p, li { white-space: pre-wrap; }
        </property>
        <property name="text">
         <string>Run</string>
-       </property>
-      </widget>
-      <widget class="QToolButton" name="killButton">
-       <property name="geometry">
-        <rect>
-         <x>310</x>
-         <y>20</y>
-         <width>91</width>
-         <height>23</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Kill task</string>
        </property>
       </widget>
       <widget class="QLabel" name="label">
@@ -400,7 +387,7 @@ p, li { white-space: pre-wrap; }
         <x>430</x>
         <y>200</y>
         <width>151</width>
-        <height>351</height>
+        <height>171</height>
        </rect>
       </property>
       <property name="sizePolicy">
@@ -417,8 +404,8 @@ p, li { white-space: pre-wrap; }
         <rect>
          <x>30</x>
          <y>140</y>
-         <width>101</width>
-         <height>17</height>
+         <width>111</width>
+         <height>16</height>
         </rect>
        </property>
        <property name="text">
@@ -503,19 +490,6 @@ p, li { white-space: pre-wrap; }
         </property>
        </item>
       </widget>
-      <widget class="QToolButton" name="logButton">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>320</y>
-         <width>91</width>
-         <height>21</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Show log</string>
-       </property>
-      </widget>
       <widget class="QRadioButton" name="radioLimit">
        <property name="enabled">
         <bool>false</bool>
@@ -531,7 +505,36 @@ p, li { white-space: pre-wrap; }
        <property name="text">
         <string>LIMIT</string>
        </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
       </widget>
+     </widget>
+     <widget class="QToolButton" name="killButton">
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>420</y>
+        <width>91</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Kill all</string>
+      </property>
+     </widget>
+     <widget class="QToolButton" name="logButton">
+      <property name="geometry">
+       <rect>
+        <x>460</x>
+        <y>390</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Show log</string>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="queryTab">
@@ -544,7 +547,7 @@ p, li { white-space: pre-wrap; }
         <x>10</x>
         <y>10</y>
         <width>571</width>
-        <height>171</height>
+        <height>201</height>
        </rect>
       </property>
       <property name="title">
@@ -556,53 +559,126 @@ p, li { white-space: pre-wrap; }
          <x>10</x>
          <y>20</y>
          <width>551</width>
-         <height>111</height>
+         <height>141</height>
         </rect>
        </property>
        <property name="documentTitle">
         <string/>
        </property>
       </widget>
-      <widget class="QRadioButton" name="radioSelect">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>140</y>
-         <width>91</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string> SELECT TOP</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-      <widget class="QRadioButton" name="radioExec">
-       <property name="geometry">
-        <rect>
-         <x>100</x>
-         <y>140</y>
-         <width>111</width>
-         <height>17</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>STACKED QUERY</string>
-       </property>
-      </widget>
       <widget class="QPushButton" name="queryButton">
        <property name="geometry">
         <rect>
          <x>490</x>
-         <y>140</y>
+         <y>170</y>
          <width>71</width>
-         <height>23</height>
+         <height>20</height>
         </rect>
        </property>
        <property name="text">
         <string>Run</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="blindMethodList">
+       <property name="geometry">
+        <rect>
+         <x>60</x>
+         <y>170</y>
+         <width>61</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <item>
+        <property name="text">
+         <string>Time</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QCheckBox" name="isStacked">
+       <property name="geometry">
+        <rect>
+         <x>410</x>
+         <y>170</y>
+         <width>70</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Stacked</string>
+       </property>
+      </widget>
+      <widget class="QSpinBox" name="delayBox">
+       <property name="geometry">
+        <rect>
+         <x>170</x>
+         <y>170</y>
+         <width>42</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>59</number>
+       </property>
+       <property name="value">
+        <number>2</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="methodLabel">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>170</y>
+         <width>51</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Method:</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="isMultirows">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>330</x>
+         <y>170</y>
+         <width>70</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Multirows</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="testButton">
+       <property name="geometry">
+        <rect>
+         <x>220</x>
+         <y>170</y>
+         <width>91</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Test response</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="delayLabel">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>170</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Delay:</string>
        </property>
       </widget>
      </widget>
@@ -610,9 +686,9 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>190</y>
+        <y>220</y>
         <width>571</width>
-        <height>131</height>
+        <height>171</height>
        </rect>
       </property>
       <property name="title">
@@ -624,7 +700,7 @@ p, li { white-space: pre-wrap; }
          <x>10</x>
          <y>20</y>
          <width>551</width>
-         <height>101</height>
+         <height>141</height>
         </rect>
        </property>
        <property name="documentTitle">
@@ -726,7 +802,7 @@ p, li { white-space: pre-wrap; }
      <widget class="QLineEdit" name="lineTo">
       <property name="geometry">
        <rect>
-        <x>300</x>
+        <x>310</x>
         <y>40</y>
         <width>71</width>
         <height>20</height>
@@ -734,6 +810,9 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="locale">
        <locale language="English" country="UnitedStates"/>
+      </property>
+      <property name="inputMethodHints">
+       <set>Qt::ImhDigitsOnly</set>
       </property>
       <property name="text">
        <string>10</string>
@@ -769,6 +848,9 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="locale">
        <locale language="English" country="UnitedStates"/>
+      </property>
+      <property name="inputMethodHints">
+       <set>Qt::ImhDigitsOnly</set>
       </property>
       <property name="text">
        <string>0</string>
@@ -810,9 +892,9 @@ p, li { white-space: pre-wrap; }
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>80</y>
+        <y>70</y>
         <width>571</width>
-        <height>471</height>
+        <height>481</height>
        </rect>
       </property>
       <property name="locale">
@@ -834,51 +916,25 @@ p, li { white-space: pre-wrap; }
        <number>20</number>
       </attribute>
      </widget>
-     <widget class="QCommandLinkButton" name="dmpButton">
+     <widget class="QPushButton" name="dmpButton">
       <property name="geometry">
        <rect>
-        <x>380</x>
-        <y>30</y>
-        <width>91</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>start</string>
-      </property>
-     </widget>
-     <widget class="QToolButton" name="killDumpButton">
-      <property name="geometry">
-       <rect>
-        <x>490</x>
+        <x>400</x>
         <y>40</y>
         <width>91</width>
-        <height>21</height>
+        <height>23</height>
        </rect>
       </property>
       <property name="text">
-       <string>Kill task</string>
+       <string>Start</string>
       </property>
      </widget>
     </widget>
    </widget>
-   <widget class="QTextEdit" name="logTxtEdit">
-    <property name="geometry">
-     <rect>
-      <x>600</x>
-      <y>20</y>
-      <width>501</width>
-      <height>541</height>
-     </rect>
-    </property>
-    <property name="readOnly">
-     <bool>true</bool>
-    </property>
-   </widget>
    <widget class="QToolButton" name="clearLogButton">
     <property name="geometry">
      <rect>
-      <x>1020</x>
+      <x>810</x>
       <y>570</y>
       <width>81</width>
       <height>21</height>
@@ -931,13 +987,46 @@ p, li { white-space: pre-wrap; }
      <string>%p%</string>
     </property>
    </widget>
+   <widget class="QTextEdit" name="logTxtEdit">
+    <property name="geometry">
+     <rect>
+      <x>600</x>
+      <y>10</y>
+      <width>511</width>
+      <height>551</height>
+     </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+    <property name="html">
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="isVerbose">
+    <property name="geometry">
+     <rect>
+      <x>1030</x>
+      <y>570</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Verbose</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>591</width>
+     <width>1121</width>
      <height>21</height>
     </rect>
    </property>

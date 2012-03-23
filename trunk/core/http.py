@@ -14,6 +14,7 @@
 """
 
 import sys
+import time
 import socket
 import core.txtproc
 from PyQt4 import QtCore
@@ -26,9 +27,11 @@ from core.e_const import ENCODING
 from core.e_const import USER_AGENT
 from core.e_const import QUOTED_CONTENT
 
+
 class HTTP_Handler(QtCore.QObject):
 
     logSignal = QtCore.pyqtSignal(str)
+    requestDoneSignal = QtCore.pyqtSignal(bool)
     
     def __init__(self):
         QtCore.QObject.__init__(self)
@@ -42,7 +45,7 @@ class HTTP_Handler(QtCore.QObject):
     def buildQuery(self, query, vars, args=None):
         ms =  core.txtproc.strToSqlChar(vars['ms'], vars['db_type'])
         try:
-            if vars['db_type'] == "mysql" and (vars['task'] =='tables' or vars['task'] =='columns'):
+            if vars['db_type'] == "MySQL" and (vars['task'] =='tables' or vars['task'] =='columns'):
                 args['cdb'] = core.txtproc.strToSqlChar(args['cdb'], vars['db_type'])
         except Exception:
             pass
@@ -54,8 +57,13 @@ class HTTP_Handler(QtCore.QObject):
         '${MS}' : ms, 
         #Args---
         '${current_db}' : args.setdefault('cdb'), 
-        '${current_table}' : args.setdefault('ctbl'),  
+        '${current_table}' : args.setdefault('ctbl'),
+        '${symbol_num}' : args.setdefault('symbol_num'), 
+        '${condition}' : args.setdefault('condition'),
+        '${delay}' : args.setdefault('delay'),
         '${num}' : args.setdefault('num'), 
+        '${row}' : args.setdefault('row'),
+        '${btable}' : args.setdefault('btable'),
         '${current_column}' : args.setdefault('ccol'),
         '${ordinal_position,}' : args.setdefault('num'), 
         '${column}' : args.setdefault('column'), 
@@ -89,6 +97,8 @@ class HTTP_Handler(QtCore.QObject):
             if "[cmd]" in strVar:
                 strVar = strVar.replace(";[cmd]", "")
             strVar = strVar.replace("[sub]", query)
+        if "[blind]" in strVar:
+            strVar = strVar.replace("[blind]", query)
         return strVar
 
     #Content parser
@@ -101,6 +111,7 @@ class HTTP_Handler(QtCore.QObject):
             file = open("tmp/err_response.html", "w")
             file.write(content)
             file.close()
+            time.sleep(0.01)
             self.logSignal.emit("\n==================[SERVER RESPONSE]==================\n\n"\
             + content + "\n\n>>>Saved to file: tmp/err_response.html")
             return "no_content"
@@ -110,6 +121,8 @@ class HTTP_Handler(QtCore.QObject):
     def preparePostData(self, data, query, isCmd):
         #Post data must be Var=value, otherwise function fails when trying to build dictionary.
         data = data.replace("=&",  "=[empty]&").replace("\n", "")
+        if "[blind]" in data:
+            data = data.replace("[blind]", query)
         data = data.replace(":",  "[colon]")
         if len(data) < 3:
             self.logSignal.emit("No POST data specified.")
@@ -131,7 +144,8 @@ class HTTP_Handler(QtCore.QObject):
         try:
             data = dict([s.split(':') for s in data])
         except ValueError as err:
-            self.logSignal.emit("[x] Error. Can't prepare post data.\n\n[details]: " + str(err))
+            self.logSignal.emit(\
+            "[x] Error. Can't prepare post data (bad characters detected).\n\n[details]: " + str(err))
             return "fail"
         for key, value in data.items():
             if value == "[empty]":
@@ -143,12 +157,13 @@ class HTTP_Handler(QtCore.QObject):
         return postData
 
     #Http request main function:
-    def httpRequest(self, query, isCmd, vars):
+    def httpRequest(self, query, isCmd, vars, blind=False):
         urlOpener = request.build_opener()
         data = vars['data']
         cookie = vars['cookie']
         data = data.replace("+",  " ").replace("%3D",  "[eq-urlhex]")
         data = request.unquote(data)
+        start_time = time.time()
         if vars['method'] == "POST":
             postData = self.preparePostData(data, query, isCmd)
             if (postData is None or postData == "fail"):
@@ -163,6 +178,7 @@ class HTTP_Handler(QtCore.QObject):
             else:
                 urlOpener.addheaders = [('User-Agent', USER_AGENT)]
             try:
+                time.sleep(0.01)
                 self.logSignal.emit(reqLog)
                 response = urlOpener.open(vars['url'], postData, vars['timeOut'])
                 content = response.read()
@@ -172,13 +188,16 @@ class HTTP_Handler(QtCore.QObject):
             except socket.error:
                 errno, errstr = sys.exc_info()[:2]
                 if errno == socket.timeout:
+                    time.sleep(0.01)
                     self.logSignal.emit("\n\n[HTTP Timeout]")
                     return "[---Timed out---]"
             except URLError as uerr:
                 if isinstance(uerr.reason, socket.timeout):
+                    time.sleep(0.01)
                     self.logSignal.emit("\n\n[HTTP Timeout]")
                     return "[---Timed out---]"
             except ValueError as err:
+                time.sleep(0.01)
                 self.logSignal.emit("\n[x] Can't start task.\n\n[reason]: " + str(err))
                 return "no_content"
         else:
@@ -195,6 +214,7 @@ class HTTP_Handler(QtCore.QObject):
             else:
                 urlOpener.addheaders = [('User-Agent', USER_AGENT)]
             try:
+                time.sleep(0.01)
                 self.logSignal.emit(reqLog)
                 response = urlOpener.open(get_url, None, vars['timeOut'])
                 content = response.read()
@@ -204,15 +224,21 @@ class HTTP_Handler(QtCore.QObject):
             except socket.error:
                 errno, errstr = sys.exc_info()[:2]
                 if errno == socket.timeout:
+                    time.sleep(0.01)
                     self.logSignal.emit("\n\n[HTTP Timeout]")
                     return "[---Timed out---]"
             except URLError as uerr:
                 if isinstance(uerr.reason, socket.timeout):
+                    time.sleep(0.01)
                     self.logSignal.emit("\n\n[HTTP Timeout]")
                     return "[---Timed out---]"
             except ValueError as err:
+                time.sleep(0.01)
                 self.logSignal.emit("\n[x] Can't start task.\n\n[reason]: " + str(err))
                 return "no_content"
+        if blind:
+            response_time = round((time.time() - start_time), 4)
+            return response_time
         if not isCmd:
             if QUOTED_CONTENT:
                 content = request.unquote(content)

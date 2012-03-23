@@ -38,7 +38,7 @@ def strToHex(string, isCmdHex):
     
 #Convert string to SQL char:
 def strToSqlChar(string, dbtype):
-    if dbtype == "mysql":
+    if dbtype == "MySQL":
         encoded = ','.join((str(ord(symbol)) for symbol in string))
     else:
         encoded = ')+char('.join((hex(ord(symbol)) for symbol in string))
@@ -66,4 +66,13 @@ def correctQstr(qstring):
     if (qstring.startswith('"') and qstring.endswith('"')):
         return qstring[1:-1]
     return qstring
+
+#Rounding time
+def roundTime(tm):
+    seconds = str(tm).split(".")
+    try:
+        seconds = int(seconds[0])
+    except:
+        return 0
+    return seconds
     

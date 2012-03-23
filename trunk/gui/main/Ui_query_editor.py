@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\main\query_editor.ui'
 #
-# Created: Mon Mar 19 16:22:12 2012
+# Created: Thu Mar 22 12:42:54 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -473,6 +473,35 @@ class Ui_QueryEditorForm(object):
         self.q_union_ms_get_row.setObjectName(_fromUtf8("q_union_ms_get_row"))
         self.tabWidget_4.addTab(self.tab_21, _fromUtf8(""))
         self.qeTabWidget_3.addTab(self.tab_22, _fromUtf8(""))
+        self.tab_23 = QtGui.QWidget()
+        self.tab_23.setObjectName(_fromUtf8("tab_23"))
+        self.label_35 = QtGui.QLabel(self.tab_23)
+        self.label_35.setGeometry(QtCore.QRect(10, 10, 231, 20))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_35.setFont(font)
+        self.label_35.setObjectName(_fromUtf8("label_35"))
+        self.q_blind_ms_single_row = QtGui.QLineEdit(self.tab_23)
+        self.q_blind_ms_single_row.setGeometry(QtCore.QRect(10, 30, 841, 20))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.q_blind_ms_single_row.setFont(font)
+        self.q_blind_ms_single_row.setText(_fromUtf8(""))
+        self.q_blind_ms_single_row.setObjectName(_fromUtf8("q_blind_ms_single_row"))
+        self.q_blind_ms_multi_rows = QtGui.QLineEdit(self.tab_23)
+        self.q_blind_ms_multi_rows.setGeometry(QtCore.QRect(10, 70, 841, 20))
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        self.q_blind_ms_multi_rows.setFont(font)
+        self.q_blind_ms_multi_rows.setText(_fromUtf8(""))
+        self.q_blind_ms_multi_rows.setObjectName(_fromUtf8("q_blind_ms_multi_rows"))
+        self.label_36 = QtGui.QLabel(self.tab_23)
+        self.label_36.setGeometry(QtCore.QRect(10, 50, 231, 20))
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.label_36.setFont(font)
+        self.label_36.setObjectName(_fromUtf8("label_36"))
+        self.qeTabWidget_3.addTab(self.tab_23, _fromUtf8(""))
         self.qeTabWidget.addTab(self.tab, _fromUtf8(""))
         self.tab_2 = QtGui.QWidget()
         self.tab_2.setObjectName(_fromUtf8("tab_2"))
@@ -847,6 +876,9 @@ class Ui_QueryEditorForm(object):
         self.label_34.setText(QtGui.QApplication.translate("QueryEditorForm", "------get row from temp table------", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget_4.setTabText(self.tabWidget_4.indexOf(self.tab_21), QtGui.QApplication.translate("QueryEditorForm", "etc", None, QtGui.QApplication.UnicodeUTF8))
         self.qeTabWidget_3.setTabText(self.qeTabWidget_3.indexOf(self.tab_22), QtGui.QApplication.translate("QueryEditorForm", "Union-Based", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_35.setText(QtGui.QApplication.translate("QueryEditorForm", "------blind time-based single row------", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_36.setText(QtGui.QApplication.translate("QueryEditorForm", "------blind time-based multi rows------", None, QtGui.QApplication.UnicodeUTF8))
+        self.qeTabWidget_3.setTabText(self.qeTabWidget_3.indexOf(self.tab_23), QtGui.QApplication.translate("QueryEditorForm", "Common", None, QtGui.QApplication.UnicodeUTF8))
         self.qeTabWidget.setTabText(self.qeTabWidget.indexOf(self.tab), QtGui.QApplication.translate("QueryEditorForm", "mssql", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("QueryEditorForm", "------current db name------", None, QtGui.QApplication.UnicodeUTF8))
         self.label_49.setText(QtGui.QApplication.translate("QueryEditorForm", "------get db name (limit method, multithreaded)------", None, QtGui.QApplication.UnicodeUTF8))
