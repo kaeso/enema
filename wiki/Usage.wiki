@@ -51,7 +51,7 @@ For today available in development version only (cause testing and improving).
 
 *{{{[blind]}}}* keyword indicates where insert blind query
 
-When this keyword in found in url, post data or cookies - enema enables options for blind attack on Query Tab.
+When this keyword found in url, post data or cookies - enema enables options for blind attack in Query Tab.
 
 For time-based injection u can define custom delay. Then run test and look for normal and delayed responses (lag checking).
 
