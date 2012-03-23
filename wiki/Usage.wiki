@@ -5,7 +5,7 @@
 
 [#Blind_injection]
 
-[#Buttons_and_methods_on_tab_db_structure]
+[#Methods_of_db_structure_tab]
 
 [#Dump_tab]
 
@@ -97,7 +97,7 @@ session=12345; uid=32321; cartid=' and 1={{{[sub]}}}*%3b*{{{[cmd]}}}--; reffid=0
 If variable {{{[sub]}}} or {{{[cmd]}}} found in cookies, then Enema perceives attack as injection in cookies.
 
 ---------------
-===Methods on tab db structure===
+===Methods of db structure tab===
 ---------------
 *Tables* - fetch tables from current database.
 
