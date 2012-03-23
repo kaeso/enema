@@ -29,6 +29,7 @@ from plugins.mssql.xp_cmdshell import CmdShellWidget
 
 from core.e_const import ENCODING
 from core.injector import Injector
+from core.injector import BlindInjector
 from urllib import request
 from PyQt4 import QtCore, QtGui 
 
@@ -110,6 +111,12 @@ class QueryEditorForm(QtGui.QMainWindow):
         self.ui.q_union_ms_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
         self.ui.q_union_ms_query.setText(settings.value(qstring_type + 'query', ''))
         self.ui.q_union_ms_data_dump.setText(settings.value(qstring_type + 'data_dump', ''))
+        
+        #BLIND---
+        #Time-Based
+        qstring_type = "mssql_blind_time_based/"
+        self.ui.q_blind_ms_single_row.setText(settings.value(qstring_type + 'single_row', ''))
+        self.ui.q_blind_ms_multi_rows.setText(settings.value(qstring_type + 'multi_rows', ''))
 
         #MySQL------------------------------------------------------------------
         
@@ -199,6 +206,12 @@ class QueryEditorForm(QtGui.QMainWindow):
         settings.setValue(qstring_type + 'rows_count', self.ui.q_union_ms_rows_count.text())
         settings.setValue(qstring_type + 'query', self.ui.q_union_ms_query.text())
         settings.setValue(qstring_type + 'data_dump', self.ui.q_union_ms_data_dump.text())
+        
+        #BLIND---
+        #Time-Based
+        qstring_type = "mssql_blind_time_based/"
+        settings.setValue(qstring_type + 'single_row', self.ui.q_blind_ms_single_row.text())
+        settings.setValue(qstring_type + 'multi_rows', self.ui.q_blind_ms_multi_rows.text())
         
         #MySQL------------------------------------------------------------------
         
@@ -418,6 +431,12 @@ class EnemaForm(QtGui.QMainWindow):
             self.sysTray.show()
             
         self.ui.progressBar.hide()
+        self.ui.blindMethodList.setVisible(False)
+        self.ui.methodLabel.setVisible(False)
+        self.ui.delayBox.setVisible(False)
+        self.ui.isMultirows.setVisible(False)
+        self.ui.testButton.setVisible(False)
+        self.ui.delayLabel.setVisible(False)
         
         #Subforms
         self.qeditor_frm = QueryEditorForm(self)
@@ -467,13 +486,13 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.logButton.clicked.connect(self.logButton_OnClick)
         self.ui.clearLogButton.clicked.connect(self.clearLogButton_OnClick)
         self.ui.killButton.clicked.connect(self.killTask)
-        self.ui.killDumpButton.clicked.connect(self.killTask)
         
         #DUMP-TAB
         self.ui.dmpButton.clicked.connect(self.dmpButton_OnClick)
         
         #QUERY-TAB
         self.ui.queryButton.clicked.connect(self.queryButton_OnClick)
+        self.ui.testButton.clicked.connect(self.testButton_OnClick)
         
         #Save Menu 
         self.ui.saveTables.triggered.connect(self.saveTables_OnClick)
@@ -504,6 +523,9 @@ class EnemaForm(QtGui.QMainWindow):
         #Url edit finished
         self.ui.lineUrl.editingFinished.connect(self.urlEditFinished)
         
+        #Current tab changed
+        self.ui.tabs.currentChanged.connect(self.tabIndexChanged)
+        
         #Tray icon
         self.actionQuit.triggered.connect(self.trayQuit_Clicked)
         self.sysTray.activated.connect(self.trayActivated)
@@ -523,7 +545,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.actionXp_cmdshell.triggered.connect(self.actionXp_cmdshell_OnClick)
         
 #------------------------------------------------[MENU]PLUGIN-MENU-SLOTS------------------------------------------------------#
-        
+
     #ftp    
     def actionFtp_OnClick(self):
         self.pluginWidget = FtpWidget(self.webData(), self.qstrings['mssql_error_based']['exec_cmdshell'], self)
@@ -562,11 +584,14 @@ class EnemaForm(QtGui.QMainWindow):
             currTable = self.ui.listOfTables.currentItem().text()
         wD = {
               'url' : self.ui.lineUrl.text(), 
-              'method' : self.getMethod() , 
+              'method' : str(self.ui.comboBox.currentText()), 
               'mp' : self.preferences_frm.ui.lineMP.text(), 
               'ms' : self.preferences_frm.ui.lineMS.text(), 
               'threads' : self.preferences_frm.ui.threadBox.value(), 
               'timeOut' : int(self.preferences_frm.ui.lineTimeout.text()), 
+              'delay' : self.ui.delayBox.value(), 
+              'verbose' : self.ui.isVerbose.isChecked(),
+              'blind_inj_type' : str(self.ui.blindMethodList.currentText()), 
               'isRandomUpCase' : self.preferences_frm.ui.isRndUpper.isChecked(), 
               'dbListCount' : self.ui.dbListComboBox.count(),
               'dbName' : str(self.ui.dbListComboBox.currentText()), 
@@ -574,14 +599,14 @@ class EnemaForm(QtGui.QMainWindow):
               'notInSubstring' : self.ui.radioNotInSubstring.isChecked(),
               'ordinal_position' : self.ui.radioOrdinalPosition.isChecked(), 
               'selected_table' : currTable, 
-              'LIMIT' : self.ui.radioLimit.isChecked(), 
+              'LIMIT' : self.ui.radioLimit.isChecked(),
               'tblTreeCount' : self.ui.treeOfTables.topLevelItemCount(), 
               'query_cmd' : self.ui.queryText.toPlainText(), 
-              'querySelect' : self.ui.radioSelect.isChecked(), 
-              'data' : self.ui.textEdit.toPlainText(), 
+              'isStacked' : self.ui.isStacked.isChecked(), 
+              'data' : self.ui.textData.toPlainText(), 
               'cookie' :  self.ui.lineCookie.text(), 
-              'db_type' : self.getDbType(), 
-              'inj_type' : self.getInjectionType(), 
+              'db_type' : str(self.ui.dbTypeBox.currentText()), 
+              'inj_type' : str(self.ui.comboInjType.currentText()), 
               'table' : self.ui.lineTable.text(), 
               'key' : self.ui.lineKey.text(), 
               'columns' : self.ui.lineColumns.text().split(";"), 
@@ -590,51 +615,35 @@ class EnemaForm(QtGui.QMainWindow):
         return wD
 
     #Connecting to signals and starting thread
-    def connectAndStart(self):
+    def connectAndStart(self, blind=False):       
+        if not blind:
+            #dbSignal
+            self.qthread.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
+
+            #columnSignal
+            self.qthread.columnSignal.connect(self.addColumn, type=QtCore.Qt.QueuedConnection)
+        
+            #rowDataSignal
+            self.qthread.rowDataSignal.connect(self.addRowData, type=QtCore.Qt.QueuedConnection)
+
+            #tblSignal
+            self.qthread.tblSignal.connect(self.addTable, type=QtCore.Qt.QueuedConnection)
+            
+        self.ui.isVerbose.setEnabled(False)
+        
         #logSignal
         self.qthread.logSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
         
         #progressSignal
         self.qthread.progressSignal.connect(self.updatePb, type=QtCore.Qt.QueuedConnection)
         
-        #dbSignal
-        self.qthread.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
-
-        #columnSignal
-        self.qthread.columnSignal.connect(self.addColumn, type=QtCore.Qt.QueuedConnection)
-        
-        #rowDataSignal
-        self.qthread.rowDataSignal.connect(self.addRowData, type=QtCore.Qt.QueuedConnection)
-        
         #querySignal
         self.qthread.querySignal.connect(self.queryResult, type=QtCore.Qt.QueuedConnection)
-        
-        #tblSignal
-        self.qthread.tblSignal.connect(self.addTable, type=QtCore.Qt.QueuedConnection)
-        
+                
+        self.ui.isVerbose.setEnabled(False)
+
         #Starting QThread
         self.qthread.start()
-        
-    #Getting request method
-    def getMethod(self):
-        if str(self.ui.comboBox.currentText()) == "POST":
-            return "POST"
-        else:
-            return "GET"
- 
-    #Getting request method
-    def getDbType(self):
-        if str(self.ui.dbTypeBox.currentText()) == "MSSQL":
-            return "mssql"
-        else:
-            return "mysql"
-
-    #Getting request method
-    def getInjectionType(self):
-        if str(self.ui.comboInjType.currentText()) == "ERROR-BASED":
-            return "error-based"
-        else:
-            return "union-based"
             
     #Sending kill flag to qthread
     def killTask(self):
@@ -741,7 +750,7 @@ class EnemaForm(QtGui.QMainWindow):
         #db_strucure tab settings
         settings.setValue('db_structure/url', self.ui.lineUrl.text())
         settings.setValue('db_structure/method', self.ui.comboBox.currentIndex())
-        settings.setValue('db_structure/data', self.ui.textEdit.toPlainText())
+        settings.setValue('db_structure/data', self.ui.textData.toPlainText())
         settings.setValue('db_structure/cookies', self.ui.lineCookie.text())
         settings.setValue('db_structure/db_type', self.ui.dbTypeBox.currentIndex())
         settings.setValue('db_structure/inj_type', self.ui.comboInjType.currentIndex())
@@ -817,15 +826,16 @@ class EnemaForm(QtGui.QMainWindow):
         #db_strucure tab settings
         self.ui.lineUrl.setText(settings.value('db_structure/url', ''))
         self.ui.comboBox.setCurrentIndex(settings.value('db_structure/method', 0, int))
-        self.ui.textEdit.setText(settings.value('db_structure/data', ''))
+        self.ui.textData.setText(settings.value('db_structure/data', ''))
         self.ui.lineCookie.setText(settings.value('db_structure/cookies', ''))
         self.ui.dbTypeBox.setCurrentIndex(settings.value('db_structure/db_type', 0, int))
         self.ui.comboInjType.setCurrentIndex(settings.value('db_structure/inj_type', 0, int))
-        self.ui.dbListComboBox.setCurrentIndex(settings.value('db_structure/current_db', 0, int))
         self.preferences_frm.ui.lineMP.setText(settings.value('db_structure/pattern', ''))
         self.preferences_frm.ui.lineMS.setText(settings.value('db_structure/symbol', '~'))
         self.preferences_frm.ui.threadBox.setValue(settings.value('db_structure/threads', 10, int))
         self.preferences_frm.ui.lineTimeout.setText(settings.value('db_structure/timeout', '30'))
+        self.ui.dbListComboBox.setCurrentIndex(settings.value('db_structure/current_db', 0, int))
+
         #dump tab settings
         self.ui.lineTable.setText(settings.value('dump/table', ''))
         self.ui.lineColumns.setText(settings.value('dump/columns', ''))
@@ -936,19 +946,19 @@ class EnemaForm(QtGui.QMainWindow):
     #Cleaning log
     def clearLogButton_OnClick(self):
         self.ui.logTxtEdit.clear()
-
+        
     #Show or Hide log field
     def logButton_OnClick(self):
         if self.ui.logButton.text() == "Show log":
-            self.setFixedSize(1112, 624)
-            self.resize(1112, 624)
+            self.setFixedSize(1121, 624)
+            self.resize(1121, 624)
             self.ui.logButton.setText("Hide log")
         else:
             self.setFixedSize(591, 624)
             self.resize(591, 624)
             self.ui.logButton.setText("Show log")
             
-    #Query button click (query tab)
+    #Run button click (query tab)
     def queryButton_OnClick(self):
         if self.isBusy():
             self.busyDialog()
@@ -958,8 +968,25 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.queryOutput.clear()
         self.ui.progressBar.setMaximum(0)
         self.ui.progressBar.show()
-        self.qthread = Injector(wD, self.qstrings)
-        self.connectAndStart()
+        if self.ui.blindMethodList.isHidden():
+            self.qthread = Injector(wD, self.qstrings)
+            self.connectAndStart()
+        else:
+            self.qthread = BlindInjector(wD, self.qstrings)
+            self.connectAndStart(True)
+            
+    #Delay button click (query tab)
+    def testButton_OnClick(self):
+        if self.isBusy():
+            self.busyDialog()
+            return
+        wD = self.webData()
+        wD['task'] = "delay_test"
+        self.ui.queryOutput.clear()
+        self.ui.progressBar.setMaximum(0)
+        self.ui.progressBar.show()
+        self.qthread = BlindInjector(wD, self.qstrings)
+        self.connectAndStart(True)
         
     #GO button click (dump tab)        
     def dmpButton_OnClick(self):
@@ -995,13 +1022,13 @@ class EnemaForm(QtGui.QMainWindow):
             event.ignore()
         else:
             sys.exit(0)
-     
+
     def sqlOptions(self):
         if self.ui.radioColumns.isChecked():
             self.ui.radioOrdinalPosition.setEnabled(True)
         else:
             self.ui.radioOrdinalPosition.setEnabled(False)
-        if self.getDbType() == "mysql":
+        if str(self.ui.dbTypeBox.currentText())  == "MySQL":
             self.ui.radioLimit.setEnabled(True)
             self.ui.radioLimit.setChecked(True)
             self.ui.radioNotInSubstring.setEnabled(False)
@@ -1011,23 +1038,22 @@ class EnemaForm(QtGui.QMainWindow):
             self.ui.radioNotInSubstring.setChecked(True)
             self.ui.radioNotInArray.setEnabled(True)
             self.ui.radioLimit.setEnabled(False)
-
+            
     #Tables radio checked
     def radioTables_Toggled(self):
         if self.ui.radioTables.isChecked():
             self.sqlOptions()
-
-    
+            
     #Columns radio checked
     def radioColumns_Toggled(self):
         if self.ui.radioColumns.isChecked():
             self.sqlOptions()
-                
+     
     #Bases radio checked     
     def radioBases_Toggled(self):
         if self.ui.radioBases.isChecked():
             self.sqlOptions()
-            
+        
     #Tray icon clicked
     def trayActivated(self, reason):
         if reason == QtGui.QSystemTrayIcon.DoubleClick:
@@ -1044,31 +1070,65 @@ class EnemaForm(QtGui.QMainWindow):
         settings.setValue('Main/window_position', self.pos())
         settings.sync()
         sys.exit(0)
-        
-    #URL editing finished
+    
+    #Hide or show blind options
+    def blindOptions(self, mode):
+        if mode == "show":
+            self.ui.blindMethodList.setVisible(True)
+            self.ui.methodLabel.setVisible(True)
+            self.ui.delayBox.setVisible(True)
+            self.ui.isMultirows.setVisible(True)
+            self.ui.testButton.setVisible(True)
+            self.ui.delayLabel.setVisible(True)
+            self.ui.isStacked.setVisible(False)
+        else:
+            self.ui.blindMethodList.setVisible(False)
+            self.ui.methodLabel.setVisible(False)
+            self.ui.delayBox.setVisible(False)
+            self.ui.isMultirows.setVisible(False)
+            self.ui.testButton.setVisible(False)
+            self.ui.delayLabel.setVisible(False)
+            self.ui.isStacked.setVisible(True)
+            
+    def tabIndexChanged(self):
+        blind = False
+        kw = "[blind]"
+        if kw in self.ui.lineUrl.text():
+            blind = True
+        if kw in self.ui.lineCookie.text():
+            blind = True
+        if kw in self.ui.textData.toPlainText():
+            blind = True
+        if blind:
+            self.blindOptions("show")
+        else:
+            self.blindOptions("hide")
+            
+    #URL, Post data, Cookies editing finished
     def urlEditFinished(self):
         self.ui.dbListComboBox.clear()
-        
+            
     #Request method changed
     def methodChanged(self):
-        if self.getMethod() == "POST":
-            self.ui.textEdit.setEnabled(True)
+        if str(self.ui.comboBox.currentText()) == "POST":
+            self.ui.textData.setEnabled(True)
         else:
-            self.ui.textEdit.setEnabled(False)
+            self.ui.textData.setEnabled(False)
             
     #Db type changed
     def dbTypeChanged(self):
-        if self.getDbType() == "mysql":
+        if str(self.ui.dbTypeBox.currentText())  == "MySQL":
             self.ui.menuMssql.setEnabled(False)
         else:
             self.ui.menuMssql.setEnabled(True)
         self.sqlOptions()
+
 #------------------------------------------------INJECTOR-SLOTS------------------------------------------------------#
 
     #Add text to log
     def addLog(self, logStr):
         #Autoclean log when blocks more than 3000
-        if self.ui.logTxtEdit.document().blockCount() > 3000:
+        if self.ui.logTxtEdit.document().blockCount() > 10000:
             self.ui.logTxtEdit.clear()
         self.ui.logTxtEdit.append("\n" + logStr)
         #Autoscrolling
@@ -1079,6 +1139,9 @@ class EnemaForm(QtGui.QMainWindow):
     def updatePb(self, pbMax, taskDone):
         if taskDone:
             self.ui.progressBar.hide()
+            self.ui.isVerbose.setEnabled(True)
+            if self.isHidden():
+                self.sysTray.showMessage("Enema", "Task finished.", QtGui.QSystemTrayIcon.Information)
             return
         if pbMax >= 0:
             self.ui.progressBar.setMaximum(pbMax)
@@ -1105,9 +1168,15 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.treeOfTables.topLevelItem(i).addChild(column)
 
     #Set query result (query tab)
-    def queryResult(self, result):
-        self.ui.queryOutput.setText(result)
-            
+    def queryResult(self, result, blind):
+        if not blind:
+            self.ui.queryOutput.setText(result)
+        else:
+            self.ui.queryOutput.clear()
+            self.ui.queryOutput.setText(result)
+    
+    def delayResult(self, delay):
+        self.ui.delayBox.setValue(delay)
 #------------------------------------------------END------------------------------------------------------#
 
 if __name__ == "__main__":
