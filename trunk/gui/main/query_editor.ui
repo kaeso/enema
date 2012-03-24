@@ -494,7 +494,7 @@
          <attribute name="title">
           <string>etc</string>
          </attribute>
-         <widget class="QLineEdit" name="q_ms_rows_count">
+         <widget class="QLineEdit" name="q_ms_query">
           <property name="geometry">
            <rect>
             <x>10</x>
@@ -512,47 +512,11 @@
            <string/>
           </property>
          </widget>
-         <widget class="QLabel" name="label_25">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>10</y>
-            <width>291</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>------rows count in selected table------</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="q_ms_query">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>80</y>
-            <width>841</width>
-            <height>21</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>9</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
          <widget class="QLabel" name="label_26">
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>60</y>
+            <y>10</y>
             <width>291</width>
             <height>20</height>
            </rect>
@@ -570,7 +534,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>130</y>
+            <y>80</y>
             <width>841</width>
             <height>21</height>
            </rect>
@@ -588,7 +552,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>110</y>
+            <y>60</y>
             <width>291</width>
             <height>20</height>
            </rect>
@@ -606,7 +570,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>210</y>
+            <y>160</y>
             <width>291</width>
             <height>20</height>
            </rect>
@@ -624,7 +588,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>230</y>
+            <y>180</y>
             <width>841</width>
             <height>21</height>
            </rect>
@@ -642,7 +606,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>180</y>
+            <y>130</y>
             <width>841</width>
             <height>20</height>
            </rect>
@@ -660,7 +624,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>160</y>
+            <y>110</y>
             <width>291</width>
             <height>20</height>
            </rect>
@@ -1260,79 +1224,136 @@
       </widget>
       <widget class="QWidget" name="tab_23">
        <attribute name="title">
-        <string>Common</string>
+        <string>Blind</string>
        </attribute>
-       <widget class="QLabel" name="label_35">
+       <widget class="QTabWidget" name="qeTabWidget_4">
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>10</y>
-          <width>231</width>
-          <height>20</height>
+          <x>0</x>
+          <y>0</y>
+          <width>871</width>
+          <height>481</height>
          </rect>
         </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
+        <property name="currentIndex">
+         <number>0</number>
         </property>
-        <property name="text">
-         <string>------blind time-based single row------</string>
+        <property name="documentMode">
+         <bool>true</bool>
         </property>
-       </widget>
-       <widget class="QLineEdit" name="q_blind_ms_single_row">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>30</y>
-          <width>841</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>9</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-       <widget class="QLineEdit" name="q_blind_ms_multi_rows">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>70</y>
-          <width>841</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>9</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-       <widget class="QLabel" name="label_36">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>50</y>
-          <width>231</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>------blind time-based multi rows------</string>
-        </property>
+        <widget class="QWidget" name="tab_34">
+         <attribute name="title">
+          <string>Time based</string>
+         </attribute>
+         <widget class="QLabel" name="label_36">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>110</y>
+            <width>231</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>------multi rows------</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="q_blind_ms_single_row">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>841</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_37">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>60</y>
+            <width>231</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>------rows count------</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_35">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>231</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>------single row------</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="q_blind_ms_multi_rows">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>130</y>
+            <width>841</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="q_blind_ms_rows_count">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>80</y>
+            <width>841</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </widget>
        </widget>
       </widget>
      </widget>
@@ -1682,7 +1703,7 @@
          <attribute name="title">
           <string>etc</string>
          </attribute>
-         <widget class="QLineEdit" name="q_my_rows_count">
+         <widget class="QLineEdit" name="q_my_query">
           <property name="geometry">
            <rect>
             <x>10</x>
@@ -1700,47 +1721,11 @@
            <string/>
           </property>
          </widget>
-         <widget class="QLabel" name="label_66">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>10</y>
-            <width>291</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>------rows count in selected table------</string>
-          </property>
-         </widget>
-         <widget class="QLineEdit" name="q_my_query">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>80</y>
-            <width>841</width>
-            <height>21</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>9</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
          <widget class="QLabel" name="label_67">
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>60</y>
+            <y>10</y>
             <width>291</width>
             <height>20</height>
            </rect>
@@ -2153,6 +2138,140 @@
           </property>
           <property name="text">
            <string>------run query------</string>
+          </property>
+         </widget>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_49">
+       <attribute name="title">
+        <string>Blind</string>
+       </attribute>
+       <widget class="QTabWidget" name="qeTabWidget_5">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>871</width>
+          <height>481</height>
+         </rect>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <property name="documentMode">
+         <bool>true</bool>
+        </property>
+        <widget class="QWidget" name="tab_50">
+         <attribute name="title">
+          <string>Time based</string>
+         </attribute>
+         <widget class="QLabel" name="label_124">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>110</y>
+            <width>231</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>------multi rows------</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="q_blind_my_single_row">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>841</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_125">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>60</y>
+            <width>231</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>------rows count------</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_126">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>231</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>------single row------</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="q_blind_my_multi_rows">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>130</y>
+            <width>841</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="q_blind_my_rows_count">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>80</y>
+            <width>841</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </widget>
         </widget>

@@ -463,7 +463,7 @@ class BlindInjector(QtCore.QThread):
         self.bad_time = 0
         retry_counter = 0
         
-        #First codes members
+        #First six codes of symbol ranges
         self.lowerAlphabet = [97, 98, 99, 100, 101, 102]
         self.upperAlphabet = [65, 66, 67, 68, 69, 70]
         self.numbers = [48, 49, 50, 51, 52, 53]

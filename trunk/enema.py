@@ -84,7 +84,6 @@ class QueryEditorForm(QtGui.QMainWindow):
         self.ui.q_ms_exec_cmdshell.setText(settings.value(qstring_type + 'exec_cmdshell', ''))
         #etc
         self.ui.q_ms_get_row.setText(settings.value(qstring_type + 'get_row', ''))
-        self.ui.q_ms_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
         self.ui.q_ms_query.setText(settings.value(qstring_type + 'query', ''))
         self.ui.q_ms_data_dump.setText(settings.value(qstring_type + 'data_dump', ''))
 
@@ -106,7 +105,6 @@ class QueryEditorForm(QtGui.QMainWindow):
         self.ui.q_union_ms_get_column_name3.setText(settings.value(qstring_type + 'get_column_name3', ''))      
         #etc
         self.ui.q_union_ms_get_row.setText(settings.value(qstring_type + 'get_row', ''))
-        self.ui.q_union_ms_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
         self.ui.q_union_ms_query.setText(settings.value(qstring_type + 'query', ''))
         self.ui.q_union_ms_data_dump.setText(settings.value(qstring_type + 'data_dump', ''))
         
@@ -114,6 +112,7 @@ class QueryEditorForm(QtGui.QMainWindow):
         #Time-Based
         qstring_type = "mssql_blind_time_based/"
         self.ui.q_blind_ms_single_row.setText(settings.value(qstring_type + 'single_row', ''))
+        self.ui.q_blind_ms_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
         self.ui.q_blind_ms_multi_rows.setText(settings.value(qstring_type + 'multi_rows', ''))
 
         #MySQL------------------------------------------------------------------
@@ -132,7 +131,6 @@ class QueryEditorForm(QtGui.QMainWindow):
         self.ui.q_my_get_column_name2.setText(settings.value(qstring_type + 'get_column_name2', ''))
         self.ui.q_my_get_column_name3.setText(settings.value(qstring_type + 'get_column_name3', ''))      
         #etc
-        self.ui.q_my_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
         self.ui.q_my_query.setText(settings.value(qstring_type + 'query', ''))
         
         #UNION-Based---
@@ -149,8 +147,15 @@ class QueryEditorForm(QtGui.QMainWindow):
         self.ui.q_union_my_get_column_name2.setText(settings.value(qstring_type + 'get_column_name2', ''))
         self.ui.q_union_my_get_column_name3.setText(settings.value(qstring_type + 'get_column_name3', ''))      
         #etc
-        self.ui.q_union_my_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
         self.ui.q_union_my_query.setText(settings.value(qstring_type + 'query', ''))
+        
+        #BLIND---
+        #Time-Based
+        qstring_type = "mysql_blind_time_based/"
+        self.ui.q_blind_my_single_row.setText(settings.value(qstring_type + 'single_row', ''))
+        self.ui.q_blind_my_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
+        self.ui.q_blind_my_multi_rows.setText(settings.value(qstring_type + 'multi_rows', ''))
+        
         #---------------------------------------------------------------------------
         
     def qsSave_OnClick(self):
@@ -179,7 +184,6 @@ class QueryEditorForm(QtGui.QMainWindow):
         settings.setValue(qstring_type + 'exec_cmdshell', self.ui.q_ms_exec_cmdshell.text())
         #etc
         settings.setValue(qstring_type + 'get_row', self.ui.q_ms_get_row.text())
-        settings.setValue(qstring_type + 'rows_count', self.ui.q_ms_rows_count.text())
         settings.setValue(qstring_type + 'query', self.ui.q_ms_query.text())
         settings.setValue(qstring_type + 'data_dump', self.ui.q_ms_data_dump.text())
         
@@ -201,7 +205,6 @@ class QueryEditorForm(QtGui.QMainWindow):
         settings.setValue(qstring_type + 'get_column_name3', self.ui.q_union_ms_get_column_name3.text())    
         #etc
         settings.setValue(qstring_type + 'get_row', self.ui.q_union_ms_get_row.text())
-        settings.setValue(qstring_type + 'rows_count', self.ui.q_union_ms_rows_count.text())
         settings.setValue(qstring_type + 'query', self.ui.q_union_ms_query.text())
         settings.setValue(qstring_type + 'data_dump', self.ui.q_union_ms_data_dump.text())
         
@@ -209,6 +212,7 @@ class QueryEditorForm(QtGui.QMainWindow):
         #Time-Based
         qstring_type = "mssql_blind_time_based/"
         settings.setValue(qstring_type + 'single_row', self.ui.q_blind_ms_single_row.text())
+        settings.setValue(qstring_type + 'rows_count', self.ui.q_blind_ms_rows_count.text())
         settings.setValue(qstring_type + 'multi_rows', self.ui.q_blind_ms_multi_rows.text())
         
         #MySQL------------------------------------------------------------------
@@ -227,7 +231,6 @@ class QueryEditorForm(QtGui.QMainWindow):
         settings.setValue(qstring_type + 'get_column_name2', self.ui.q_my_get_column_name2.text())
         settings.setValue(qstring_type + 'get_column_name3', self.ui.q_my_get_column_name3.text())    
         #etc
-        settings.setValue(qstring_type + 'rows_count', self.ui.q_my_rows_count.text())
         settings.setValue(qstring_type + 'query', self.ui.q_my_query.text())
         
         #UNION-BASED---
@@ -244,8 +247,14 @@ class QueryEditorForm(QtGui.QMainWindow):
         settings.setValue(qstring_type + 'get_column_name2', self.ui.q_union_my_get_column_name2.text())
         settings.setValue(qstring_type + 'get_column_name3', self.ui.q_union_my_get_column_name3.text())    
         #etc
-        settings.setValue(qstring_type + 'rows_count', self.ui.q_union_my_rows_count.text())
         settings.setValue(qstring_type + 'query', self.ui.q_union_my_query.text())
+        
+        #BLIND---
+        #Time-Based
+        qstring_type = "mysql_blind_time_based/"
+        settings.setValue(qstring_type + 'single_row', self.ui.q_blind_my_single_row.text())
+        settings.setValue(qstring_type + 'rows_count', self.ui.q_blind_my_rows_count.text())
+        settings.setValue(qstring_type + 'multi_rows', self.ui.q_blind_my_multi_rows.text())
         
         #---------------------------------------------------------------------------
         
@@ -360,6 +369,7 @@ class PreferencesForm(QtGui.QMainWindow):
         settings.setValue('Main/timeout', self.ui.lineTimeout.text())
         settings.setValue('Main/rnd_upcase', self.ui.isRndUpper.isChecked())
         settings.sync()
+        
         
 #Main form GUI class
 class EnemaForm(QtGui.QMainWindow):
@@ -543,10 +553,6 @@ class EnemaForm(QtGui.QMainWindow):
 
     #Get user defined parametes from GUI
     def webData(self):
-        if not self.ui.listOfTables.currentItem():
-            currTable = ""
-        else:
-            currTable = self.ui.listOfTables.currentItem().text()
         wD = {
               'url' : self.ui.lineUrl.text(), 
               'method' : str(self.ui.comboBox.currentText()), 
@@ -563,7 +569,6 @@ class EnemaForm(QtGui.QMainWindow):
               'notInArray' : self.ui.radioNotInArray.isChecked(),
               'notInSubstring' : self.ui.radioNotInSubstring.isChecked(),
               'ordinal_position' : self.ui.radioOrdinalPosition.isChecked(), 
-              'selected_table' : currTable, 
               'LIMIT' : self.ui.radioLimit.isChecked(),
               'tblTreeCount' : self.ui.treeOfTables.topLevelItemCount(), 
               'query_cmd' : self.ui.queryText.toPlainText(), 
