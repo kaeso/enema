@@ -13,6 +13,7 @@
     GNU General Public License for more details.
 """
 
+import os
 import sys
 import time
 import socket
@@ -108,12 +109,13 @@ class HTTP_Handler(QtCore.QObject):
         fromStr += 1
         toStr = content.find(match_sybol, fromStr, len(content))
         if (fromStr or toStr) <= 0:
-            file = open("tmp/err_response.html", "w")
+            file = open("tmp/err_log.html", "w")
             file.write(content)
             file.close()
             time.sleep(0.01)
             self.logSignal.emit("\n==================[SERVER RESPONSE]==================\n\n"\
-            + content + "\n\n>>>Saved to file: tmp/err_response.html")
+            + content + \
+            ">>> Html saved to: " + os.path.abspath("tmp/err_log.html"))
             return "no_content"
         return content[fromStr:toStr]
         
