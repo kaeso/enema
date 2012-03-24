@@ -61,7 +61,7 @@ class HTTP_Handler(QtCore.QObject):
         '${current_table}' : args.setdefault('ctbl'),
         '${symbol_num}' : args.setdefault('symbol_num'), 
         '${condition}' : args.setdefault('condition'),
-        '${delay}' : args.setdefault('delay'),
+        '${time}' : args.setdefault('delay'),
         '${num}' : args.setdefault('num'), 
         '${row}' : args.setdefault('row'),
         '${btable}' : args.setdefault('btable'),

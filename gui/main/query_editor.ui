@@ -1245,29 +1245,11 @@
          <attribute name="title">
           <string>Time based</string>
          </attribute>
-         <widget class="QLabel" name="label_36">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>110</y>
-            <width>231</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>------multi rows------</string>
-          </property>
-         </widget>
          <widget class="QLineEdit" name="q_blind_ms_single_row">
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>30</y>
+            <y>80</y>
             <width>841</width>
             <height>20</height>
            </rect>
@@ -1285,7 +1267,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>60</y>
+            <y>110</y>
             <width>231</width>
             <height>20</height>
            </rect>
@@ -1303,7 +1285,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>10</y>
+            <y>60</y>
             <width>231</width>
             <height>20</height>
            </rect>
@@ -1317,7 +1299,7 @@
            <string>------single row------</string>
           </property>
          </widget>
-         <widget class="QLineEdit" name="q_blind_ms_multi_rows">
+         <widget class="QLineEdit" name="q_blind_ms_rows_count">
           <property name="geometry">
            <rect>
             <x>10</x>
@@ -1335,11 +1317,29 @@
            <string/>
           </property>
          </widget>
-         <widget class="QLineEdit" name="q_blind_ms_rows_count">
+         <widget class="QLabel" name="label_36">
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>80</y>
+            <y>10</y>
+            <width>231</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>------delay------</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="q_blind_ms_delay">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
             <width>841</width>
             <height>20</height>
            </rect>
@@ -2166,29 +2166,11 @@
          <attribute name="title">
           <string>Time based</string>
          </attribute>
-         <widget class="QLabel" name="label_124">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>110</y>
-            <width>231</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>------multi rows------</string>
-          </property>
-         </widget>
          <widget class="QLineEdit" name="q_blind_my_single_row">
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>30</y>
+            <y>80</y>
             <width>841</width>
             <height>20</height>
            </rect>
@@ -2206,7 +2188,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>60</y>
+            <y>110</y>
             <width>231</width>
             <height>20</height>
            </rect>
@@ -2224,7 +2206,7 @@
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>10</y>
+            <y>60</y>
             <width>231</width>
             <height>20</height>
            </rect>
@@ -2238,7 +2220,7 @@
            <string>------single row------</string>
           </property>
          </widget>
-         <widget class="QLineEdit" name="q_blind_my_multi_rows">
+         <widget class="QLineEdit" name="q_blind_my_rows_count">
           <property name="geometry">
            <rect>
             <x>10</x>
@@ -2256,11 +2238,29 @@
            <string/>
           </property>
          </widget>
-         <widget class="QLineEdit" name="q_blind_my_rows_count">
+         <widget class="QLabel" name="label_38">
           <property name="geometry">
            <rect>
             <x>10</x>
-            <y>80</y>
+            <y>10</y>
+            <width>231</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>------delay------</string>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="q_blind_my_delay">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
             <width>841</width>
             <height>20</height>
            </rect>

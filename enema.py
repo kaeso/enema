@@ -111,9 +111,9 @@ class QueryEditorForm(QtGui.QMainWindow):
         #BLIND---
         #Time-Based
         qstring_type = "mssql_blind_time_based/"
+        self.ui.q_blind_ms_delay.setText(settings.value(qstring_type + 'delay', ''))
         self.ui.q_blind_ms_single_row.setText(settings.value(qstring_type + 'single_row', ''))
         self.ui.q_blind_ms_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
-        self.ui.q_blind_ms_multi_rows.setText(settings.value(qstring_type + 'multi_rows', ''))
 
         #MySQL------------------------------------------------------------------
         
@@ -152,9 +152,9 @@ class QueryEditorForm(QtGui.QMainWindow):
         #BLIND---
         #Time-Based
         qstring_type = "mysql_blind_time_based/"
+        self.ui.q_blind_my_delay.setText(settings.value(qstring_type + 'delay', ''))
         self.ui.q_blind_my_single_row.setText(settings.value(qstring_type + 'single_row', ''))
         self.ui.q_blind_my_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
-        self.ui.q_blind_my_multi_rows.setText(settings.value(qstring_type + 'multi_rows', ''))
         
         #---------------------------------------------------------------------------
         
@@ -211,9 +211,9 @@ class QueryEditorForm(QtGui.QMainWindow):
         #BLIND---
         #Time-Based
         qstring_type = "mssql_blind_time_based/"
+        settings.setValue(qstring_type + 'delay', self.ui.q_blind_ms_delay.text())
         settings.setValue(qstring_type + 'single_row', self.ui.q_blind_ms_single_row.text())
         settings.setValue(qstring_type + 'rows_count', self.ui.q_blind_ms_rows_count.text())
-        settings.setValue(qstring_type + 'multi_rows', self.ui.q_blind_ms_multi_rows.text())
         
         #MySQL------------------------------------------------------------------
         
@@ -252,9 +252,9 @@ class QueryEditorForm(QtGui.QMainWindow):
         #BLIND---
         #Time-Based
         qstring_type = "mysql_blind_time_based/"
+        settings.setValue(qstring_type + 'delay', self.ui.q_blind_my_delay.text())
         settings.setValue(qstring_type + 'single_row', self.ui.q_blind_my_single_row.text())
         settings.setValue(qstring_type + 'rows_count', self.ui.q_blind_my_rows_count.text())
-        settings.setValue(qstring_type + 'multi_rows', self.ui.q_blind_my_multi_rows.text())
         
         #---------------------------------------------------------------------------
         
@@ -275,6 +275,7 @@ class QueryEditorForm(QtGui.QMainWindow):
         self.loadQstrings()
         self.logSignal.emit("[+] Query strings restored to default.")
         self.qstringsChanged.emit()
+        
         
 #Enccoder form GUI class
 class EncoderForm(QtGui.QWidget):
@@ -411,7 +412,6 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.blindMethodList.setVisible(False)
         self.ui.methodLabel.setVisible(False)
         self.ui.delayBox.setVisible(False)
-        self.ui.isMultirows.setVisible(False)
         self.ui.testButton.setVisible(False)
         self.ui.delayLabel.setVisible(False)
         
@@ -560,7 +560,7 @@ class EnemaForm(QtGui.QMainWindow):
               'ms' : self.preferences_frm.ui.lineMS.text(), 
               'threads' : self.preferences_frm.ui.threadBox.value(), 
               'timeOut' : int(self.preferences_frm.ui.lineTimeout.text()), 
-              'delay' : self.ui.delayBox.value(), 
+              'time' : self.ui.delayBox.value(), 
               'verbose' : self.ui.isVerbose.isChecked(),
               'blind_inj_type' : str(self.ui.blindMethodList.currentText()), 
               'isRandomUpCase' : self.preferences_frm.ui.isRndUpper.isChecked(), 
@@ -1035,7 +1035,6 @@ class EnemaForm(QtGui.QMainWindow):
             self.ui.blindMethodList.setVisible(True)
             self.ui.methodLabel.setVisible(True)
             self.ui.delayBox.setVisible(True)
-            self.ui.isMultirows.setVisible(True)
             self.ui.testButton.setVisible(True)
             self.ui.delayLabel.setVisible(True)
             self.ui.isStacked.setVisible(False)
@@ -1043,7 +1042,6 @@ class EnemaForm(QtGui.QMainWindow):
             self.ui.blindMethodList.setVisible(False)
             self.ui.methodLabel.setVisible(False)
             self.ui.delayBox.setVisible(False)
-            self.ui.isMultirows.setVisible(False)
             self.ui.testButton.setVisible(False)
             self.ui.delayLabel.setVisible(False)
             self.ui.isStacked.setVisible(True)

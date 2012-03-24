@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Projects\enema-dev\gui\main\about.ui'
+# Form implementation generated from reading ui file 'C:\Projects\enema\gui\main\about.ui'
 #
-# Created: Mon Mar 19 16:22:14 2012
+# Created: Sat Mar 24 19:39:40 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -42,7 +42,7 @@ class Ui_AboutForm(object):
         self.label_2.setFont(font)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.label_4 = QtGui.QLabel(AboutForm)
-        self.label_4.setGeometry(QtCore.QRect(230, 90, 71, 21))
+        self.label_4.setGeometry(QtCore.QRect(200, 90, 131, 21))
         font = QtGui.QFont()
         font.setPointSize(12)
         font.setItalic(False)
@@ -699,7 +699,7 @@ class Ui_AboutForm(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:12pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">© Kaeso</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">© Valeriy Bogachuk</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.versionLabel.setText(QtGui.QApplication.translate("AboutForm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
