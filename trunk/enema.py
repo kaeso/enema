@@ -301,9 +301,9 @@ class EncoderForm(QtGui.QWidget):
                 readyStr = core.txtproc.strToHex(string, True)
         else:
             if self.ui.comboBox.currentText() == "MySQL":
-                readyStr = core.txtproc.strToSqlChar(string, "mysql")
+                readyStr = core.txtproc.strToSqlChar(string, "MySQL")
             else:
-                readyStr = core.txtproc.strToSqlChar(string, "mssql")
+                readyStr = core.txtproc.strToSqlChar(string, "MSSQL")
                 if self.ui.isUrlencoded.isChecked():
                     readyStr = readyStr.replace("+",  "%2b")
         self.ui.textResult.setText(readyStr)
