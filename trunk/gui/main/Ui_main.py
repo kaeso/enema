@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Projects\enema\gui\main\main.ui'
 #
-# Created: Sat Mar 24 12:26:57 2012
+# Created: Sat Mar 24 19:59:07 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -186,10 +186,6 @@ class Ui_MainForm(object):
         self.methodLabel = QtGui.QLabel(self.groupBox_3)
         self.methodLabel.setGeometry(QtCore.QRect(10, 170, 51, 20))
         self.methodLabel.setObjectName(_fromUtf8("methodLabel"))
-        self.isMultirows = QtGui.QCheckBox(self.groupBox_3)
-        self.isMultirows.setEnabled(False)
-        self.isMultirows.setGeometry(QtCore.QRect(330, 170, 70, 20))
-        self.isMultirows.setObjectName(_fromUtf8("isMultirows"))
         self.testButton = QtGui.QPushButton(self.groupBox_3)
         self.testButton.setGeometry(QtCore.QRect(220, 170, 91, 20))
         self.testButton.setObjectName(_fromUtf8("testButton"))
@@ -410,7 +406,6 @@ class Ui_MainForm(object):
         self.blindMethodList.setItemText(0, QtGui.QApplication.translate("MainForm", "Time", None, QtGui.QApplication.UnicodeUTF8))
         self.isStacked.setText(QtGui.QApplication.translate("MainForm", "Stacked", None, QtGui.QApplication.UnicodeUTF8))
         self.methodLabel.setText(QtGui.QApplication.translate("MainForm", "Method:", None, QtGui.QApplication.UnicodeUTF8))
-        self.isMultirows.setText(QtGui.QApplication.translate("MainForm", "Multirows", None, QtGui.QApplication.UnicodeUTF8))
         self.testButton.setText(QtGui.QApplication.translate("MainForm", "Test response", None, QtGui.QApplication.UnicodeUTF8))
         self.delayLabel.setText(QtGui.QApplication.translate("MainForm", "Delay:", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_4.setTitle(QtGui.QApplication.translate("MainForm", "Result", None, QtGui.QApplication.UnicodeUTF8))

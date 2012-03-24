@@ -639,22 +639,6 @@ p, li { white-space: pre-wrap; }
         <string>Method:</string>
        </property>
       </widget>
-      <widget class="QCheckBox" name="isMultirows">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>330</x>
-         <y>170</y>
-         <width>70</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Multirows</string>
-       </property>
-      </widget>
       <widget class="QPushButton" name="testButton">
        <property name="geometry">
         <rect>

