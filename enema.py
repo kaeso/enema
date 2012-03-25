@@ -1031,6 +1031,7 @@ class EnemaForm(QtGui.QMainWindow):
         if reason == QtGui.QSystemTrayIcon.DoubleClick:
             if self.isHidden():
                 self.show()
+                self.activateWindow()
             else:
                 self.hide()
         
