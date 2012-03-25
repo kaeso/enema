@@ -81,7 +81,7 @@ username=' and 1[eq][sub]--&password=test123
 
 For example Cookie string:
 <code>
-session=12345; uid=32321; cartid=' and 1={{{[sub]}}}*%3b*{{{[cmd]}}}--; reffid=005541
+session=12345; uid=32321; cartid=' and 1=[sub]%3b[cmd]--; reffid=005541
 </code>
 
 If variable {{{[sub]}}} or {{{[cmd]}}} found in cookies, then Enema perceives attack as injection in cookies.
