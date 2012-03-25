@@ -415,6 +415,11 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.testButton.setVisible(False)
         self.ui.delayLabel.setVisible(False)
         
+        #Three horizontal scroll fix
+        self.ui.treeOfTables.header().setStretchLastSection(False)
+        self.ui.treeOfTables.header().setResizeMode(QtGui.QHeaderView.ResizeToContents)
+        self.ui.treeOfTables.setColumnWidth(0,500)
+        
         #Subforms
         self.qeditor_frm = QueryEditorForm(self)
         self.enc_frm = EncoderForm(self)

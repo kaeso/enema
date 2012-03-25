@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Projects\enema\gui\main\main.ui'
 #
-# Created: Sat Mar 24 19:59:07 2012
+# Created: Sun Mar 25 07:23:51 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -79,14 +79,19 @@ class Ui_MainForm(object):
         self.listOfTables.setDragEnabled(True)
         self.listOfTables.setDragDropMode(QtGui.QAbstractItemView.DragOnly)
         self.listOfTables.setDefaultDropAction(QtCore.Qt.IgnoreAction)
+        self.listOfTables.setVerticalScrollMode(QtGui.QAbstractItemView.ScrollPerPixel)
+        self.listOfTables.setHorizontalScrollMode(QtGui.QAbstractItemView.ScrollPerPixel)
         self.listOfTables.setObjectName(_fromUtf8("listOfTables"))
         self.treeOfTables = QtGui.QTreeWidget(self.groupBox_2)
         self.treeOfTables.setGeometry(QtCore.QRect(210, 50, 191, 261))
         self.treeOfTables.setAcceptDrops(True)
+        self.treeOfTables.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.treeOfTables.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.treeOfTables.setDragDropOverwriteMode(True)
         self.treeOfTables.setDragDropMode(QtGui.QAbstractItemView.DropOnly)
         self.treeOfTables.setSelectionBehavior(QtGui.QAbstractItemView.SelectItems)
+        self.treeOfTables.setVerticalScrollMode(QtGui.QAbstractItemView.ScrollPerPixel)
+        self.treeOfTables.setHorizontalScrollMode(QtGui.QAbstractItemView.ScrollPerPixel)
         self.treeOfTables.setIndentation(20)
         self.treeOfTables.setRootIsDecorated(True)
         self.treeOfTables.setUniformRowHeights(False)
