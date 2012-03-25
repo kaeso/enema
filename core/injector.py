@@ -276,8 +276,6 @@ class Injector(QtCore.QThread):
                 except ValueError as err:
                     self.logger("\n[x] Something wrong. Check server request and response...\n\n[details]: " + str(err), True)
                     return
-                if columnsInTable < 1:
-                    return
                 while not self.killed:
                     query = self.wq.buildQuery(self.dbType('get_column_name'), self.vars,\
                                            {'cdb' : current_db, 'ctbl' : current_table, 'ccol': current_column})
@@ -307,8 +305,6 @@ class Injector(QtCore.QThread):
                     columnsInTable = int(columnsInTable)
                 except ValueError as err:
                     self.logger("\n[x] Something wrong. Check server request and response...\n\n[details]: " + str(err), True)
-                    return
-                if columnsInTable < 1:
                     return
                 for rowid in range(columnsInTable):
                     if self.killed:
