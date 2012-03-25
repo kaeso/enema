@@ -60,12 +60,7 @@ When you hit 'run' button, program initially detecting 'True' response time.
 
 e. g. (in log field)
 <code>
-====================================
-
-[+] Setting 'True' response time to 4sec (rounding from 4.881 +- 0.3; Max allowable lag time: 3)
-
-====================================
-</code>
+[+] Setting 'True' response time to 4sec (rounding from 4.881 +- 0.2; Max allowable lag time: 3)</code>
 ---------------
 ===SQL injection in POST requests, Cookies===
 ---------------
