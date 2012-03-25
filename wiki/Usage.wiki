@@ -47,7 +47,6 @@ Also you can use only {{{[cmd]}}} if you not interested in results or not output
 ---------------
 ===Blind injection===
 ---------------
-For today available in development version only (cause testing and improving).
 
 *{{{[blind]}}}* keyword indicates where insert blind query
 
@@ -55,19 +54,10 @@ When this keyword found in url, post data or cookies - enema enables options for
 
 For time-based injection u can define custom delay. Then run test and look for normal and delayed responses (lag checking).
 
-*Multirows* - query can return more than 1 row.
-
-e. g. 
-<code>
-select top 50 login from users
-</code>
-<code>
-select login from users
-</code>
-
 ---------------
 ===SQL injection in POST requests, Cookies===
 ---------------
+
 All the same, with a little correction.
 For example vulnerable script:
 <code>
@@ -99,6 +89,7 @@ If variable {{{[sub]}}} or {{{[cmd]}}} found in cookies, then Enema perceives at
 ---------------
 ===Methods of db structure tab===
 ---------------
+
 *Tables* - fetch tables from current database.
 
 *Columns* - fetch columns from tables in right field. (Drag and drop table or tables from left field to right.)
@@ -116,6 +107,7 @@ Enema parsing sql data between "Match symbols", default match symbol is "~"
 ---------------
 ===Dump tab===
 ---------------
+
 *Table* - table for dump
 
 *Columns* - columns for dump. Can be separated by ";".
