@@ -46,7 +46,7 @@ class QueryEditorForm(QtGui.QMainWindow):
     logSignal = QtCore.pyqtSignal(str)
     
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent, QtCore.Qt.WindowTitleHint)
+        QtGui.QMainWindow.__init__(self, parent, QtCore.Qt.Tool)
         self.ui = Ui_QueryEditorForm()
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
@@ -353,11 +353,11 @@ class AboutForm(QtGui.QWidget):
 
 
 #Preferences widget
-class PreferencesForm(QtGui.QMainWindow):
+class PreferencesForm(QtGui.QWidget):
     
     
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent, QtCore.Qt.WindowTitleHint)
+        QtGui.QWidget.__init__(self, parent, QtCore.Qt.Tool )
         self.ui = Ui_preferencesWidget()
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
@@ -370,14 +370,13 @@ class PreferencesForm(QtGui.QMainWindow):
         settings.setValue('Main/timeout', self.ui.lineTimeout.text())
         settings.setValue('Main/rnd_upcase', self.ui.isRndUpper.isChecked())
         settings.sync()
-        
-        
+            
 #Main form GUI class
 class EnemaForm(QtGui.QMainWindow):
     
     
     def __init__(self):
-        QtGui.QMainWindow.__init__(self, None, QtCore.Qt.WindowTitleHint)
+        QtGui.QMainWindow.__init__(self)
         self.ui = Ui_MainForm()
         self.ui.setupUi(self)
         
@@ -977,7 +976,7 @@ class EnemaForm(QtGui.QMainWindow):
         
 #----------------------------------------------MAIN-EVENTS----------------------------------------------------#
 
-    #When form closing
+    #clos() event handler
     def closeEvent(self, event):
         if self.sysTray.isSystemTrayAvailable():
             self.hide()
@@ -985,8 +984,16 @@ class EnemaForm(QtGui.QMainWindow):
                 self.sysTray.showMessage("Enema", "I'll wait here...", QtGui.QSystemTrayIcon.Information)
                 self.firstHide = False
             event.ignore()
-        else:
-            sys.exit(0)
+    
+    #minimized() event handler
+    def changeEvent(self, event):
+        if (event.type() == QtCore.QEvent.WindowStateChange and self.isMinimized()):
+            if self.sysTray.isSystemTrayAvailable():
+                self.hide()
+                if self.firstHide:
+                    self.sysTray.showMessage("Enema", "I'll wait here...", QtGui.QSystemTrayIcon.Information)
+                    self.firstHide = False
+                event.ignore()
 
     def sqlOptions(self):
         if self.ui.radioColumns.isChecked():
