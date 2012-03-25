@@ -147,7 +147,7 @@ class HTTP_Handler(QtCore.QObject):
             data = dict([s.split(':') for s in data])
         except ValueError as err:
             self.logSignal.emit(\
-            "[x] Error. Can't prepare post data (bad characters detected).\n\n[details]: " + str(err))
+            "[x] Error. Can't prepare post data (bad characters detected). Use [eq] keyword instead of '='\n\n[details]: " + str(err))
             return "fail"
         for key, value in data.items():
             if value == "[empty]":
@@ -208,7 +208,7 @@ class HTTP_Handler(QtCore.QObject):
             get_url = self.buildUrl(vars['url'], query, isCmd, False)
             get_url = request.quote(get_url)
             #Replacing important symbols
-            get_url = get_url.replace("%3D", "=").replace("%26", "&").replace("%3A", ":").replace("%3F", "?")
+            get_url = get_url.replace("%3D", "=").replace("%26", "&").replace("%3A", ":").replace("%3F", "?").replace("+", " ")
             reqLog = "\n[GET] " + get_url
             if len(cookie) > 0:
                 reqLog += "\nCookie: " + cookie

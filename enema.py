@@ -383,6 +383,7 @@ class EnemaForm(QtGui.QMainWindow):
         
         #Setting fixed form size
         self.setFixedSize(591, 624)
+        
         #-----------------ICONS-----------------  
         #Tray and window icon
         trayIcon = QtGui.QIcon("gui/resources/icons/tray.png")
@@ -401,6 +402,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.trayMenu.addAction(self.ui.menuEncoder)
         self.trayMenu.addSeparator()
         self.trayMenu.addAction(self.actionQuit)
+        
         #System tray icon
         self.sysTray=QtGui.QSystemTrayIcon(trayIcon, self)
         self.sysTray.setToolTip("Enema " + VERSION)
@@ -418,7 +420,7 @@ class EnemaForm(QtGui.QMainWindow):
         #Three horizontal scroll fix
         self.ui.treeOfTables.header().setStretchLastSection(False)
         self.ui.treeOfTables.header().setResizeMode(QtGui.QHeaderView.ResizeToContents)
-        self.ui.treeOfTables.setColumnWidth(0,500)
+        self.ui.treeOfTables.setColumnWidth(0, 500)
         
         #Subforms
         self.qeditor_frm = QueryEditorForm(self)
