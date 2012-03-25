@@ -48,12 +48,24 @@ Also you can use only {{{[cmd]}}} if you not interested in results or not output
 ===Blind injection===
 ---------------
 
-*{{{[blind]}}}* keyword indicates where insert blind query
+*{{{[blind]}}}* keyword indicates where insert blind query.
 
 When this keyword found in url, post data or cookies - enema enables options for blind attack in Query Tab.
 
 For time-based injection u can define custom delay. Then run test and look for normal and delayed responses (lag checking).
 
+If server lagging you can play with 'Max lag time' and 'Allowable difference' options.
+
+When you hit 'run' button, program initially detecting 'True' response time.
+
+e. g. (in log field)
+<code>
+====================================
+
+[+] Setting 'True' response time to 4sec (rounding from 4.881 +- 0.3; Max allowable lag time: 3)
+
+====================================
+</code>
 ---------------
 ===SQL injection in POST requests, Cookies===
 ---------------
