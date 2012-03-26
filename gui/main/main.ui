@@ -721,7 +721,7 @@ p, li { white-space: pre-wrap; }
        </property>
        <property name="geometry">
         <rect>
-         <x>330</x>
+         <x>300</x>
          <y>20</y>
          <width>51</width>
          <height>20</height>
@@ -743,7 +743,7 @@ p, li { white-space: pre-wrap; }
       <widget class="QLabel" name="trueTimeLabel">
        <property name="geometry">
         <rect>
-         <x>220</x>
+         <x>190</x>
          <y>20</y>
          <width>111</width>
          <height>20</height>
@@ -756,7 +756,7 @@ p, li { white-space: pre-wrap; }
       <widget class="QCheckBox" name="isAuto">
        <property name="geometry">
         <rect>
-         <x>400</x>
+         <x>360</x>
          <y>20</y>
          <width>81</width>
          <height>20</height>
@@ -772,7 +772,7 @@ p, li { white-space: pre-wrap; }
       <widget class="QDoubleSpinBox" name="differenceBox">
        <property name="geometry">
         <rect>
-         <x>150</x>
+         <x>140</x>
          <y>50</y>
          <width>51</width>
          <height>20</height>
@@ -782,13 +782,13 @@ p, li { white-space: pre-wrap; }
         <number>2</number>
        </property>
        <property name="maximum">
-        <double>9.000000000000000</double>
+        <double>30.000000000000000</double>
        </property>
        <property name="singleStep">
         <double>0.100000000000000</double>
        </property>
        <property name="value">
-        <double>0.000000000000000</double>
+        <double>1.000000000000000</double>
        </property>
       </widget>
       <widget class="QLabel" name="differenceLabel">
@@ -801,13 +801,13 @@ p, li { white-space: pre-wrap; }
         </rect>
        </property>
        <property name="text">
-        <string>Allowable difference (+ -):</string>
+        <string>Allowable difference (+):</string>
        </property>
       </widget>
       <widget class="QLabel" name="lagLabel">
        <property name="geometry">
         <rect>
-         <x>230</x>
+         <x>210</x>
          <y>50</y>
          <width>91</width>
          <height>20</height>
@@ -820,20 +820,20 @@ p, li { white-space: pre-wrap; }
       <widget class="QPushButton" name="testButton">
        <property name="geometry">
         <rect>
-         <x>110</x>
+         <x>100</x>
          <y>20</y>
-         <width>91</width>
+         <width>81</width>
          <height>20</height>
         </rect>
        </property>
        <property name="text">
-        <string>Test response</string>
+        <string>Test</string>
        </property>
       </widget>
       <widget class="QDoubleSpinBox" name="lagBox">
        <property name="geometry">
         <rect>
-         <x>330</x>
+         <x>300</x>
          <y>50</y>
          <width>51</width>
          <height>20</height>
@@ -849,7 +849,7 @@ p, li { white-space: pre-wrap; }
         <double>0.100000000000000</double>
        </property>
        <property name="value">
-        <double>3.000000000000000</double>
+        <double>5.000000000000000</double>
        </property>
       </widget>
      </widget>
