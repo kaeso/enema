@@ -1284,7 +1284,7 @@ p, li { white-space: pre-wrap; }
     <string>Site settings</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+L</string>
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="qEditor">

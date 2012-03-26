@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\Projects\enema\gui\main\main.ui'
 #
-# Created: Mon Mar 26 19:28:39 2012
+# Created: Tue Mar 27 00:33:59 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -497,7 +497,7 @@ class Ui_MainForm(object):
         self.ssSettings.setText(QtGui.QApplication.translate("MainForm", "Site settings", None, QtGui.QApplication.UnicodeUTF8))
         self.ssSettings.setShortcut(QtGui.QApplication.translate("MainForm", "Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
         self.lsSettings.setText(QtGui.QApplication.translate("MainForm", "Site settings", None, QtGui.QApplication.UnicodeUTF8))
-        self.lsSettings.setShortcut(QtGui.QApplication.translate("MainForm", "Ctrl+L", None, QtGui.QApplication.UnicodeUTF8))
+        self.lsSettings.setShortcut(QtGui.QApplication.translate("MainForm", "Ctrl+O", None, QtGui.QApplication.UnicodeUTF8))
         self.qEditor.setText(QtGui.QApplication.translate("MainForm", "Query editor", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFtp.setText(QtGui.QApplication.translate("MainForm", "ftp", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAdd_user.setText(QtGui.QApplication.translate("MainForm", "add_user", None, QtGui.QApplication.UnicodeUTF8))

@@ -39,6 +39,7 @@ from gui.main.Ui_encoder import Ui_EncoderForm
 from gui.main.Ui_about import Ui_AboutForm
 from gui.main.Ui_query_editor import Ui_QueryEditorForm
 
+
 #Query editor form GUI class
 class QueryEditorForm(QtGui.QWidget):
     
@@ -368,7 +369,8 @@ class PreferencesForm(QtGui.QWidget):
         settings.setValue('Main/timeout', self.ui.lineTimeout.text())
         settings.setValue('Main/rnd_upcase', self.ui.isRndUpper.isChecked())
         settings.sync()
-            
+       
+       
 #Main form GUI class
 class EnemaForm(QtGui.QMainWindow):
     
@@ -526,6 +528,9 @@ class EnemaForm(QtGui.QMainWindow):
         
     #ftp    
     def actionFtp_OnClick(self):
+        if not self.keywordsCheck("[cmd]"):
+            QtGui.QMessageBox.information(self, "Enema", "[cmd] keyword required for this plugin", 1, 0)
+            return
         self.pluginWidget = FtpWidget(self.webData(), self.qstrings['mssql_error_based']['exec_hex'], self)
         self.pluginWidget.logSignal.connect(self.addLog)
         self.pluginWidget.show()
@@ -533,6 +538,9 @@ class EnemaForm(QtGui.QMainWindow):
 
     #add_user       
     def actionAdd_user_OnClick(self):
+        if not self.keywordsCheck("[cmd]"):
+            QtGui.QMessageBox.information(self, "Enema", "[cmd] keyword required for this plugin", 1, 0)
+            return
         self.pluginWidget = AddUserWidget(self.webData(), self.qstrings['mssql_error_based']['exec_hex'], self)
         self.pluginWidget.logSignal.connect(self.addLog)
         self.pluginWidget.show()
@@ -540,13 +548,19 @@ class EnemaForm(QtGui.QMainWindow):
         
     #openrowset      
     def actionOpenrowset_OnClick(self):
+        if not self.keywordsCheck("[cmd]"):
+            QtGui.QMessageBox.information(self, "Enema", "[cmd] keyword required for this plugin", 1, 0)
+            return
         self.pluginWidget = OpenrowsetWidget(self.webData(), self.qstrings['mssql_error_based']['exec_hex'], self)
         self.pluginWidget.logSignal.connect(self.addLog)
         self.pluginWidget.show()
         self.pluginWidget.activateWindow()
     
-    
+    #xp_cmdshell
     def actionXp_cmdshell_OnClick(self):
+        if (not self.keywordsCheck("[sub]") or not self.keywordsCheck("[cmd]")):
+            QtGui.QMessageBox.information(self, "Enema", "[sub] and [cmd] keywords required for this plugin", 1, 0)
+            return
         self.pluginWidget = CmdShellWidget(self.webData(), self.qstrings, self)
         self.pluginWidget.logSignal.connect(self.addLog)
         self.pluginWidget.show()
@@ -591,7 +605,19 @@ class EnemaForm(QtGui.QMainWindow):
               'fromPos' : int(self.ui.lineFrom.text()), 
               'toPos' :  int(self.ui.lineTo.text())}
         return wD
-
+    
+    #checking for keywords
+    def keywordsCheck(self, kw):
+        kwFound = False
+        if kw in self.ui.lineUrl.text():
+            kwFound = True
+        if kw in self.ui.lineCookie.text():
+            kwFound = True
+        if kw in self.ui.textData.toPlainText():
+            kwFound = True
+        if kwFound:
+            return kwFound
+            
     #Connecting to signals and starting thread
     def connectAndStart(self, blind=False):
         self.ui.isVerbose.setEnabled(False)
@@ -886,6 +912,10 @@ class EnemaForm(QtGui.QMainWindow):
         if self.isBusy():
             self.busyDialog()
             return
+        if not self.keywordsCheck("[sub]"):
+            self.addLog("[!] No keywords found.\n\n[sub] keyword required for this task. (sub means Subquery)")
+            return
+            
         wD = self.webData()
         
         #Tables task
@@ -947,18 +977,27 @@ class EnemaForm(QtGui.QMainWindow):
     def queryButton_OnClick(self):
         if self.isBusy():
             self.busyDialog()
-            return        
+            return
         wD = self.webData()
         wD['task'] = "query"
+        blind_flag = False
+        if self.ui.blindMethodList.isHidden():
+            if self.ui.isStacked.isChecked():
+                if not self.keywordsCheck("[cmd]"):
+                    self.addLog("[!] No keywords found.\n\n[cmd] keyword required for this task. (cmd means Stacked query)")
+                    return
+            else:
+                if not self.keywordsCheck("[sub]"):
+                    self.addLog("[!] No keywords found.\n\n[sub] keyword required for this task. (sub means Subquery)")
+                    return
+            self.qthread = Injector(wD, self.qstrings)
+        else:
+            self.qthread = BlindInjector(wD, self.qstrings)
+            blind_flag = True
         self.ui.queryOutput.clear()
         self.ui.progressBar.setMaximum(0)
         self.ui.progressBar.show()
-        if self.ui.blindMethodList.isHidden():
-            self.qthread = Injector(wD, self.qstrings)
-            self.connectAndStart()
-        else:
-            self.qthread = BlindInjector(wD, self.qstrings)
-            self.connectAndStart(True)
+        self.connectAndStart(blind_flag)
             
     #Delay button click (query tab)
     def testButton_OnClick(self):
@@ -977,6 +1016,9 @@ class EnemaForm(QtGui.QMainWindow):
     def dmpButton_OnClick(self):
         if self.isBusy():
             self.busyDialog()
+            return
+        if not self.keywordsCheck("[sub]"):
+            self.addLog("[!] No keywords found.\n\n[sub] keyword required for this task. (sub means Subquery)")
             return
         if len(self.ui.lineTable.text()) < 1\
         or len(self.ui.lineColumns.text()) < 1\
