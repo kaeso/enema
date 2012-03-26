@@ -597,7 +597,7 @@ p, li { white-space: pre-wrap; }
       <widget class="QComboBox" name="blindMethodList">
        <property name="geometry">
         <rect>
-         <x>140</x>
+         <x>130</x>
          <y>170</y>
          <width>111</width>
          <height>20</height>
@@ -743,7 +743,7 @@ p, li { white-space: pre-wrap; }
       <widget class="QLabel" name="trueTimeLabel">
        <property name="geometry">
         <rect>
-         <x>210</x>
+         <x>200</x>
          <y>20</y>
          <width>61</width>
          <height>20</height>
@@ -756,7 +756,7 @@ p, li { white-space: pre-wrap; }
       <widget class="QCheckBox" name="isAuto">
        <property name="geometry">
         <rect>
-         <x>330</x>
+         <x>340</x>
          <y>20</y>
          <width>81</width>
          <height>20</height>
@@ -788,7 +788,7 @@ p, li { white-space: pre-wrap; }
         <double>0.100000000000000</double>
        </property>
        <property name="value">
-        <double>1.000000000000000</double>
+        <double>0.300000000000000</double>
        </property>
       </widget>
       <widget class="QLabel" name="differenceLabel">
@@ -796,7 +796,7 @@ p, li { white-space: pre-wrap; }
         <rect>
          <x>10</x>
          <y>50</y>
-         <width>111</width>
+         <width>101</width>
          <height>20</height>
         </rect>
        </property>
