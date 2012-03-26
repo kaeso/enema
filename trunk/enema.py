@@ -1005,16 +1005,6 @@ class EnemaForm(QtGui.QMainWindow):
                 self.sysTray.showMessage("Enema", "I'll wait here...", QtGui.QSystemTrayIcon.Information)
                 self.firstHide = False
             event.ignore()
-    
-    #minimized() event handler
-    def changeEvent(self, event):
-        if (event.type() == QtCore.QEvent.WindowStateChange and self.isMinimized()):
-            if self.sysTray.isSystemTrayAvailable():
-                self.hide()
-                if self.firstHide:
-                    self.sysTray.showMessage("Enema", "I'll wait here...", QtGui.QSystemTrayIcon.Information)
-                    self.firstHide = False
-                event.ignore()
 
     def sqlOptions(self):
         if self.ui.radioColumns.isChecked():
