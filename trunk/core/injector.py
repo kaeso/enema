@@ -511,7 +511,7 @@ class BlindInjector(QtCore.QThread):
                 self.verbose(None, {'rdata' : "Empty",  'rtime' : str(response)})
             self.logSignal.emit("\n====================================\n\n"\
             "[+] Setting 'True' response time to " + str(core.txtproc.roundTime(response)) +\
-            "sec (rounding from " + str(response) + " +- " + str(self.vars['difference']) + "; Max allowable lag time: " + str(self.vars['max_lag']) +\
+            "sec (rounding from " + str(response) + " + " + str(self.vars['difference']) + "; Max allowed lag time: " + str(self.vars['max_lag']) +\
             ")\n\n====================================\n") 
             #If HTTP timeout occured
             try:
@@ -543,8 +543,9 @@ class BlindInjector(QtCore.QThread):
                     else:
                         if retry_counter > 2:
                             self.logSignal.emit("[!] Retried " + str(retry_counter) + \
-                            " times, but server response time (" + str(self.bad_time) + ") more than detected at begining fetching (" + str(self.response) + ")"\
-                            " Try to increase delay. Stopping.")
+                            " times, but server response time (" + str(self.bad_time) +\
+                            ") more than maximum allowed (" + str(self.response + self.vars['max_lag'])+ ")"\
+                            " Try to increase maximum lag time. Stopping.")
                             break
                         retry_counter += 1
                         self.logSignal.emit("!!! LAG DETECTED (response time: " + str(self.bad_time) + ") !!!: Retry #"+ str(retry_counter))
