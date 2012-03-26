@@ -68,6 +68,7 @@ class HTTP_Handler(QtCore.QObject):
         '${current_column}' : args.setdefault('ccol'),
         '${ordinal_position,}' : args.setdefault('num'), 
         '${column}' : args.setdefault('column'), 
+        '${hex}' : args.setdefault('hex'), 
         #Vars---
         '${selected_table}' : vars.setdefault('selected_table'), 
         '${cmd}' : vars.setdefault('cmd'), 
@@ -75,8 +76,7 @@ class HTTP_Handler(QtCore.QObject):
         '${login}' : vars.setdefault('login'), 
         '${password}' : vars.setdefault('password'), 
         '${key}' : vars.setdefault('key'),
-        '${table}' : vars.setdefault('table'), 
-        '${hex}' : vars.setdefault('hex'), } 
+        '${table}' : vars.setdefault('table')} 
         for key in query_vars:
             query = query.replace(key, str(query_vars[key]))
         if vars['isRandomUpCase']:
@@ -148,6 +148,7 @@ class HTTP_Handler(QtCore.QObject):
         except ValueError as err:
             self.logSignal.emit(\
             "[x] Error. Can't prepare post data (bad characters detected). Use [eq] keyword instead of '='\n\n[details]: " + str(err))
+            print(data)
             return "fail"
         for key, value in data.items():
             if value == "[empty]":

