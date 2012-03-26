@@ -458,6 +458,12 @@ class BlindInjector(QtCore.QThread):
             self.verbose(None, {'rdata' : "Empty",  'rtime' : str(response)})
             testLog += str(response) + " (" + str(core.txtproc.roundTime(response)) + " sec)\n"
             self.querySignal.emit(testLog, False)
+            #If HTTP timeout occured
+            try:
+                if "Time" in response:
+                    return
+            except TypeError:
+                pass
         testLog += "\nDone."
         self.querySignal.emit(testLog, False)
         
@@ -507,6 +513,12 @@ class BlindInjector(QtCore.QThread):
             "[+] Setting 'True' response time to " + str(core.txtproc.roundTime(response)) +\
             "sec (rounding from " + str(response) + " +- " + str(self.vars['difference']) + "; Max allowable lag time: " + str(self.vars['max_lag']) +\
             ")\n\n====================================\n") 
+            #If HTTP timeout occured
+            try:
+                if "Time" in response:
+                    return
+            except TypeError:
+                pass
             self.response = response
             self.trueTimeSignal.emit(self.response)
             
@@ -609,23 +621,26 @@ class BlindInjector(QtCore.QThread):
         self.verbose(query)
         self.request_counter += 1
         response = self.wq.httpRequest(query, False, self.vars, True)
-        #If response time < allowable difference (-)
-        if (core.txtproc.roundTime(response) < core.txtproc.roundTime(self.response - self.vars['difference'])):
-            self.verbose(None, {'rdata' : False,  'rtime' : str(response)})
-            return False
-        #If response time > max lagging time
-        if (core.txtproc.roundTime(response) > (self.response + self.vars['max_lag'])):
-            self.verbose(None, {'rdata' : "UNKNOWN (response time was longer). Try to increase maximum lag time.",  'rtime' : str(response)})
-            self.bad_response = True
-            self.bad_time = response
-            return False
-        #If response match with allowable difference (+ -)
-        if (core.txtproc.roundTime(response) == core.txtproc.roundTime(self.response + self.vars['difference']) or\
-        core.txtproc.roundTime(response) == core.txtproc.roundTime(self.response - self.vars['difference'])):
+        #If HTTP timeout occured
+        try:
+            if "Time" in response:
+                    return
+        except TypeError:
+                pass
+        if (core.txtproc.roundTime(response) >= core.txtproc.roundTime(self.response)):
             self.bad_response = False
             self.verbose(None, {'rdata' : True,  'rtime' : str(response)})
+            #If response > response time + max lagging time
+            if (core.txtproc.roundTime(response) > (self.response + self.vars['max_lag'])):
+                self.verbose(None, {'rdata' : "UNKNOWN (response time was longer). Try to increase maximum lag time.",  'rtime' : str(response)})
+                self.bad_response = True
+                self.bad_time = response
+                return False
             return True
-        
+        else:
+            self.verbose(None, {'rdata' : False,  'rtime' : str(response)})
+            return False
+                
     #Return symbol
     def retSymbol(self, code):
         self.symbol += chr(code)
