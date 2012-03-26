@@ -40,20 +40,20 @@ from gui.main.Ui_about import Ui_AboutForm
 from gui.main.Ui_query_editor import Ui_QueryEditorForm
 
 #Query editor form GUI class
-class QueryEditorForm(QtGui.QMainWindow):
+class QueryEditorForm(QtGui.QWidget):
     
     qstringsChanged = QtCore.pyqtSignal()
     logSignal = QtCore.pyqtSignal(str)
     
     def __init__(self, parent=None):
-        QtGui.QMainWindow.__init__(self, parent, QtCore.Qt.Tool)
+        QtGui.QWidget.__init__(self, parent, QtCore.Qt.Tool)
         self.ui = Ui_QueryEditorForm()
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.loadQstrings()
         #SIGNALS-----------------------------------------------------------------------
-        self.ui.qsSave.triggered.connect(self.qsSave_OnClick)
-        self.ui.qsRestore.triggered.connect(self.qsRestore_OnClick)
+        self.ui.saveButton.clicked.connect(self.qsSave_OnClick)
+        self.ui.defaultsButton.clicked.connect(self.qsRestore_OnClick)
         
     #Loading querystrings to GUI
     def loadQstrings(self):
@@ -81,7 +81,7 @@ class QueryEditorForm(QtGui.QMainWindow):
         self.ui.q_ms_get_column_name2.setText(settings.value(qstring_type + 'get_column_name2', ''))
         self.ui.q_ms_get_column_name3.setText(settings.value(qstring_type + 'get_column_name3', ''))      
         #xp_cmdshell
-        self.ui.q_ms_exec_cmdshell.setText(settings.value(qstring_type + 'exec_cmdshell', ''))
+        self.ui.q_ms_exec_hex.setText(settings.value(qstring_type + 'exec_hex', ''))
         #etc
         self.ui.q_ms_get_row.setText(settings.value(qstring_type + 'get_row', ''))
         self.ui.q_ms_query.setText(settings.value(qstring_type + 'query', ''))
@@ -181,7 +181,7 @@ class QueryEditorForm(QtGui.QMainWindow):
         settings.setValue(qstring_type + 'get_column_name2', self.ui.q_ms_get_column_name2.text())
         settings.setValue(qstring_type + 'get_column_name3', self.ui.q_ms_get_column_name3.text())    
         #xp_cmdshell
-        settings.setValue(qstring_type + 'exec_cmdshell', self.ui.q_ms_exec_cmdshell.text())
+        settings.setValue(qstring_type + 'exec_hex', self.ui.q_ms_exec_hex.text())
         #etc
         settings.setValue(qstring_type + 'get_row', self.ui.q_ms_get_row.text())
         settings.setValue(qstring_type + 'query', self.ui.q_ms_query.text())
@@ -259,7 +259,6 @@ class QueryEditorForm(QtGui.QMainWindow):
         #---------------------------------------------------------------------------
         
         settings.sync()
-        self.logSignal.emit("[+] Customised query strings saved to: " + os.path.abspath("settings/qstrings_custom.ini"))
         self.qstringsChanged.emit()
 
     #Reset query strings to default
@@ -269,11 +268,10 @@ class QueryEditorForm(QtGui.QMainWindow):
             try:
                 os.remove(customPath)
             except Exception:
-                self.logSignal.emit("[x] Cannot remove file (access denied): " + os.path.abspath(customPath))
+                pass
         else:
             return
         self.loadQstrings()
-        self.logSignal.emit("[+] Query strings restored to default.")
         self.qstringsChanged.emit()
         
         
@@ -411,10 +409,8 @@ class EnemaForm(QtGui.QMainWindow):
             
         self.ui.progressBar.hide()
         self.ui.blindMethodList.setVisible(False)
-        self.ui.methodLabel.setVisible(False)
-        self.ui.delayBox.setVisible(False)
-        self.ui.testButton.setVisible(False)
-        self.ui.delayLabel.setVisible(False)
+        self.ui.timeGroup.setVisible(False)
+        self.ui.resultGroup.setGeometry(QtCore.QRect(10, 220, 571, 171))
         
         #Three horizontal scroll fix
         self.ui.treeOfTables.header().setStretchLastSection(False)
@@ -476,6 +472,9 @@ class EnemaForm(QtGui.QMainWindow):
         #QUERY-TAB
         self.ui.queryButton.clicked.connect(self.queryButton_OnClick)
         self.ui.testButton.clicked.connect(self.testButton_OnClick)
+        self.ui.isStacked.stateChanged.connect(self.stacked_Changed)
+        self.ui.isHexed.stateChanged.connect(self.hex_Changed)
+        self.ui.isAuto.stateChanged.connect(self.autodetect_Changed)
         
         #Save Menu 
         self.ui.saveTables.triggered.connect(self.saveTables_OnClick)
@@ -529,21 +528,21 @@ class EnemaForm(QtGui.QMainWindow):
         
     #ftp    
     def actionFtp_OnClick(self):
-        self.pluginWidget = FtpWidget(self.webData(), self.qstrings['mssql_error_based']['exec_cmdshell'], self)
+        self.pluginWidget = FtpWidget(self.webData(), self.qstrings['mssql_error_based']['exec_hex'], self)
         self.pluginWidget.logSignal.connect(self.addLog)
         self.pluginWidget.show()
         self.pluginWidget.activateWindow()
 
     #add_user       
     def actionAdd_user_OnClick(self):
-        self.pluginWidget = AddUserWidget(self.webData(), self.qstrings['mssql_error_based']['exec_cmdshell'], self)
+        self.pluginWidget = AddUserWidget(self.webData(), self.qstrings['mssql_error_based']['exec_hex'], self)
         self.pluginWidget.logSignal.connect(self.addLog)
         self.pluginWidget.show()
         self.pluginWidget.activateWindow()
         
     #openrowset      
     def actionOpenrowset_OnClick(self):
-        self.pluginWidget = OpenrowsetWidget(self.webData(), self.qstrings['mssql_error_based']['exec_cmdshell'], self)
+        self.pluginWidget = OpenrowsetWidget(self.webData(), self.qstrings['mssql_error_based']['exec_hex'], self)
         self.pluginWidget.logSignal.connect(self.addLog)
         self.pluginWidget.show()
         self.pluginWidget.activateWindow()
@@ -568,7 +567,12 @@ class EnemaForm(QtGui.QMainWindow):
               'timeOut' : int(self.preferences_frm.ui.lineTimeout.text()), 
               'time' : self.ui.delayBox.value(), 
               'verbose' : self.ui.isVerbose.isChecked(),
-              'blind_inj_type' : str(self.ui.blindMethodList.currentText()), 
+              'blind_inj_type' : str(self.ui.blindMethodList.currentText()),
+              'difference' : self.ui.differenceBox.value(), 
+              'max_lag' : self.ui.lagBox.value(), 
+              'hexed' : self.ui.isHexed.isChecked(), 
+              'auto_detect' : self.ui.isAuto.isChecked(), 
+              'true_time' : self.ui.trueTimeBox.value(), 
               'isRandomUpCase' : self.preferences_frm.ui.isRndUpper.isChecked(), 
               'dbListCount' : self.ui.dbListComboBox.count(),
               'dbName' : str(self.ui.dbListComboBox.currentText()), 
@@ -591,7 +595,8 @@ class EnemaForm(QtGui.QMainWindow):
         return wD
 
     #Connecting to signals and starting thread
-    def connectAndStart(self, blind=False):       
+    def connectAndStart(self, blind=False):
+        self.ui.isVerbose.setEnabled(False)
         if not blind:
             #dbSignal
             self.qthread.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
@@ -604,9 +609,10 @@ class EnemaForm(QtGui.QMainWindow):
 
             #tblSignal
             self.qthread.tblSignal.connect(self.addTable, type=QtCore.Qt.QueuedConnection)
+        else:
+            #Setting 'True' time
+            self.qthread.trueTimeSignal.connect(self.setTrueTime, type=QtCore.Qt.QueuedConnection)
             
-        self.ui.isVerbose.setEnabled(False)
-        
         #logSignal
         self.qthread.logSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
         
@@ -615,9 +621,7 @@ class EnemaForm(QtGui.QMainWindow):
         
         #querySignal
         self.qthread.querySignal.connect(self.queryResult, type=QtCore.Qt.QueuedConnection)
-                
-        self.ui.isVerbose.setEnabled(False)
-
+        
         #Starting QThread
         self.qthread.start()
             
@@ -926,7 +930,7 @@ class EnemaForm(QtGui.QMainWindow):
     def queryButton_OnClick(self):
         if self.isBusy():
             self.busyDialog()
-            return
+            return        
         wD = self.webData()
         wD['task'] = "query"
         self.ui.queryOutput.clear()
@@ -1043,23 +1047,34 @@ class EnemaForm(QtGui.QMainWindow):
         settings.setValue('Main/window_position', self.pos())
         settings.sync()
         sys.exit(0)
-    
+
+    #Hex checked
+    def hex_Changed(self):
+        if self.ui.isHexed.isChecked():
+            self.ui.isStacked.setChecked(True)
+
+    #Stacked checked
+    def stacked_Changed(self):
+        if not self.ui.isStacked.isChecked():
+            self.ui.isHexed.setChecked(False)
+            
+    #Autodetect checked or unchecked
+    def autodetect_Changed(self):
+        if not self.ui.isAuto.isChecked():
+            self.ui.trueTimeBox.setEnabled(True)
+        else:
+            self.ui.trueTimeBox.setEnabled(False)
+            
     #Hide or show blind options
     def blindOptions(self, mode):
         if mode == "show":
             self.ui.blindMethodList.setVisible(True)
-            self.ui.methodLabel.setVisible(True)
-            self.ui.delayBox.setVisible(True)
-            self.ui.testButton.setVisible(True)
-            self.ui.delayLabel.setVisible(True)
-            self.ui.isStacked.setVisible(False)
+            self.ui.resultGroup.setGeometry(QtCore.QRect(10, 310, 571, 171))
+            self.ui.timeGroup.setVisible(True)
         else:
             self.ui.blindMethodList.setVisible(False)
-            self.ui.methodLabel.setVisible(False)
-            self.ui.delayBox.setVisible(False)
-            self.ui.testButton.setVisible(False)
-            self.ui.delayLabel.setVisible(False)
-            self.ui.isStacked.setVisible(True)
+            self.ui.resultGroup.setGeometry(QtCore.QRect(10, 220, 571, 171))
+            self.ui.timeGroup.setVisible(False)
             
     def tabIndexChanged(self):
         blind = False
@@ -1090,8 +1105,11 @@ class EnemaForm(QtGui.QMainWindow):
     def dbTypeChanged(self):
         if str(self.ui.dbTypeBox.currentText())  == "MySQL":
             self.ui.menuMssql.setEnabled(False)
+            self.ui.isHexed.setChecked(False)
+            self.ui.isHexed.setVisible(False)
         else:
             self.ui.menuMssql.setEnabled(True)
+            self.ui.isHexed.setVisible(True)
         self.sqlOptions()
 
 #------------------------------------------------INJECTOR-SLOTS------------------------------------------------------#
@@ -1146,8 +1164,8 @@ class EnemaForm(QtGui.QMainWindow):
             self.ui.queryOutput.clear()
             self.ui.queryOutput.setText(result)
     
-    def delayResult(self, delay):
-        self.ui.delayBox.setValue(delay)
+    def setTrueTime(self, trueTime):
+        self.ui.trueTimeBox.setValue(trueTime)
 #------------------------------------------------END------------------------------------------------------#
 
 if __name__ == "__main__":

