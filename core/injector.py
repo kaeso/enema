@@ -535,6 +535,9 @@ class BlindInjector(QtCore.QThread):
         
         while not (self.string_fetched or self.killed):
             if self.preCheck():
+                if self.symbol == "NULL":
+                    self.querySignal.emit(self.symbol, True)
+                    break
                 symbol_found = self.getSymbol()
                 if not symbol_found:
                     if not self.bad_response:
@@ -550,9 +553,6 @@ class BlindInjector(QtCore.QThread):
                         retry_counter += 1
                         self.logSignal.emit("!!! LAG DETECTED (response time: " + str(self.bad_time) + ") !!!: Retry #"+ str(retry_counter))
                         time.sleep(3)
-                if self.symbol == "NULL":
-                    self.querySignal.emit(self.symbol, True)
-                    break
                 self.querySignal.emit(self.symbol, True)
                 
         seconds = str(time.time() - start_time).split('.')
