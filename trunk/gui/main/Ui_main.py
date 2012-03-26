@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\Projects\enema\gui\main\main.ui'
 #
-# Created: Mon Mar 26 18:15:22 2012
+# Created: Mon Mar 26 19:28:39 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -176,7 +176,7 @@ class Ui_MainForm(object):
         self.queryButton.setGeometry(QtCore.QRect(490, 170, 71, 20))
         self.queryButton.setObjectName(_fromUtf8("queryButton"))
         self.blindMethodList = QtGui.QComboBox(self.groupBox_3)
-        self.blindMethodList.setGeometry(QtCore.QRect(140, 170, 111, 20))
+        self.blindMethodList.setGeometry(QtCore.QRect(130, 170, 111, 20))
         self.blindMethodList.setObjectName(_fromUtf8("blindMethodList"))
         self.blindMethodList.addItem(_fromUtf8(""))
         self.isStacked = QtGui.QCheckBox(self.groupBox_3)
@@ -216,10 +216,10 @@ class Ui_MainForm(object):
         self.trueTimeBox.setProperty("value", 0.0)
         self.trueTimeBox.setObjectName(_fromUtf8("trueTimeBox"))
         self.trueTimeLabel = QtGui.QLabel(self.timeGroup)
-        self.trueTimeLabel.setGeometry(QtCore.QRect(210, 20, 61, 20))
+        self.trueTimeLabel.setGeometry(QtCore.QRect(200, 20, 61, 20))
         self.trueTimeLabel.setObjectName(_fromUtf8("trueTimeLabel"))
         self.isAuto = QtGui.QCheckBox(self.timeGroup)
-        self.isAuto.setGeometry(QtCore.QRect(330, 20, 81, 20))
+        self.isAuto.setGeometry(QtCore.QRect(340, 20, 81, 20))
         self.isAuto.setChecked(True)
         self.isAuto.setObjectName(_fromUtf8("isAuto"))
         self.differenceBox = QtGui.QDoubleSpinBox(self.timeGroup)
@@ -227,10 +227,10 @@ class Ui_MainForm(object):
         self.differenceBox.setDecimals(2)
         self.differenceBox.setMaximum(30.0)
         self.differenceBox.setSingleStep(0.1)
-        self.differenceBox.setProperty("value", 1.0)
+        self.differenceBox.setProperty("value", 0.3)
         self.differenceBox.setObjectName(_fromUtf8("differenceBox"))
         self.differenceLabel = QtGui.QLabel(self.timeGroup)
-        self.differenceLabel.setGeometry(QtCore.QRect(10, 50, 111, 20))
+        self.differenceLabel.setGeometry(QtCore.QRect(10, 50, 101, 20))
         self.differenceLabel.setObjectName(_fromUtf8("differenceLabel"))
         self.lagLabel = QtGui.QLabel(self.timeGroup)
         self.lagLabel.setGeometry(QtCore.QRect(180, 50, 91, 20))

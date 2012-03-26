@@ -434,8 +434,6 @@ class EnemaForm(QtGui.QMainWindow):
         #Loading settings if ini file exists
         if os.path.exists(configPath):
             settings = QtCore.QSettings(configPath, QtCore.QSettings.IniFormat)
-            #query field
-            self.ui.queryText.setText(settings.value('Main/query', ''))
             self.preferences_frm.ui.lineMS.setText(settings.value('Main/match_symbol', '~'))
             self.preferences_frm.ui.lineMP.setText(settings.value('Main/match_pattern', ''))
             self.preferences_frm.ui.threadBox.setValue(settings.value('Main/threads', 5, int))
@@ -737,6 +735,16 @@ class EnemaForm(QtGui.QMainWindow):
         settings.setValue('db_structure/tables', tables)
         settings.setValue('db_structure/bases', bases)
         settings.setValue('db_structure/current_db', self.ui.dbListComboBox.currentIndex())
+        #query tab settings
+        settings.setValue('query/query_str', self.ui.queryText.toPlainText())
+        settings.setValue('query/stacked_enabled', self.ui.isStacked.isChecked())
+        settings.setValue('query/hex_enabled', self.ui.isHexed.isChecked())
+        settings.setValue('query/blind_method', self.ui.blindMethodList.currentIndex())
+        settings.setValue('query/delay', self.ui.delayBox.value())
+        settings.setValue('query/true_time', self.ui.trueTimeBox.value())
+        settings.setValue('query/auto_enabled', self.ui.isAuto.isChecked())
+        settings.setValue('query/max_difference', self.ui.differenceBox.value())
+        settings.setValue('query/max_lag', self.ui.lagBox.value())
         #dump tab settings
         settings.setValue('dump/table', self.ui.lineTable.text())
         settings.setValue('dump/columns', self.ui.lineColumns.text())
@@ -815,7 +823,16 @@ class EnemaForm(QtGui.QMainWindow):
         self.preferences_frm.ui.threadBox.setValue(settings.value('db_structure/threads', 10, int))
         self.preferences_frm.ui.lineTimeout.setText(settings.value('db_structure/timeout', '30'))
         self.ui.dbListComboBox.setCurrentIndex(settings.value('db_structure/current_db', 0, int))
-
+        #query tab settings
+        self.ui.queryText.setText(settings.value('query/query_str', ''))
+        self.ui.isStacked.setChecked(settings.value('query/stacked_enabled', False, bool))
+        self.ui.isHexed.setChecked(settings.value('query/hex_enabled', False, bool))
+        self.ui.blindMethodList.setCurrentIndex(settings.value('query/blind_method', 0, int))
+        self.ui.delayBox.setValue(settings.value('query/delay', 2, int))
+        self.ui.trueTimeBox.setValue(settings.value('query/true_time', 0.00, float))
+        self.ui.isAuto.setChecked(settings.value('query/auto_enabled', True, bool))
+        self.ui.differenceBox.setValue(settings.value('query/max_difference', 0.20, float))
+        self.ui.lagBox.setValue(settings.value('query/max_lag', 5.00, float))
         #dump tab settings
         self.ui.lineTable.setText(settings.value('dump/table', ''))
         self.ui.lineColumns.setText(settings.value('dump/columns', ''))
@@ -980,7 +997,7 @@ class EnemaForm(QtGui.QMainWindow):
         
 #----------------------------------------------MAIN-EVENTS----------------------------------------------------#
 
-    #clos() event handler
+    #close() event handler
     def closeEvent(self, event):
         if self.sysTray.isSystemTrayAvailable():
             self.hide()
@@ -1043,7 +1060,6 @@ class EnemaForm(QtGui.QMainWindow):
     def trayQuit_Clicked(self):
         #Saving main and log window position
         settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
-        settings.setValue("Main/query", self.ui.queryText.toPlainText())
         settings.setValue('Main/window_position', self.pos())
         settings.sync()
         sys.exit(0)
