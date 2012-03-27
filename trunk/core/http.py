@@ -211,7 +211,7 @@ class HTTP_Handler(QtCore.QObject):
             get_url = self.buildUrl(vars['url'], query, isCmd, False)
             get_url = request.quote(get_url)
             #Replacing important symbols
-            get_url = get_url.replace("%3D", "=").replace("%26", "&").replace("%3A", ":").replace("%3F", "?").replace("+", " ")
+            get_url = get_url.replace("%3D", "=").replace("%26", "&").replace("%3A", ":").replace("%3F", "?")
             reqLog = "\n[GET] " + get_url
             if len(cookie) > 0:
                 reqLog += "\nCookie: " + cookie
