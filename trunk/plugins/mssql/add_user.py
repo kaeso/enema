@@ -43,7 +43,8 @@ class AddUserWidget(QtGui.QWidget):
             settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
             self.ui.lineUsername.setText(settings.value('ADD_USER/username', ''))
             self.ui.linePassword.setText(settings.value('ADD_USER/password', ''))
-            self.move(settings.value("Main/window_position"))
+            if settings.value("Main/window_position") is not None: 
+                self.move(settings.value("Main/window_position"))
         #---
         
     def emitLog(self, logStr):

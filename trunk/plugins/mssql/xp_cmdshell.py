@@ -47,7 +47,8 @@ class CmdShellWidget(QtGui.QWidget):
         #Load config
         if os.path.exists(CONFIG_PATH):
             settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
-            self.move(settings.value("Main/window_position"))
+            if settings.value("Main/window_position") is not None: 
+                self.move(settings.value("Main/window_position"))
         #---
 
     def emitLog(self, logStr):
