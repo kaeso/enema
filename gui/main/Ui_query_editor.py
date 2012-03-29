@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\Projects\enema\gui\main\query_editor.ui'
 #
-# Created: Thu Mar 29 09:24:51 2012
+# Created: Thu Mar 29 09:30:41 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -858,7 +858,7 @@ class Ui_QueryEditorForm(object):
         QtCore.QMetaObject.connectSlotsByName(QueryEditorForm)
 
     def retranslateUi(self, QueryEditorForm):
-        QueryEditorForm.setWindowTitle(QtGui.QApplication.translate("QueryEditorForm", "Form", None, QtGui.QApplication.UnicodeUTF8))
+        QueryEditorForm.setWindowTitle(QtGui.QApplication.translate("QueryEditorForm", "Query Editor", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("QueryEditorForm", "------current db name------", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setText(QtGui.QApplication.translate("QueryEditorForm", "------get db name (not in substring method, multithreaded)------", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("QueryEditorForm", "------get db name (not in array method)------", None, QtGui.QApplication.UnicodeUTF8))

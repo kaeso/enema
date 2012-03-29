@@ -1113,7 +1113,7 @@ class EnemaForm(QtGui.QMainWindow):
     #Tray menu "Quit" clicked
     def trayQuit_Clicked(self):
         #Saving main and log window position
-        settings = QtCore.QSettings(self.mainConfigPath, QtCore.QSettings.IniFormat)
+        settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
         settings.setValue('Main/window_position', self.pos())
         settings.sync()
         sys.exit(0)
