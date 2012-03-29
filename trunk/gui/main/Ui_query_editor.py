@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\Projects\enema\gui\main\query_editor.ui'
 #
-# Created: Mon Mar 26 15:56:22 2012
+# Created: Thu Mar 29 09:24:51 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -824,11 +824,26 @@ class Ui_QueryEditorForm(object):
         self.qeTabWidget_2.addTab(self.tab_49, _fromUtf8(""))
         self.qeTabWidget.addTab(self.tab_2, _fromUtf8(""))
         self.defaultsButton = QtGui.QPushButton(QueryEditorForm)
-        self.defaultsButton.setGeometry(QtCore.QRect(740, 280, 111, 23))
+        self.defaultsButton.setGeometry(QtCore.QRect(780, 280, 71, 23))
         self.defaultsButton.setObjectName(_fromUtf8("defaultsButton"))
         self.saveButton = QtGui.QPushButton(QueryEditorForm)
-        self.saveButton.setGeometry(QtCore.QRect(610, 280, 111, 23))
+        self.saveButton.setGeometry(QtCore.QRect(700, 280, 71, 23))
         self.saveButton.setObjectName(_fromUtf8("saveButton"))
+        self.lineFindStr = QtGui.QLineEdit(QueryEditorForm)
+        self.lineFindStr.setGeometry(QtCore.QRect(170, 280, 91, 20))
+        self.lineFindStr.setObjectName(_fromUtf8("lineFindStr"))
+        self.label = QtGui.QLabel(QueryEditorForm)
+        self.label.setGeometry(QtCore.QRect(10, 280, 161, 20))
+        self.label.setObjectName(_fromUtf8("label"))
+        self.lineResplaceStr = QtGui.QLineEdit(QueryEditorForm)
+        self.lineResplaceStr.setGeometry(QtCore.QRect(280, 280, 91, 20))
+        self.lineResplaceStr.setObjectName(_fromUtf8("lineResplaceStr"))
+        self.label_25 = QtGui.QLabel(QueryEditorForm)
+        self.label_25.setGeometry(QtCore.QRect(270, 280, 16, 20))
+        self.label_25.setObjectName(_fromUtf8("label_25"))
+        self.replaceButton = QtGui.QPushButton(QueryEditorForm)
+        self.replaceButton.setGeometry(QtCore.QRect(380, 280, 71, 20))
+        self.replaceButton.setObjectName(_fromUtf8("replaceButton"))
 
         self.retranslateUi(QueryEditorForm)
         self.qeTabWidget.setCurrentIndex(0)
@@ -923,8 +938,11 @@ class Ui_QueryEditorForm(object):
         self.qeTabWidget_5.setTabText(self.qeTabWidget_5.indexOf(self.tab_50), QtGui.QApplication.translate("QueryEditorForm", "Time based", None, QtGui.QApplication.UnicodeUTF8))
         self.qeTabWidget_2.setTabText(self.qeTabWidget_2.indexOf(self.tab_49), QtGui.QApplication.translate("QueryEditorForm", "Blind", None, QtGui.QApplication.UnicodeUTF8))
         self.qeTabWidget.setTabText(self.qeTabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("QueryEditorForm", "mysql", None, QtGui.QApplication.UnicodeUTF8))
-        self.defaultsButton.setText(QtGui.QApplication.translate("QueryEditorForm", "Restore defaults", None, QtGui.QApplication.UnicodeUTF8))
+        self.defaultsButton.setText(QtGui.QApplication.translate("QueryEditorForm", "Defaults", None, QtGui.QApplication.UnicodeUTF8))
         self.saveButton.setText(QtGui.QApplication.translate("QueryEditorForm", "Save", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("QueryEditorForm", "Find & Replace (case sensitive):", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_25.setText(QtGui.QApplication.translate("QueryEditorForm", "/", None, QtGui.QApplication.UnicodeUTF8))
+        self.replaceButton.setText(QtGui.QApplication.translate("QueryEditorForm", "Replace", None, QtGui.QApplication.UnicodeUTF8))
 
 
 if __name__ == "__main__":
