@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Query Editor</string>
   </property>
   <widget class="QTabWidget" name="qeTabWidget">
    <property name="geometry">
