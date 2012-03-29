@@ -692,7 +692,7 @@ class EnemaForm(QtGui.QMainWindow):
 
     #Show busy dialog
     def busyDialog(self):
-        clicked = QtGui.QMessageBox.question(self, "Enema", "Program busy. Kill current task?",\
+        clicked = QtGui.QMessageBox.question(self, "Enema", "Program is busy. Kill current task?",\
                                         QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
         if clicked == QtGui.QMessageBox.Yes:
             self.killTask()
@@ -1073,9 +1073,11 @@ class EnemaForm(QtGui.QMainWindow):
 
     def sqlOptions(self):
         if self.ui.radioColumns.isChecked():
+            self.ui.treeOfTables.setEnabled(True)
             self.ui.radioOrdinalPosition.setEnabled(True)
         else:
             self.ui.radioOrdinalPosition.setEnabled(False)
+            self.ui.treeOfTables.setEnabled(False)
         if str(self.ui.dbTypeBox.currentText())  == "MySQL":
             self.ui.radioLimit.setEnabled(True)
             self.ui.radioLimit.setChecked(True)

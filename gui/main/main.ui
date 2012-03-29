@@ -243,6 +243,9 @@ p, li { white-space: pre-wrap; }
        </property>
       </widget>
       <widget class="QTreeWidget" name="treeOfTables">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>210</x>

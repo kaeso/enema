@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\Projects\enema\gui\main\main.ui'
 #
-# Created: Tue Mar 27 00:33:59 2012
+# Created: Thu Mar 29 19:58:11 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -83,6 +83,7 @@ class Ui_MainForm(object):
         self.listOfTables.setHorizontalScrollMode(QtGui.QAbstractItemView.ScrollPerPixel)
         self.listOfTables.setObjectName(_fromUtf8("listOfTables"))
         self.treeOfTables = QtGui.QTreeWidget(self.groupBox_2)
+        self.treeOfTables.setEnabled(False)
         self.treeOfTables.setGeometry(QtCore.QRect(210, 50, 191, 261))
         self.treeOfTables.setAcceptDrops(True)
         self.treeOfTables.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
