@@ -457,7 +457,7 @@ class EnemaForm(QtGui.QMainWindow):
         #Set current program version and logo
         self.about_frm.ui.versionLabel.setText("Version: " + VERSION)
         self.about_frm.ui.logoLabel.setPixmap(QtGui.QPixmap("gui/resources/logo.png"))
-               
+
         #Loading settings if ini file exists
         if os.path.exists(CONFIG_PATH):
             settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
@@ -468,11 +468,12 @@ class EnemaForm(QtGui.QMainWindow):
             self.preferences_frm.ui.isRndUpper.setChecked(settings.value('Main/rnd_upcase', False, bool))
             #restoring widgets position
             widgetPosition = settings.value("Main/window_position")
-            self.move(widgetPosition)
-            self.enc_frm.move(widgetPosition)
-            self.qeditor_frm.move(widgetPosition)
-            self.about_frm.move(widgetPosition)
-            self.preferences_frm.move(widgetPosition)
+            if widgetPosition is not None: 
+                self.move(widgetPosition)
+                self.enc_frm.move(widgetPosition)
+                self.qeditor_frm.move(widgetPosition)
+                self.about_frm.move(widgetPosition)
+                self.preferences_frm.move(widgetPosition)
         #Query strings loading
         self.readQstrings()
         

@@ -46,7 +46,8 @@ class FtpWidget(QtGui.QWidget):
             self.ui.lineFtpPwd.setText(settings.value('FTP/password', ''))
             self.ui.lineFtpFile.setText(settings.value('FTP/files', ''))
             self.ui.lineFtpPath.setText(settings.value('FTP/path', ''))
-            self.move(settings.value("Main/window_position"))
+            if settings.value("Main/window_position") is not None: 
+                self.move(settings.value("Main/window_position"))
         #---
 
     def emitLog(self, logStr):

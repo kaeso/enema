@@ -51,7 +51,8 @@ class OpenrowsetWidget(QtGui.QWidget):
             self.ui.lineUsername.setText(settings.value('OPENROWSET/username', ''))
             self.ui.linePassword.setText(settings.value('OPENROWSET/password', ''))
             self.ui.lineDB.setText(settings.value('OPENROWSET/database', ''))
-            self.move(settings.value("Main/window_position"))
+            if settings.value("Main/window_position") is not None: 
+                self.move(settings.value("Main/window_position"))
         #---
 
     def isCmdShell(self):
