@@ -16,8 +16,9 @@
 import os
 import sys
 import time
-import core.txtproc
 import threading
+import core.txtproc
+from core.e_const import CONFIG_PATH
 from queue import Queue
 from core.http import HTTP_Handler
 from PyQt4 import QtCore, QtGui
@@ -44,9 +45,8 @@ class CmdShellWidget(QtGui.QWidget):
         self.ui.enableButton.clicked.connect(self.enableButton_OnClick)
         
         #Load config
-        configPath = "settings/enema.ini"
-        if os.path.exists(configPath):
-            settings = QtCore.QSettings(configPath, QtCore.QSettings.IniFormat)
+        if os.path.exists(CONFIG_PATH):
+            settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
             self.move(settings.value("Main/window_position"))
         #---
 

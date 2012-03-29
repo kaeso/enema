@@ -16,7 +16,8 @@
 import os
 import core.txtproc
 import pyodbc
-import core.e_const
+from core.e_const import ENCODING
+from core.e_const import CONFIG_PATH
 from core.http import HTTP_Handler
 from PyQt4 import QtCore, QtGui
 
@@ -43,9 +44,8 @@ class OpenrowsetWidget(QtGui.QWidget):
         self.ui.queryBox.currentIndexChanged.connect(self.queryBox_Changed)
         
         #Load config
-        configPath = "settings/enema.ini"
-        if os.path.exists(configPath):
-            settings = QtCore.QSettings(configPath, QtCore.QSettings.IniFormat)
+        if os.path.exists(CONFIG_PATH):
+            settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
             self.ui.driverBox.setCurrentIndex(settings.value('OPENROWSET/driver', 0, int))
             self.ui.lineIP.setText(settings.value('OPENROWSET/ip', ''))
             self.ui.lineUsername.setText(settings.value('OPENROWSET/username', ''))
@@ -200,8 +200,7 @@ class Worker(QtCore.QThread):
         self.logSignal.emit(logStr)
     
     def sqlErrorDesc(self, errMsg, errStr):
-        enc = core.e_const.ENCODING
-        errStr = str(errStr).encode(enc).decode(enc)
+        errStr = str(errStr).encode(ENCODING).decode(ENCODING)
         fullStr = errMsg + errStr
         self.logSignal.emit(fullStr)
     
@@ -329,8 +328,8 @@ class Worker(QtCore.QThread):
             query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
             
-        #Deleting tamporaty table
-        try:
-            cursor.execute("drop table dtpropertie")
-        except pyodbc.DatabaseError:
-            pass
+        ##Deleting tamporaty table
+       # try:
+            #cursor.execute("drop table dtpropertie")
+       # except pyodbc.DatabaseError:
+           # pass

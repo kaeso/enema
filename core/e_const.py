@@ -1,5 +1,8 @@
 #Constants
-VERSION = "1.66"
+VERSION = "1.67"
+CONFIG_PATH = "settings/enema.ini"
+QSTRINGS_DEFAULT_PATH = "settings/qstrings.ini"
+QSTRINGS_CUSTOM_PATH = "settings/qstrings_custom.ini"
 USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0.2) Gecko/20100101 Firefox/6.0.2'
 ENCODING = 'windows-1251'
 QUOTED_CONTENT = False

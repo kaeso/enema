@@ -15,6 +15,7 @@
 
 import os
 import core.txtproc
+from core.e_const import CONFIG_PATH
 from core.http import HTTP_Handler
 from PyQt4 import QtCore, QtGui
 
@@ -38,9 +39,8 @@ class AddUserWidget(QtGui.QWidget):
         self.ui.addUserButton.clicked.connect(self.addUserButton_OnClick)
                 
         #Load config
-        configPath = "settings/enema.ini"
-        if os.path.exists(configPath):
-            settings = QtCore.QSettings(configPath, QtCore.QSettings.IniFormat)
+        if os.path.exists(CONFIG_PATH):
+            settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
             self.ui.lineUsername.setText(settings.value('ADD_USER/username', ''))
             self.ui.linePassword.setText(settings.value('ADD_USER/password', ''))
             self.move(settings.value("Main/window_position"))

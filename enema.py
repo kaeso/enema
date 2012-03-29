@@ -27,7 +27,7 @@ from plugins.mssql.openrowset import OpenrowsetWidget
 #xp_cmdshell
 from plugins.mssql.xp_cmdshell import CmdShellWidget
 
-from core.e_const import VERSION
+from core.e_const import *
 from core.injector import Injector
 from core.injector import BlindInjector
 
@@ -44,7 +44,6 @@ from gui.main.Ui_query_editor import Ui_QueryEditorForm
 class QueryEditorForm(QtGui.QWidget):
     
     qstringsChanged = QtCore.pyqtSignal()
-    logSignal = QtCore.pyqtSignal(str)
     
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent, QtCore.Qt.Tool)
@@ -52,16 +51,18 @@ class QueryEditorForm(QtGui.QWidget):
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.loadQstrings()
+
         #SIGNALS-----------------------------------------------------------------------
+        self.ui.replaceButton.clicked.connect(self.replaceButton_OnClick)
         self.ui.saveButton.clicked.connect(self.qsSave_OnClick)
         self.ui.defaultsButton.clicked.connect(self.qsRestore_OnClick)
         
     #Loading querystrings to GUI
     def loadQstrings(self):
-        if os.path.exists("settings/qstrings_custom.ini"):
-            settings = QtCore.QSettings("settings/qstrings_custom.ini", QtCore.QSettings.IniFormat)
+        if os.path.exists(QSTRINGS_CUSTOM_PATH):
+            settings = QtCore.QSettings(QSTRINGS_CUSTOM_PATH, QtCore.QSettings.IniFormat)
         else:
-            settings = QtCore.QSettings("settings/qstrings.ini", QtCore.QSettings.IniFormat)
+            settings = QtCore.QSettings(QSTRINGS_DEFAULT_PATH, QtCore.QSettings.IniFormat)
             
         #MSSQL------------------------------------------------------------------
         
@@ -158,10 +159,36 @@ class QueryEditorForm(QtGui.QWidget):
         self.ui.q_blind_my_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
         
         #---------------------------------------------------------------------------
+     
+    #Finding and Replacing in query strings
+    def replaceButton_OnClick(self):
+        cfgparser = configparser.ConfigParser()
+        if os.path.exists(QSTRINGS_CUSTOM_PATH):
+            cfgparser.read_file(open(QSTRINGS_CUSTOM_PATH))
+        else:
+            cfgparser.read_file(open(QSTRINGS_DEFAULT_PATH))
+        qstrings = cfgparser
+        findStr = self.ui.lineFindStr.text()
+        replaceStr = self.ui.lineResplaceStr.text()
+        if "%" in replaceStr:
+            return
+        if ("\"" in findStr) or ("\"" in replaceStr):
+            return
+        stringFound = 0
+        for inj_type in qstrings:
+            for string in qstrings[inj_type]:
+                stringFound += qstrings[inj_type][string].find(findStr)
+                qstrings[inj_type][string] = qstrings[inj_type][string].replace(findStr, replaceStr)
+        #if string not found then no custom file will be created
+        if stringFound <= 0:
+            return
+        qstrings.write(open(QSTRINGS_CUSTOM_PATH, "w"))
+        self.loadQstrings()
+        self.qstringsChanged.emit()
         
     def qsSave_OnClick(self):
         #Saving customised querys
-        settings = QtCore.QSettings("settings/qstrings_custom.ini", QtCore.QSettings.IniFormat)
+        settings = QtCore.QSettings(QSTRINGS_CUSTOM_PATH, QtCore.QSettings.IniFormat)
         
         #MSSQL------------------------------------------------------------------
         
@@ -264,10 +291,9 @@ class QueryEditorForm(QtGui.QWidget):
 
     #Reset query strings to default
     def qsRestore_OnClick(self):
-        customPath = "settings/qstrings_custom.ini"
-        if os.path.exists(customPath):
+        if os.path.exists(QSTRINGS_CUSTOM_PATH):
             try:
-                os.remove(customPath)
+                os.remove(QSTRINGS_CUSTOM_PATH)
             except Exception:
                 pass
         else:
@@ -362,7 +388,7 @@ class PreferencesForm(QtGui.QWidget):
         self.setWindowModality(QtCore.Qt.ApplicationModal)
     
     def closeEvent(self, event):
-        settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
+        settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
         settings.setValue('Main/match_symbol', self.ui.lineMS.text())
         settings.setValue('Main/match_pattern', self.ui.lineMP.text())
         settings.setValue('Main/threads', self.ui.threadBox.value())
@@ -431,11 +457,10 @@ class EnemaForm(QtGui.QMainWindow):
         #Set current program version and logo
         self.about_frm.ui.versionLabel.setText("Version: " + VERSION)
         self.about_frm.ui.logoLabel.setPixmap(QtGui.QPixmap("gui/resources/logo.png"))
-        
-        configPath = "settings/enema.ini"
+               
         #Loading settings if ini file exists
-        if os.path.exists(configPath):
-            settings = QtCore.QSettings(configPath, QtCore.QSettings.IniFormat)
+        if os.path.exists(CONFIG_PATH):
+            settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
             self.preferences_frm.ui.lineMS.setText(settings.value('Main/match_symbol', '~'))
             self.preferences_frm.ui.lineMP.setText(settings.value('Main/match_pattern', ''))
             self.preferences_frm.ui.threadBox.setValue(settings.value('Main/threads', 5, int))
@@ -875,7 +900,6 @@ class EnemaForm(QtGui.QMainWindow):
         self.enc_frm.activateWindow()
         
     def queryEditor_OnClick(self):
-        self.qeditor_frm.logSignal.connect(self.addLog)
         self.qeditor_frm.show()
         self.qeditor_frm.activateWindow()
         
@@ -886,12 +910,10 @@ class EnemaForm(QtGui.QMainWindow):
     #Reading default or custom query strings
     def readQstrings(self):
         cfgparser = configparser.ConfigParser()
-        customPath = "settings/qstrings_custom.ini"
-        defaultPath = "settings/qstrings.ini"
-        if os.path.exists(customPath):
-            cfgparser.read_file(open(customPath))
+        if os.path.exists(QSTRINGS_CUSTOM_PATH):
+            cfgparser.read_file(open(QSTRINGS_CUSTOM_PATH))
         else:
-            cfgparser.read_file(open(defaultPath))
+            cfgparser.read_file(open(QSTRINGS_DEFAULT_PATH))
         self.qstrings = cfgparser
     
 #------------------------------------------------[MENU]ABOUT-SLOTS------------------------------------------------------#
@@ -1091,7 +1113,7 @@ class EnemaForm(QtGui.QMainWindow):
     #Tray menu "Quit" clicked
     def trayQuit_Clicked(self):
         #Saving main and log window position
-        settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
+        settings = QtCore.QSettings(self.mainConfigPath, QtCore.QSettings.IniFormat)
         settings.setValue('Main/window_position', self.pos())
         settings.sync()
         sys.exit(0)
