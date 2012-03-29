@@ -44,8 +44,6 @@ class HTTP_Handler(QtCore.QObject):
 
     #SET variables in string to valid value 
     def buildQuery(self, query, vars, args=None):
-        if vars['method'] == "POST":
-            query = query.replace("=", "[eq]")
         ms =  core.txtproc.strToSqlChar(vars['ms'], vars['db_type'])
         try:
             if vars['db_type'] == "MySQL" and (vars['task'] =='tables' or vars['task'] =='columns'):
