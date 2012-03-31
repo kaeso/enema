@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\Projects\enema\gui\mssql\openrowset\openrowset.ui'
 #
-# Created: Fri Mar 30 09:38:10 2012
+# Created: Sat Mar 31 12:45:56 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -73,7 +73,7 @@ class Ui_OpenrowsetWidget(object):
         self.statusLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.statusLabel.setObjectName(_fromUtf8("statusLabel"))
         self.openrowsetGroup = QtGui.QGroupBox(OpenrowsetWidget)
-        self.openrowsetGroup.setEnabled(False)
+        self.openrowsetGroup.setEnabled(True)
         self.openrowsetGroup.setGeometry(QtCore.QRect(10, 100, 571, 511))
         self.openrowsetGroup.setObjectName(_fromUtf8("openrowsetGroup"))
         self.tableWidget = QtGui.QTableWidget(self.openrowsetGroup)
@@ -104,10 +104,6 @@ class Ui_OpenrowsetWidget(object):
         self.lineFrom.setGeometry(QtCore.QRect(360, 20, 201, 20))
         self.lineFrom.setText(_fromUtf8(""))
         self.lineFrom.setObjectName(_fromUtf8("lineFrom"))
-        self.lineRowsCount = QtGui.QLineEdit(self.openrowsetGroup)
-        self.lineRowsCount.setEnabled(False)
-        self.lineRowsCount.setGeometry(QtCore.QRect(160, 50, 61, 20))
-        self.lineRowsCount.setObjectName(_fromUtf8("lineRowsCount"))
         self.label_6 = QtGui.QLabel(self.openrowsetGroup)
         self.label_6.setGeometry(QtCore.QRect(120, 50, 46, 20))
         self.label_6.setObjectName(_fromUtf8("label_6"))
@@ -127,6 +123,10 @@ class Ui_OpenrowsetWidget(object):
         self.enableButton = QtGui.QPushButton(self.openrowsetGroup)
         self.enableButton.setGeometry(QtCore.QRect(230, 50, 141, 20))
         self.enableButton.setObjectName(_fromUtf8("enableButton"))
+        self.lineRowsCount = QtGui.QLineEdit(self.openrowsetGroup)
+        self.lineRowsCount.setEnabled(True)
+        self.lineRowsCount.setGeometry(QtCore.QRect(160, 50, 61, 20))
+        self.lineRowsCount.setObjectName(_fromUtf8("lineRowsCount"))
 
         self.retranslateUi(OpenrowsetWidget)
         QtCore.QMetaObject.connectSlotsByName(OpenrowsetWidget)
@@ -145,12 +145,12 @@ class Ui_OpenrowsetWidget(object):
         self.openrowsetGroup.setTitle(QtGui.QApplication.translate("OpenrowsetWidget", "Query", None, QtGui.QApplication.UnicodeUTF8))
         self.queryRun.setText(QtGui.QApplication.translate("OpenrowsetWidget", "Run", None, QtGui.QApplication.UnicodeUTF8))
         self.labelSelect_2.setText(QtGui.QApplication.translate("OpenrowsetWidget", "FROM", None, QtGui.QApplication.UnicodeUTF8))
-        self.lineRowsCount.setText(QtGui.QApplication.translate("OpenrowsetWidget", "5000", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("OpenrowsetWidget", "Rows:", None, QtGui.QApplication.UnicodeUTF8))
         self.selectTOP.setText(QtGui.QApplication.translate("OpenrowsetWidget", "TOP", None, QtGui.QApplication.UnicodeUTF8))
         self.queryBox.setItemText(0, QtGui.QApplication.translate("OpenrowsetWidget", "SELECT", None, QtGui.QApplication.UnicodeUTF8))
         self.queryBox.setItemText(1, QtGui.QApplication.translate("OpenrowsetWidget", "XP_CMDSHELL", None, QtGui.QApplication.UnicodeUTF8))
         self.enableButton.setText(QtGui.QApplication.translate("OpenrowsetWidget", "Enable openrowset", None, QtGui.QApplication.UnicodeUTF8))
+        self.lineRowsCount.setText(QtGui.QApplication.translate("OpenrowsetWidget", "5000", None, QtGui.QApplication.UnicodeUTF8))
 
 
 if __name__ == "__main__":
