@@ -36,6 +36,7 @@ class OpenrowsetWidget(QtGui.QWidget):
         self.vars = vars
         self.qstring = core.txtproc.correctQstr(qstring)
         self.ui.progressBar.hide()
+        self.ui.openrowsetGroup.setEnabled(False)
         
         self.ui.connTestButton.clicked.connect(self.connTestButton_OnClick)
         self.ui.queryRun.clicked.connect(self.queryRun_OnClick)
