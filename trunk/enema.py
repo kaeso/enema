@@ -325,7 +325,7 @@ class EncoderForm(QtGui.QWidget):
         if self.ui.isPlay.isChecked():
             string = core.txtproc.rndUpCase(string)
         if self.ui.comboBox.currentText() == "Base64":
-            readyStr = core.txtproc.base64proc(string, "enc")
+            readyStr = core.txtproc.base64proc(string, "enc", self.preferences_frm.ui.lineEncoding.text())
             self.ui.textResult.setText(readyStr)
             return
         if self.ui.radioHex.isChecked():
@@ -346,7 +346,7 @@ class EncoderForm(QtGui.QWidget):
     #Encode button click
     def decodeButton_OnClick(self):
         string = self.ui.lineString.text()
-        readyStr = core.txtproc.base64proc(string, "dec")
+        readyStr = core.txtproc.base64proc(string, "dec", self.preferences_frm.ui.lineEncoding.text())
         self.ui.textResult.setText(readyStr)
         
     #ComboBox changed:
@@ -393,6 +393,7 @@ class PreferencesForm(QtGui.QWidget):
         settings.setValue('Main/match_pattern', self.ui.lineMP.text())
         settings.setValue('Main/threads', self.ui.threadBox.value())
         settings.setValue('Main/timeout', self.ui.lineTimeout.text())
+        settings.setValue('Main/encoding', self.ui.lineEncoding.text())
         settings.setValue('Main/rnd_upcase', self.ui.isRndUpper.isChecked())
         settings.sync()
        
@@ -465,6 +466,7 @@ class EnemaForm(QtGui.QMainWindow):
             self.preferences_frm.ui.lineMP.setText(settings.value('Main/match_pattern', ''))
             self.preferences_frm.ui.threadBox.setValue(settings.value('Main/threads', 5, int))
             self.preferences_frm.ui.lineTimeout.setText(settings.value('Main/timeout', '60'))
+            self.preferences_frm.ui.lineEncoding.setText(settings.value('Main/encoding', 'windows-1251'))
             self.preferences_frm.ui.isRndUpper.setChecked(settings.value('Main/rnd_upcase', False, bool))
             #restoring widgets position
             widgetPosition = settings.value("Main/window_position")
@@ -611,6 +613,7 @@ class EnemaForm(QtGui.QMainWindow):
               'hexed' : self.ui.isHexed.isChecked(), 
               'auto_detect' : self.ui.isAuto.isChecked(), 
               'true_time' : self.ui.trueTimeBox.value(), 
+              'encoding' : self.preferences_frm.ui.lineEncoding.text(), 
               'isRandomUpCase' : self.preferences_frm.ui.isRndUpper.isChecked(), 
               'dbListCount' : self.ui.dbListComboBox.count(),
               'dbName' : str(self.ui.dbListComboBox.currentText()), 

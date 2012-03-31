@@ -15,18 +15,17 @@
 
 import random
 import base64
-from core.e_const import ENCODING
 
 #Convert string to base64:
-def base64proc(string, mode):
+def base64proc(string, mode, encoding):
     if mode == "enc":
-        readyStr = base64.b64encode(bytes(string, ENCODING))
+        readyStr = base64.b64encode(bytes(string, encoding))
     else:
         try:
-            readyStr = base64.b64decode(bytes(string, ENCODING))
+            readyStr = base64.b64decode(bytes(string, encoding))
         except Exception:
             return " - invalid string - "
-    return str(readyStr, ENCODING)
+    return str(readyStr, encoding)
     
 #Convert string to HEX:
 def strToHex(string, isCmdHex):
