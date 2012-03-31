@@ -174,21 +174,49 @@
      <string>db:</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="enableButton">
+   <widget class="QPushButton" name="connTestButton">
     <property name="geometry">
      <rect>
-      <x>420</x>
+      <x>110</x>
       <y>50</y>
-      <width>141</width>
+      <width>101</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>Enable openrowset</string>
+     <string>Test connection</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="statusLabel">
+    <property name="geometry">
+     <rect>
+      <x>225</x>
+      <y>50</y>
+      <width>51</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="groupBox_2">
+  <widget class="QGroupBox" name="openrowsetGroup">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -292,7 +320,7 @@
    </widget>
    <widget class="QLineEdit" name="lineRowsCount">
     <property name="enabled">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -367,6 +395,19 @@
       <string>XP_CMDSHELL</string>
      </property>
     </item>
+   </widget>
+   <widget class="QPushButton" name="enableButton">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>50</y>
+      <width>141</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Enable openrowset</string>
+    </property>
    </widget>
   </widget>
  </widget>

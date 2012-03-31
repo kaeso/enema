@@ -24,7 +24,6 @@ from urllib import request
 from urllib.error import HTTPError
 from urllib.error import URLError
 from urllib.parse import urlencode
-from core.e_const import ENCODING
 from core.e_const import USER_AGENT
 from core.e_const import QUOTED_CONTENT
 
@@ -120,7 +119,7 @@ class HTTP_Handler(QtCore.QObject):
         return content[fromStr:toStr]
         
     #Preparing POST data
-    def preparePostData(self, data, query, isCmd):
+    def preparePostData(self, data, query, isCmd, encoding):
         #Post data must be Var=value, otherwise function fails when trying to build dictionary.
         data = data.replace("=&",  "=[empty]&").replace("\n", "")
         if "[blind]" in data:
@@ -156,7 +155,7 @@ class HTTP_Handler(QtCore.QObject):
             if "[colon]" in value:
                 data[key] = value.replace("[colon]", ":")
         urlEncoded = urlencode(data)
-        postData = urlEncoded.encode(ENCODING)
+        postData = urlEncoded.encode(encoding)
         return postData
 
     #Http request main function:
@@ -168,12 +167,12 @@ class HTTP_Handler(QtCore.QObject):
         data = request.unquote(data)
         start_time = time.time()
         if vars['method'] == "POST":
-            postData = self.preparePostData(data, query, isCmd)
+            postData = self.preparePostData(data, query, isCmd, vars['encoding'])
             if (postData is None or postData == "fail"):
                 return "no_content"
             if self.isCookieInjection(cookie):
                 cookie = self.buildUrl(cookie, query, isCmd, True)
-            reqLog = "\n[POST] " + vars['url'] + "\n+data+:\n{\n" + postData.decode(ENCODING)\
+            reqLog = "\n[POST] " + vars['url'] + "\n+data+:\n{\n" + postData.decode(vars['encoding'])\
                         + "\n}"
             if len(cookie) > 0:
                 reqLog += "\nCookie:" + cookie
@@ -246,8 +245,9 @@ class HTTP_Handler(QtCore.QObject):
             if QUOTED_CONTENT:
                 content = request.unquote(content)
             try:
-                content = content.decode(ENCODING)
+                content = content.decode(vars['encoding'])
             except:
+                self.logSignal.emit("[x] Can't decode content (current encoding: " + vars['encoding'] + "). Try to change it in Tools->Pereferences.")
                 return "no_content"
             db_data = self.contentParse(content, vars['mp'], vars['ms'])
         else:

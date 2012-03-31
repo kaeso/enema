@@ -16,7 +16,6 @@
 import os
 import core.txtproc
 import pyodbc
-from core.e_const import ENCODING
 from core.e_const import CONFIG_PATH
 from core.http import HTTP_Handler
 from PyQt4 import QtCore, QtGui
@@ -38,11 +37,12 @@ class OpenrowsetWidget(QtGui.QWidget):
         self.qstring = core.txtproc.correctQstr(qstring)
         self.ui.progressBar.hide()
         
+        self.ui.connTestButton.clicked.connect(self.connTestButton_OnClick)
         self.ui.queryRun.clicked.connect(self.queryRun_OnClick)
         self.ui.enableButton.clicked.connect(self.enableButton_OnClick)
         self.ui.selectTOP.stateChanged.connect(self.selectTOP_StateChanged)
         self.ui.queryBox.currentIndexChanged.connect(self.queryBox_Changed)
-        
+
         #Load config
         if os.path.exists(CONFIG_PATH):
             settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
@@ -101,7 +101,36 @@ class OpenrowsetWidget(QtGui.QWidget):
         rData = QtGui.QTableWidgetItem()
         rData.setText(rowData)
         self.ui.tableWidget.setItem(tNum, num, rData)
-     
+   
+    #Setting colored label and text (depend on connection result)
+    def setConnectionStatus(self, success):
+        if success:
+            self.ui.statusLabel.setStyleSheet("QLabel { background-color: LightGreen }")
+            self.ui.statusLabel.setText("Success")
+            self.ui.openrowsetGroup.setEnabled(True)
+        else:
+            self.ui.statusLabel.setText("Failed")
+            self.ui.statusLabel.setStyleSheet("QLabel { background-color: Red }")
+            self.ui.openrowsetGroup.setEnabled(False)
+            
+    #Test connection button click
+    def connTestButton_OnClick(self):
+        if self.isBusy():
+            return
+        self.vars['task'] = "connection_test"
+        self.vars['ip'] = self.ui.lineIP.text()
+        self.vars['username'] = self.ui.lineUsername.text()
+        self.vars['password'] = self.ui.linePassword.text()
+        self.vars['db'] = self.ui.lineDB.text()
+        self.ui.progressBar.show()
+        self.worker = Worker(self.vars, self.qstring)
+        #Signal connects
+        self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.QueuedConnection)
+        self.worker.connResultSignal.connect(self.setConnectionStatus, type=QtCore.Qt.QueuedConnection)
+        self.worker.taskDoneSignal.connect(self.taskDone, type=QtCore.Qt.QueuedConnection)
+        #---
+        self.worker.start()
+
     #Enable openrowset button click
     def enableButton_OnClick(self):
         if self.isBusy():
@@ -158,7 +187,11 @@ class OpenrowsetWidget(QtGui.QWidget):
                 self.vars['columns'] = ','.join(self.vars['select'])
             else:
                 self.vars['columnsCount'] = 1
-                self.vars['columns'] = self.vars['select'][0]
+                try:
+                    self.vars['columns'] = self.vars['select'][0]
+                except IndexError:
+                    self.logSignal.emit("[x] Can't start task. Incorect input detected.")
+                    return
         self.ui.tableWidget.setColumnCount(self.vars['columnsCount'])
         self.ui.tableWidget.setHorizontalHeaderLabels(self.vars['select'])
         self.ui.tableWidget.setRowCount(int(self.ui.lineRowsCount.text()))
@@ -168,6 +201,7 @@ class OpenrowsetWidget(QtGui.QWidget):
         #Signal connects
         self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.QueuedConnection)
         self.worker.rowDataSignal.connect(self.addRowData, type=QtCore.Qt.QueuedConnection)
+        self.worker.connResultSignal.connect(self.setConnectionStatus, type=QtCore.Qt.QueuedConnection)
         self.worker.taskDoneSignal.connect(self.taskDone, type=QtCore.Qt.QueuedConnection)
         #---
         self.worker.start()
@@ -188,6 +222,7 @@ class Worker(QtCore.QThread):
 
     logSignal = QtCore.pyqtSignal(str)
     rowDataSignal = QtCore.pyqtSignal(int, int, str)
+    connResultSignal = QtCore.pyqtSignal(bool)
     taskDoneSignal = QtCore.pyqtSignal()
     
     def __init__(self, vars, qstring):
@@ -196,13 +231,25 @@ class Worker(QtCore.QThread):
         self.qstring = qstring
         self.wq = HTTP_Handler()
         self.wq.logSignal.connect(self.log)
+        #if defined non-standart sql server port
+        self.connIP = self.vars['ip']
+        if ":" in self.connIP:
+            self.connIP = self.connIP.replace(":", ",")
+        else:
+            self.connIP += ",1433"
+        #Connection String
+        self.connStr = "DRIVER={SQL Server};SERVER=" + self.connIP + ";DATABASE="\
+        + self.vars['db'] + ";UID=" + self.vars['username'] + ";PWD=" + self.vars['password']
         
     def log(self, logStr):
         self.logSignal.emit(logStr)
     
     def sqlErrorDesc(self, errMsg, errStr):
-        errStr = str(errStr).encode(ENCODING).decode(ENCODING)
-        fullStr = errMsg + errStr
+        try:
+            errStr = str(errStr).encode(self.vars['encoding']).decode(self.vars['encoding'])
+        except Exception:
+            pass
+        fullStr = errMsg + str(errStr)
         self.logSignal.emit(fullStr)
     
     def buildTable(self, isMulti, isCMD=False):
@@ -238,12 +285,24 @@ class Worker(QtCore.QThread):
     
     def run(self):
         self.logSignal.emit("+++ ["+ PLUGIN_NAME +"]: TASK STARTED +++")
-        if self.vars['task'] == "enable":
+        if self.vars['task'] == "connection_test":
+            self.connTest()
+        elif self.vars['task'] == "enable":
             self.enableOpenrowset()
         else:
             self.opernrowsetWorker()
         self.taskDoneSignal.emit()
         self.logSignal.emit("*** [" + PLUGIN_NAME + "]: TASK DONE ***")
+
+    #Just connection testing
+    def connTest(self):
+        try:
+            pyodbc.connect(self.connStr)
+        except pyodbc.Error as sqlError:
+            self.sqlErrorDesc("\n[x] Connection error. Task aborted.\n-----Details-----\n ", sqlError)
+            self.connResultSignal.emit(False)
+            return
+        self.connResultSignal.emit(True)
         
     def enableOpenrowset(self):
         #Enbale openrowset request
@@ -253,15 +312,9 @@ class Worker(QtCore.QThread):
         self.wq.httpRequest(query, True, self.vars)
     
     def opernrowsetWorker(self):
-        connIP = self.vars['ip']
         multicolumn = False
         if "," in self.vars['columns']:
             multicolumn = True
-        #if defined non-standart sql server port
-        if ":" in connIP:
-            connIP = connIP.replace(":", ",")
-        else:
-            connIP += ",1433"
         
         if self.vars['CMD']:
             self.buildTable(False, isCMD=True)
@@ -269,23 +322,20 @@ class Worker(QtCore.QThread):
             multicolumn = False
         else:
             queryStr =  "select " + self.vars['TOP'] + self.vars['columns'] + self.vars['from']
-            
-        #Connection String
-        connStr = "DRIVER={SQL Server};SERVER=" + connIP + ";DATABASE="\
-        + self.vars['db'] + ";UID=" + self.vars['username'] + ";PWD=" + self.vars['password']
         
         openrowsetString = "insert into OPENROWSET('" + self.vars['driver'] + "',"\
         "'uid=" + self.vars['username'] + ";pwd=" + self.vars['password'] + ";"\
-        "database=" + self.vars['db'] + ";Address=" + connIP + ";',"\
+        "database=" + self.vars['db'] + ";Address=" + self.connIP + ";',"\
         "'select * from dtpropertie')" + queryStr
 
         #Connect to sql server
         try:
-            conn = pyodbc.connect(connStr, autocommit=True)
+            conn = pyodbc.connect(self.connStr, autocommit=True)
         except pyodbc.Error as sqlError:
             self.sqlErrorDesc("\n[x] Connection error. Task aborted.\n-----Details-----\n ", sqlError)
+            self.connResultSignal.emit(False)
             return
-            
+        self.connResultSignal.emit(True)
         cursor = conn.cursor()
         
         #Dropping temporary table(if exists)

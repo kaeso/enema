@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\Projects\enema\gui\main\preferences.ui'
 #
-# Created: Mon Mar 26 15:56:24 2012
+# Created: Fri Mar 30 16:36:48 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,11 +17,11 @@ except AttributeError:
 class Ui_preferencesWidget(object):
     def setupUi(self, preferencesWidget):
         preferencesWidget.setObjectName(_fromUtf8("preferencesWidget"))
-        preferencesWidget.resize(241, 131)
-        preferencesWidget.setMinimumSize(QtCore.QSize(241, 131))
-        preferencesWidget.setMaximumSize(QtCore.QSize(241, 131))
+        preferencesWidget.resize(231, 161)
+        preferencesWidget.setMinimumSize(QtCore.QSize(231, 161))
+        preferencesWidget.setMaximumSize(QtCore.QSize(231, 161))
         self.groupBox = QtGui.QGroupBox(preferencesWidget)
-        self.groupBox.setGeometry(QtCore.QRect(10, 10, 221, 111))
+        self.groupBox.setGeometry(QtCore.QRect(10, 10, 211, 141))
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.lineMP = QtGui.QLineEdit(self.groupBox)
         self.lineMP.setGeometry(QtCore.QRect(160, 20, 41, 20))
@@ -53,8 +53,14 @@ class Ui_preferencesWidget(object):
         self.label_6.setGeometry(QtCore.QRect(110, 50, 51, 20))
         self.label_6.setObjectName(_fromUtf8("label_6"))
         self.isRndUpper = QtGui.QCheckBox(self.groupBox)
-        self.isRndUpper.setGeometry(QtCore.QRect(10, 80, 131, 17))
+        self.isRndUpper.setGeometry(QtCore.QRect(10, 110, 111, 17))
         self.isRndUpper.setObjectName(_fromUtf8("isRndUpper"))
+        self.lineEncoding = QtGui.QLineEdit(self.groupBox)
+        self.lineEncoding.setGeometry(QtCore.QRect(60, 80, 81, 20))
+        self.lineEncoding.setObjectName(_fromUtf8("lineEncoding"))
+        self.label_7 = QtGui.QLabel(self.groupBox)
+        self.label_7.setGeometry(QtCore.QRect(10, 80, 61, 20))
+        self.label_7.setObjectName(_fromUtf8("label_7"))
 
         self.retranslateUi(preferencesWidget)
         QtCore.QMetaObject.connectSlotsByName(preferencesWidget)
@@ -69,6 +75,8 @@ class Ui_preferencesWidget(object):
         self.lineTimeout.setText(QtGui.QApplication.translate("preferencesWidget", "60", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("preferencesWidget", "Timeout:", None, QtGui.QApplication.UnicodeUTF8))
         self.isRndUpper.setText(QtGui.QApplication.translate("preferencesWidget", "Random UpCase", None, QtGui.QApplication.UnicodeUTF8))
+        self.lineEncoding.setText(QtGui.QApplication.translate("preferencesWidget", "windows-1251", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_7.setText(QtGui.QApplication.translate("preferencesWidget", "Encoding:", None, QtGui.QApplication.UnicodeUTF8))
 
 
 if __name__ == "__main__":
