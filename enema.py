@@ -608,7 +608,6 @@ class EnemaForm(QtGui.QMainWindow):
               'time' : self.ui.delayBox.value(), 
               'verbose' : self.ui.isVerbose.isChecked(),
               'blind_inj_type' : str(self.ui.blindMethodList.currentText()),
-              'difference' : self.ui.differenceBox.value(), 
               'max_lag' : self.ui.lagBox.value(), 
               'hexed' : self.ui.isHexed.isChecked(), 
               'auto_detect' : self.ui.isAuto.isChecked(), 
@@ -798,7 +797,6 @@ class EnemaForm(QtGui.QMainWindow):
         settings.setValue('query/delay', self.ui.delayBox.value())
         settings.setValue('query/true_time', self.ui.trueTimeBox.value())
         settings.setValue('query/auto_enabled', self.ui.isAuto.isChecked())
-        settings.setValue('query/max_difference', self.ui.differenceBox.value())
         settings.setValue('query/max_lag', self.ui.lagBox.value())
         #dump tab settings
         settings.setValue('dump/table', self.ui.lineTable.text())
@@ -886,7 +884,6 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.delayBox.setValue(settings.value('query/delay', 2, int))
         self.ui.trueTimeBox.setValue(settings.value('query/true_time', 0.00, float))
         self.ui.isAuto.setChecked(settings.value('query/auto_enabled', True, bool))
-        self.ui.differenceBox.setValue(settings.value('query/max_difference', 0.20, float))
         self.ui.lagBox.setValue(settings.value('query/max_lag', 5.00, float))
         #dump tab settings
         self.ui.lineTable.setText(settings.value('dump/table', ''))
@@ -1145,7 +1142,7 @@ class EnemaForm(QtGui.QMainWindow):
     def blindOptions(self, mode):
         if mode == "show":
             self.ui.blindMethodList.setVisible(True)
-            self.ui.resultGroup.setGeometry(QtCore.QRect(10, 310, 571, 171))
+            self.ui.resultGroup.setGeometry(QtCore.QRect(10, 280, 571, 171))
             self.ui.timeGroup.setVisible(True)
         else:
             self.ui.blindMethodList.setVisible(False)

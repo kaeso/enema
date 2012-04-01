@@ -489,8 +489,7 @@ class BlindInjector(QtCore.QThread):
         if not self.vars['auto_detect']:
             self.logSignal.emit("\n====================================\n\n"\
             "[!] Autodetect skipped, using user-defined 'True' response time: " + str(core.txtproc.roundTime(self.vars['true_time'])) +\
-            "sec (rounding from " + str(self.vars['true_time']) + " +- "\
-            + str(self.vars['difference']) + "; Max allowable lag time: " + str(self.vars['max_lag']) +\
+            "sec (rounding from " + str(self.vars['true_time']) + "; Max allowable lag time: " + str(self.vars['max_lag']) +\
             ")\n\n====================================\n") 
             self.response = self.vars['true_time']
         #Auto detecting time
@@ -505,7 +504,7 @@ class BlindInjector(QtCore.QThread):
                 self.verbose(None, {'rdata' : "Empty",  'rtime' : str(response)})
             self.logSignal.emit("\n====================================\n\n"\
             "[+] Setting 'True' response time to " + str(core.txtproc.roundTime(response)) +\
-            "sec (rounding from " + str(response) + " + " + str(self.vars['difference']) + "; Max allowed lag time: " + str(self.vars['max_lag']) +\
+            "sec (rounding from " + str(response) + "; Max allowed lag time: " + str(self.vars['max_lag']) +\
             ")\n\n====================================\n") 
             #If HTTP timeout occured
             try:
