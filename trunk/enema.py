@@ -301,7 +301,7 @@ class QueryEditorForm(QtGui.QWidget):
         self.loadQstrings()
         self.qstringsChanged.emit()
         
-        
+
 #Enccoder form GUI class
 class EncoderForm(QtGui.QWidget):
     
@@ -1205,7 +1205,7 @@ class EnemaForm(QtGui.QMainWindow):
         if taskDone:
             self.ui.progressBar.hide()
             self.ui.isVerbose.setEnabled(True)
-            if self.isHidden():
+            if (self.isHidden() or self.windowState() == QtCore.Qt.WindowMinimized):
                 self.sysTray.showMessage("Enema", "Task finished.", QtGui.QSystemTrayIcon.Information)
             return
         if pbMax >= 0:
