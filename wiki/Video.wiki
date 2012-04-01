@@ -4,3 +4,6 @@
 
 ===Plugins overview===
 <wiki:video url="http://www.youtube.com/watch?v=Up4qpL9KQck"/>
+
+===Blind attack demonstration===
+<wiki:video url="http://www.youtube.com/watch?v=0b5gIYaQsy8"/>
