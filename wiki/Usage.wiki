@@ -64,7 +64,7 @@ All the same, with a little correction.
 For example vulnerable script:
 <code>
 http://site.com/login.aspx
-Post data: _username=admin'&password=test123_
+Post data: _username=admin'&password=test123
 </code>
 <code>
 Unclosed quotation mark after the character string 'admin'`
