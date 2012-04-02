@@ -123,6 +123,7 @@ class HTTP_Handler(QtCore.QObject):
         #Post data must be Var=value, otherwise function fails when trying to build dictionary.
         data = data.replace("=&",  "=[empty]&").replace("\n", "")
         if "[blind]" in data:
+            query = query.replace("=", "[eq]")
             data = data.replace("[blind]", query)
         data = data.replace(":",  "[colon]")
         if len(data) < 3:
@@ -147,7 +148,6 @@ class HTTP_Handler(QtCore.QObject):
         except ValueError as err:
             self.logSignal.emit(\
             "[x] Error. Can't prepare post data (bad characters detected). Use [eq] keyword instead of '='\n\n[details]: " + str(err))
-            print(data)
             return "fail"
         for key, value in data.items():
             if value == "[empty]":
