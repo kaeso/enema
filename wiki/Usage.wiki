@@ -52,9 +52,9 @@ Also you can use only {{{[cmd]}}} if you not interested in results or not output
 
 When this keyword found in url, post data or cookies - enema enables options for blind attack in Query Tab.
 
-For time-based injection u can define custom delay. Then run test and look for normal and delayed responses (lag checking).
+For time-based injection you can define custom delay. Then run test and look for normal and delayed responses (lag checking).
 
-If server lagging you can play with 'Max lag time' and 'Allowable difference' options.
+If server lagging you can play with 'Max lag time' and 'Delay' options.
 
 ---------------
 ===SQL injection in POST requests, Cookies===
