@@ -385,12 +385,12 @@
      <rect>
       <x>230</x>
       <y>50</y>
-      <width>141</width>
+      <width>181</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>Enable openrowset</string>
+     <string>Enable openrowset &amp;&amp; xp_cmdshell</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineRowsCount">

