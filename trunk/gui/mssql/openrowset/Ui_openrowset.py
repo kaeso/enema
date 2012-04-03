@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\Projects\enema\gui\mssql\openrowset\openrowset.ui'
 #
-# Created: Sat Mar 31 12:45:56 2012
+# Created: Tue Apr  3 09:10:26 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -121,7 +121,7 @@ class Ui_OpenrowsetWidget(object):
         self.queryBox.addItem(_fromUtf8(""))
         self.queryBox.addItem(_fromUtf8(""))
         self.enableButton = QtGui.QPushButton(self.openrowsetGroup)
-        self.enableButton.setGeometry(QtCore.QRect(230, 50, 141, 20))
+        self.enableButton.setGeometry(QtCore.QRect(230, 50, 181, 20))
         self.enableButton.setObjectName(_fromUtf8("enableButton"))
         self.lineRowsCount = QtGui.QLineEdit(self.openrowsetGroup)
         self.lineRowsCount.setEnabled(True)
@@ -149,7 +149,7 @@ class Ui_OpenrowsetWidget(object):
         self.selectTOP.setText(QtGui.QApplication.translate("OpenrowsetWidget", "TOP", None, QtGui.QApplication.UnicodeUTF8))
         self.queryBox.setItemText(0, QtGui.QApplication.translate("OpenrowsetWidget", "SELECT", None, QtGui.QApplication.UnicodeUTF8))
         self.queryBox.setItemText(1, QtGui.QApplication.translate("OpenrowsetWidget", "XP_CMDSHELL", None, QtGui.QApplication.UnicodeUTF8))
-        self.enableButton.setText(QtGui.QApplication.translate("OpenrowsetWidget", "Enable openrowset", None, QtGui.QApplication.UnicodeUTF8))
+        self.enableButton.setText(QtGui.QApplication.translate("OpenrowsetWidget", "Enable openrowset && xp_cmdshell", None, QtGui.QApplication.UnicodeUTF8))
         self.lineRowsCount.setText(QtGui.QApplication.translate("OpenrowsetWidget", "5000", None, QtGui.QApplication.UnicodeUTF8))
 
 
