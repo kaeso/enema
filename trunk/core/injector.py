@@ -396,13 +396,12 @@ class BlindInjector(QtCore.QThread):
         return core.txtproc.correctQstr(qstring)
     
     def verbose(self, query, respInfo=None):
-        if self.vars['verbose']:
-            if query is None:
-                self.logSignal.emit("[RESPONSE DATA]: " + str(respInfo['rdata']) + "\n[RESPONSE TIME]: " + str(respInfo['rtime']) )
-            else:
-                query = query.replace("[eq]", "=")
-                self.logSignal.emit("---------------------------------------")
-                self.logSignal.emit("[QUERY]: " + query)
+        if query is None:
+            self.logSignal.emit("[RESPONSE DATA]: " + str(respInfo['rdata']) + "\n[RESPONSE TIME]: " + str(respInfo['rtime']) )
+        else:
+            query = query.replace("[eq]", "=")
+            self.logSignal.emit("---------------------------------------")
+            self.logSignal.emit("[QUERY]: " + query)
    
     #Testing for optimal delay
     def delayTest(self):

@@ -606,7 +606,6 @@ class EnemaForm(QtGui.QMainWindow):
               'threads' : self.preferences_frm.ui.threadBox.value(), 
               'timeOut' : int(self.preferences_frm.ui.lineTimeout.text()), 
               'time' : self.ui.delayBox.value(), 
-              'verbose' : self.ui.isVerbose.isChecked(),
               'blind_inj_type' : str(self.ui.blindMethodList.currentText()),
               'max_lag' : self.ui.lagBox.value(), 
               'hexed' : self.ui.isHexed.isChecked(), 
@@ -648,7 +647,6 @@ class EnemaForm(QtGui.QMainWindow):
             
     #Connecting to signals and starting thread
     def connectAndStart(self, blind=False):
-        self.ui.isVerbose.setEnabled(False)
         if not blind:
             #dbSignal
             self.qthread.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
@@ -1201,7 +1199,6 @@ class EnemaForm(QtGui.QMainWindow):
     def updatePb(self, pbMax, taskDone):
         if taskDone:
             self.ui.progressBar.hide()
-            self.ui.isVerbose.setEnabled(True)
             if (self.isHidden() or self.windowState() == QtCore.Qt.WindowMinimized):
                 self.sysTray.showMessage("Enema", "Task finished.", QtGui.QSystemTrayIcon.Information)
             return
