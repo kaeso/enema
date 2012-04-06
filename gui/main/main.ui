@@ -1120,22 +1120,6 @@ p, li { white-space: pre-wrap; }
      <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
     </property>
    </widget>
-   <widget class="QCheckBox" name="isVerbose">
-    <property name="geometry">
-     <rect>
-      <x>1030</x>
-      <y>570</y>
-      <width>81</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Verbose</string>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

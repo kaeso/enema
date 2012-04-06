@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\Projects\enema\gui\main\main.ui'
 #
-# Created: Fri Apr  6 21:20:51 2012
+# Created: Fri Apr  6 21:32:01 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -317,10 +317,6 @@ class Ui_MainForm(object):
         self.logTxtEdit.setReadOnly(True)
         self.logTxtEdit.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByMouse|QtCore.Qt.TextSelectableByMouse)
         self.logTxtEdit.setObjectName(_fromUtf8("logTxtEdit"))
-        self.isVerbose = QtGui.QCheckBox(self.centralwidget)
-        self.isVerbose.setGeometry(QtCore.QRect(1030, 570, 81, 20))
-        self.isVerbose.setChecked(True)
-        self.isVerbose.setObjectName(_fromUtf8("isVerbose"))
         MainForm.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainForm)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1121, 21))
@@ -470,7 +466,6 @@ class Ui_MainForm(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.isVerbose.setText(QtGui.QApplication.translate("MainForm", "Verbose", None, QtGui.QApplication.UnicodeUTF8))
         self.menuSave.setTitle(QtGui.QApplication.translate("MainForm", "Save", None, QtGui.QApplication.UnicodeUTF8))
         self.menuLoad.setTitle(QtGui.QApplication.translate("MainForm", "Open", None, QtGui.QApplication.UnicodeUTF8))
         self.menuTools.setTitle(QtGui.QApplication.translate("MainForm", "Tools", None, QtGui.QApplication.UnicodeUTF8))
