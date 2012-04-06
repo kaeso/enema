@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\Projects\enema\gui\main\main.ui'
 #
-# Created: Sun Apr  1 16:34:10 2012
+# Created: Fri Apr  6 21:20:51 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -319,6 +319,7 @@ class Ui_MainForm(object):
         self.logTxtEdit.setObjectName(_fromUtf8("logTxtEdit"))
         self.isVerbose = QtGui.QCheckBox(self.centralwidget)
         self.isVerbose.setGeometry(QtCore.QRect(1030, 570, 81, 20))
+        self.isVerbose.setChecked(True)
         self.isVerbose.setObjectName(_fromUtf8("isVerbose"))
         MainForm.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainForm)

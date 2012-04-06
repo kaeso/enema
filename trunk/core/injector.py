@@ -81,17 +81,7 @@ class Injector(QtCore.QThread):
             self.logSignal.emit(strValue)
             return
         self.logSignal.emit("\n - [x] 'no_content' returned by function " + strValue)
-    
-    def verbose(self, msg , query, rdata=None):
-        if self.vars['verbose']:
-            if query is None:
-                time.sleep(0.01)
-                self.logSignal.emit("[RESPONSE DATA]: " + rdata)
-            else:
-                query = query.replace("[eq]", "=")
-                self.logSignal.emit("-------------------|" + msg+ "|--------------------")
-                self.logSignal.emit("[QUERY]: " + query)
-                
+        
     #Current db type selected
     def dbType(self, todo):
         if self.vars['db_type'] == "MySQL":
@@ -110,9 +100,7 @@ class Injector(QtCore.QThread):
     def getCurrDb(self):
         if self.vars['dbListCount'] < 1:
             query = self.wq.buildQuery(self.dbType('curr_db_name'), self.vars)
-            self.verbose("Fetching current db name" , query)
             db_name = self.wq.httpRequest(query, False, self.vars)
-            self.verbose(None , None, db_name)
             if db_name == "no_content": 
                 self.logger(sys._getframe().f_code.co_name + "() -> db_name", False)
                 return 'no_db'
@@ -128,9 +116,7 @@ class Injector(QtCore.QThread):
             current_db = self.vars['dbName']
             while not self.killed:
                 query = self.wq.buildQuery(self.dbType('get_db_name'), self.vars, {'cdb' : current_db})
-                self.verbose("Fetching db name" , query)
                 db_name = self.wq.httpRequest(query, False, self.vars)
-                self.verbose(None , None, db_name)
                 if db_name == "no_content":
                     self.logger(sys._getframe().f_code.co_name + "() -> db_name", False)
                     return
@@ -141,9 +127,7 @@ class Injector(QtCore.QThread):
         #not in (substring) method
         else:
             query = self.wq.buildQuery(self.dbType('dbs_count'), self.vars)
-            self.verbose("Fetching count of databases" , query)
             dbCount = self.wq.httpRequest(query, False, self.vars)
-            self.verbose(None , None, dbCount)
             if dbCount == "no_content":
                 self.logger(sys._getframe().f_code.co_name + "() -> dbCount", False)
                 return
@@ -174,7 +158,6 @@ class Injector(QtCore.QThread):
             except Exception:  
                 break
             query = self.wq.buildQuery(self.dbType('get_db_name2'), self.vars, {'num' : str(tNum)})
-            self.verbose("Fetching db name multithreaded" , query)
             db_name = self.wq.httpRequest(query, False, self.vars)
             if db_name == "no_content":
                 self.logger(sys._getframe().f_code.co_name + "() -> db_name", False)
@@ -191,9 +174,7 @@ class Injector(QtCore.QThread):
             return
         query = self.wq.buildQuery(self.dbType('tbls_count'), self.vars,\
                                    {'cdb' : current_db})
-        self.verbose("Fetching count of tables" , query)
         tblCount = self.wq.httpRequest(query, False, self.vars)
-        self.verbose(None , None, tblCount)
         if tblCount == "no_content": 
             self.logger(sys._getframe().f_code.co_name + "() -> tblCount", False)
             return
@@ -209,9 +190,7 @@ class Injector(QtCore.QThread):
             while not self.killed:
                 query = self.wq.buildQuery(self.dbType('get_tbl_name'), self.vars,\
                                         {'cdb' : current_db, 'ctbl' : current_table})
-                self.verbose("Fetching table_name" , query)
                 table_name = self.wq.httpRequest(query, False, self.vars)
-                self.verbose(None , None, table_name)
                 if table_name == "no_content":
                     self.logger(sys._getframe().f_code.co_name + "() -> table_name", False)
                     return
@@ -242,7 +221,6 @@ class Injector(QtCore.QThread):
                 break
             query = self.wq.buildQuery(self.dbType('get_tbl_name2'), self.vars,\
                                         {'cdb' : current_db, 'num' : str(tNum)})
-            self.verbose("Fetching table name" , query)
             table_name = self.wq.httpRequest(query, False, self.vars)
             if table_name == "no_content":
                 self.logger(sys._getframe().f_code.co_name + "() -> table_name", False)
@@ -265,9 +243,7 @@ class Injector(QtCore.QThread):
                 current_column = ""
                 query = self.wq.buildQuery(self.dbType('columns_count'), self.vars,\
                                            {'cdb' : current_db, 'ctbl' : current_table})
-                self.verbose("Fetching count of columns in table: " +  tables[i], query)
                 columnsInTable = self.wq.httpRequest(query, False, self.vars)
-                self.verbose(None , None, columnsInTable)
                 if columnsInTable == "no_content": 
                     self.logger(sys._getframe().f_code.co_name + "() -> notInArray -> columnsinTable", False)
                     return
@@ -279,9 +255,7 @@ class Injector(QtCore.QThread):
                 while not self.killed:
                     query = self.wq.buildQuery(self.dbType('get_column_name'), self.vars,\
                                            {'cdb' : current_db, 'ctbl' : current_table, 'ccol': current_column})
-                    self.verbose("Fetching column name" , query)
                     column_name = self.wq.httpRequest(query, False, self.vars)
-                    self.verbose(None , None, column_name)
                     if column_name == "no_content":
                         self.logger(sys._getframe().f_code.co_name + "() -> notInArray -> column_name", False)
                         return
@@ -295,9 +269,7 @@ class Injector(QtCore.QThread):
                 current_table = core.txtproc.strToSqlChar(tables[i], self.vars['db_type'])
                 query = self.wq.buildQuery(self.dbType('columns_count'), self.vars,\
                                            {'cdb' : current_db, 'ctbl' : current_table})
-                self.verbose("Fetching count of columns in table: " +  tables[i], query)
                 columnsInTable = self.wq.httpRequest(query, False, self.vars)
-                self.verbose(None , None, columnsInTable)
                 if columnsInTable == "no_content": 
                     self.logger(sys._getframe().f_code.co_name + "() -> columnsinTable", False)
                     return
@@ -318,9 +290,7 @@ class Injector(QtCore.QThread):
                         rowid += 1
                         query = self.wq.buildQuery(self.dbType('get_column_name3'), self.vars,\
                                            {'cdb' : current_db, 'ctbl' : current_table, 'num' : str(rowid)})
-                    self.verbose("Fetching count of columns in table: " +  tables[i], query)
                     column_name = self.wq.httpRequest(query, False, self.vars)
-                    self.verbose(None , None, column_name)
                     if column_name == "no_content":
                         self.logger(sys._getframe().f_code.co_name + "() -> notInSubstring -> column_name", False)
                         return
@@ -332,16 +302,13 @@ class Injector(QtCore.QThread):
         #If this select command
         if not self.vars['isStacked']:
             query = self.wq.buildQuery(self.dbType('query'), self.vars)
-            self.verbose("Fetching query result" , query)
             result = self.wq.httpRequest(query, False, self.vars)
-            self.verbose(None , None, result)
         else:
             result = "NULL"
             if self.vars['hexed']:
                 query = self.wq.buildQuery(self.dbType('exec_hex'), self.vars, {'hex' : core.txtproc.strToHex(self.vars['query_cmd'], True)})
             else:
                 query = self.vars['query_cmd']
-            self.verbose("Executing stacked query" , query)
             self.wq.httpRequest(query, True, self.vars)
         self.querySignal.emit(result, False)
 
@@ -372,7 +339,6 @@ class Injector(QtCore.QThread):
             except Exception:  
                 break
             query = self.wq.buildQuery(self.dbType('data_dump'), self.vars, {'cdb' : current_db, 'column' : column, 'num' : str(tNum)})
-            self.verbose("Fetching row data multithreaded" , query)
             rowData = self.wq.httpRequest(query, False, self.vars)
             if rowData == "no_content":
                 rowData = "NULL"
