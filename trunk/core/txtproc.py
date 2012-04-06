@@ -47,6 +47,16 @@ def strToSqlChar(string, dbtype):
 def rndUpCase(string):
     string = ''.join(random.choice([s.upper(), s]) for s in string)
     return string
+
+#Special keywords handler.
+def extractString(string, specKw):
+    keyword = "[" + specKw + "^"
+    fromStr = string.find(keyword)
+    fromStr += len(keyword)
+    toStr = string.find("^]", fromStr, len(string))
+    substring = string[fromStr:toStr]
+    string = ''.join((string[:fromStr - len(keyword)] + "ERASEDSUBSTRING" + string[toStr + 2:]))
+    return {'str' : string, 'substr' : substring}
     
 #Symbols recovery to readable format
 def recoverSymbols(cmdResult):

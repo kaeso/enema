@@ -101,6 +101,16 @@ class HTTP_Handler(QtCore.QObject):
             strVar = strVar.replace("[blind]", query)
         return strVar
 
+    #checking for special keywords
+    def checkForSpecKw(self, string):
+        parsedStr = string
+        if "urlenc^" in string:
+            parsedStr = core.txtproc.extractString(string, "urlenc")
+            hexStr = core.txtproc.strToHex(parsedStr['substr'], False)
+            urlhex = hexStr.replace("0x", "%")
+            parsedStr['substr'] = urlhex
+        return parsedStr
+            
     #Content parser
     def contentParse(self, content, match_pattern, match_sybol):
         patternStr = content.find(match_pattern)
@@ -206,7 +216,12 @@ class HTTP_Handler(QtCore.QObject):
             if self.isCookieInjection(cookie):
                 cookie = self.buildUrl(cookie, query, isCmd, True)
             get_url = self.buildUrl(vars['url'], query, isCmd, False)
-            get_url = request.quote(get_url)
+            parsed = self.checkForSpecKw(get_url)
+            if type(parsed) is dict:
+                get_url = request.quote(parsed['str'])
+                get_url = get_url.replace("ERASEDSUBSTRING", parsed['substr'])
+            else:
+                get_url = request.quote(get_url)
             #Replacing important symbols
             get_url = get_url.replace("%3D", "=").replace("%26", "&").replace("%3A", ":").replace("%3F", "?")
             reqLog = "\n[GET] " + get_url
