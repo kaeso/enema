@@ -254,8 +254,9 @@ class HTTP_Handler(QtCore.QObject):
                 self.logSignal.emit("\n[x] Can't start task.\n\n[reason]: " + str(err))
                 return "no_content"
         if blind:
-            response_time = round((time.time() - start_time), 4)
-            return response_time
+            if vars['blind_inj_type'] == "Time":
+                response_time = round((time.time() - start_time), 4)
+                return response_time               
         if not isCmd:
             if QUOTED_CONTENT:
                 content = request.unquote(content)
@@ -264,6 +265,13 @@ class HTTP_Handler(QtCore.QObject):
             except:
                 self.logSignal.emit("[x] Can't decode content (current encoding: " + vars['encoding'] + "). Try to change it in Tools->Pereferences.")
                 return "no_content"
+            if blind:
+                if vars['blind_inj_type'] == "Boolean":
+                    patternIndex = content.find(vars['bool_pattern'])
+                    if patternIndex <= 0:
+                        return False
+                    else:
+                        return True
             db_data = self.contentParse(content, vars['mp'], vars['ms'])
         else:
             db_data = 0

