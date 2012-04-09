@@ -116,6 +116,10 @@ class QueryEditorForm(QtGui.QWidget):
         self.ui.q_blind_ms_delay.setText(settings.value(qstring_type + 'delay', ''))
         self.ui.q_blind_ms_single_row.setText(settings.value(qstring_type + 'single_row', ''))
         self.ui.q_blind_ms_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
+        #Boolean-Based
+        qstring_type = "mssql_blind_boolean_based/"
+        self.ui.q_blind_ms_bool_single_row.setText(settings.value(qstring_type + 'single_row', ''))
+        self.ui.q_blind_ms_bool_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
 
         #MySQL------------------------------------------------------------------
         
@@ -157,7 +161,10 @@ class QueryEditorForm(QtGui.QWidget):
         self.ui.q_blind_my_delay.setText(settings.value(qstring_type + 'delay', ''))
         self.ui.q_blind_my_single_row.setText(settings.value(qstring_type + 'single_row', ''))
         self.ui.q_blind_my_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
-        
+        #Boolean-Based
+        qstring_type = "mysql_blind_boolean_based/"
+        self.ui.q_blind_my_bool_single_row.setText(settings.value(qstring_type + 'single_row', ''))
+        self.ui.q_blind_my_bool_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
         #---------------------------------------------------------------------------
      
     #Finding and Replacing in query strings
@@ -242,6 +249,10 @@ class QueryEditorForm(QtGui.QWidget):
         settings.setValue(qstring_type + 'delay', self.ui.q_blind_ms_delay.text())
         settings.setValue(qstring_type + 'single_row', self.ui.q_blind_ms_single_row.text())
         settings.setValue(qstring_type + 'rows_count', self.ui.q_blind_ms_rows_count.text())
+        #Boolean-based
+        qstring_type = "mssql_blind_boolean_based/"
+        settings.setValue(qstring_type + 'single_row', self.ui.q_blind_ms_bool_single_row.text())
+        settings.setValue(qstring_type + 'rows_count', self.ui.q_blind_ms_bool_rows_count.text())
         
         #MySQL------------------------------------------------------------------
         
@@ -283,6 +294,10 @@ class QueryEditorForm(QtGui.QWidget):
         settings.setValue(qstring_type + 'delay', self.ui.q_blind_my_delay.text())
         settings.setValue(qstring_type + 'single_row', self.ui.q_blind_my_single_row.text())
         settings.setValue(qstring_type + 'rows_count', self.ui.q_blind_my_rows_count.text())
+        #Boolean-Based
+        qstring_type = "mysql_blind_boolean_based/"
+        settings.setValue(qstring_type + 'single_row', self.ui.q_blind_my_bool_single_row.text())
+        settings.setValue(qstring_type + 'rows_count', self.ui.q_blind_my_bool_rows_count.text())
         
         #---------------------------------------------------------------------------
         
@@ -437,8 +452,10 @@ class EnemaForm(QtGui.QMainWindow):
             self.sysTray.show()
             
         self.ui.progressBar.hide()
+        self.ui.methodLabel.setVisible(False)
         self.ui.blindMethodList.setVisible(False)
         self.ui.timeGroup.setVisible(False)
+        self.ui.booleanGroup.setVisible(False)
         self.ui.resultGroup.setGeometry(QtCore.QRect(10, 220, 571, 171))
         
         #Three horizontal scroll fix
@@ -503,6 +520,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.isStacked.stateChanged.connect(self.stacked_Changed)
         self.ui.isHexed.stateChanged.connect(self.hex_Changed)
         self.ui.isAuto.stateChanged.connect(self.autodetect_Changed)
+        self.ui.blindMethodList.currentIndexChanged.connect(self.blindMethodChanged)
         
         #Save Menu 
         self.ui.saveTables.triggered.connect(self.saveTables_OnClick)
@@ -607,6 +625,7 @@ class EnemaForm(QtGui.QMainWindow):
               'timeOut' : int(self.preferences_frm.ui.lineTimeout.text()), 
               'time' : self.ui.delayBox.value(), 
               'blind_inj_type' : str(self.ui.blindMethodList.currentText()),
+              'bool_pattern' : self.ui.lineTruePattern.text(), 
               'max_lag' : self.ui.lagBox.value(), 
               'hexed' : self.ui.isHexed.isChecked(), 
               'auto_detect' : self.ui.isAuto.isChecked(), 
@@ -1135,17 +1154,31 @@ class EnemaForm(QtGui.QMainWindow):
             self.ui.trueTimeBox.setEnabled(True)
         else:
             self.ui.trueTimeBox.setEnabled(False)
+    
+    #Blind method changed
+    def blindMethodChanged(self):
+        if str(self.ui.blindMethodList.currentText()) == "Boolean":
+            self.ui.timeGroup.setVisible(False)
+            self.ui.booleanGroup.setGeometry(QtCore.QRect(10, 220, 571, 51))
+            self.ui.booleanGroup.setVisible(True)
+        else:
+            self.ui.booleanGroup.setVisible(False)
+            self.ui.timeGroup.setVisible(True)
             
     #Hide or show blind options
     def blindOptions(self, mode):
         if mode == "show":
+            self.ui.methodLabel.setVisible(True)
             self.ui.blindMethodList.setVisible(True)
             self.ui.resultGroup.setGeometry(QtCore.QRect(10, 280, 571, 171))
-            self.ui.timeGroup.setVisible(True)
+            if self.ui.booleanGroup.isHidden():
+                self.ui.timeGroup.setVisible(True)
         else:
+            self.ui.methodLabel.setVisible(False)
             self.ui.blindMethodList.setVisible(False)
             self.ui.resultGroup.setGeometry(QtCore.QRect(10, 220, 571, 171))
             self.ui.timeGroup.setVisible(False)
+            self.ui.booleanGroup.setVisible(False)
             
     def tabIndexChanged(self):
         blind = False

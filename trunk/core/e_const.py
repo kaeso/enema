@@ -1,5 +1,5 @@
 #Constants
-VERSION = "1.67"
+VERSION = "1.68"
 CONFIG_PATH = "settings/enema.ini"
 QSTRINGS_DEFAULT_PATH = "settings/qstrings.ini"
 QSTRINGS_CUSTOM_PATH = "settings/qstrings_custom.ini"
