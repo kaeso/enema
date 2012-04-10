@@ -35,6 +35,7 @@ from PyQt4 import QtCore, QtGui
 
 from gui.main.Ui_main import Ui_MainForm
 from gui.main.Ui_preferences import Ui_preferencesWidget
+from gui.main.Ui_headers import Ui_HeadersWidget
 from gui.main.Ui_encoder import Ui_EncoderForm
 from gui.main.Ui_about import Ui_AboutForm
 from gui.main.Ui_query_editor import Ui_QueryEditorForm
@@ -397,7 +398,7 @@ class PreferencesForm(QtGui.QWidget):
     
     
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent, QtCore.Qt.Tool )
+        QtGui.QWidget.__init__(self, parent, QtCore.Qt.Tool)
         self.ui = Ui_preferencesWidget()
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
@@ -411,8 +412,53 @@ class PreferencesForm(QtGui.QWidget):
         settings.setValue('Main/encoding', self.ui.lineEncoding.text())
         settings.setValue('Main/rnd_upcase', self.ui.isRndUpper.isChecked())
         settings.sync()
-       
-       
+
+
+#HTTP Headers widget
+class HeadersForm(QtGui.QWidget):
+    
+    
+    def __init__(self, parent=None):
+        QtGui.QWidget.__init__(self, parent, QtCore.Qt.Tool)
+        self.ui = Ui_HeadersWidget()
+        self.ui.setupUi(self)
+        self.setWindowModality(QtCore.Qt.ApplicationModal)
+        
+        self.ui.UserAgent.stateChanged.connect(self.headersStateChanged)
+        self.ui.Cookie.stateChanged.connect(self.headersStateChanged)
+        self.ui.Referer.stateChanged.connect(self.headersStateChanged)
+        self.ui.XForwardedFor.stateChanged.connect(self.headersStateChanged)
+        
+    def headersStateChanged(self):
+        #User-Agent header
+        if self.ui.UserAgent.isChecked():
+            self.ui.UALabel.setEnabled(True)
+            self.ui.lineUserAgent.setEnabled(True)
+        else:
+            self.ui.UALabel.setEnabled(False)
+            self.ui.lineUserAgent.setEnabled(False)
+        #Cookie header
+        if self.ui.Cookie.isChecked():
+            self.ui.CookieLabel.setEnabled(True)
+            self.ui.lineCookie.setEnabled(True)
+        else:
+            self.ui.CookieLabel.setEnabled(False)
+            self.ui.lineCookie.setEnabled(False)
+        #Referer header
+        if self.ui.Referer.isChecked():
+            self.ui.RefererLabel.setEnabled(True)
+            self.ui.lineReferer.setEnabled(True)
+        else:
+            self.ui.RefererLabel.setEnabled(False)
+            self.ui.lineReferer.setEnabled(False)
+        #X-Forwarded-For header
+        if self.ui.XForwardedFor.isChecked():
+            self.ui.XForwardedLabel.setEnabled(True)
+            self.ui.lineXForwardedFor.setEnabled(True)
+        else:
+            self.ui.XForwardedLabel.setEnabled(False)
+            self.ui.lineXForwardedFor.setEnabled(False)
+            
 #Main form GUI class
 class EnemaForm(QtGui.QMainWindow):
     
@@ -468,6 +514,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.enc_frm = EncoderForm(self)
         self.about_frm = AboutForm(self)
         self.preferences_frm = PreferencesForm(self)
+        self.headers_frm = HeadersForm(self)
         
         #Show only one minimising message per program launch
         self.firstHide = True
@@ -475,7 +522,9 @@ class EnemaForm(QtGui.QMainWindow):
         #Set current program version and logo
         self.about_frm.ui.versionLabel.setText("Version: " + VERSION)
         self.about_frm.ui.logoLabel.setPixmap(QtGui.QPixmap("gui/resources/logo.png"))
-
+        
+        self.headers_frm.ui.lineUserAgent.setText(DEFAULT_USER_AGENT)
+        
         #Loading settings if ini file exists
         if os.path.exists(CONFIG_PATH):
             settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
@@ -493,6 +542,7 @@ class EnemaForm(QtGui.QMainWindow):
                 self.qeditor_frm.move(widgetPosition)
                 self.about_frm.move(widgetPosition)
                 self.preferences_frm.move(widgetPosition)
+                self.headers_frm.move(widgetPosition)
         #Query strings loading
         self.readQstrings()
         
@@ -510,6 +560,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.logButton.clicked.connect(self.logButton_OnClick)
         self.ui.clearLogButton.clicked.connect(self.clearLogButton_OnClick)
         self.ui.killButton.clicked.connect(self.killTask)
+        self.ui.headersButton.clicked.connect(self.headersButton_OnClick)
         
         #DUMP-TAB
         self.ui.dmpButton.clicked.connect(self.dmpButton_OnClick)
@@ -616,6 +667,26 @@ class EnemaForm(QtGui.QMainWindow):
 
     #Get user defined parametes from GUI
     def webData(self):
+        if self.headers_frm.ui.UserAgent.isChecked():
+            user_agent = self.headers_frm.ui.lineUserAgent.text()
+        else:
+            user_agent = ""
+            
+        if self.headers_frm.ui.Cookie.isChecked():
+            cookie = self.headers_frm.ui.lineCookie.text()
+        else:
+            cookie = ""
+            
+        if self.headers_frm.ui.Referer.isChecked():
+            referer = self.headers_frm.ui.lineReferer.text()
+        else:
+            referer = ""
+            
+        if self.headers_frm.ui.XForwardedFor.isChecked():
+            x_forwarded_for = self.headers_frm.ui.lineXForwardedFor.text()
+        else:
+            x_forwarded_for = ""
+
         wD = {
               'url' : self.ui.lineUrl.text(), 
               'method' : str(self.ui.comboBox.currentText()), 
@@ -642,7 +713,12 @@ class EnemaForm(QtGui.QMainWindow):
               'query_cmd' : self.ui.queryText.toPlainText(), 
               'isStacked' : self.ui.isStacked.isChecked(), 
               'data' : self.ui.textData.toPlainText(), 
-              'cookie' :  self.ui.lineCookie.text(), 
+              #HTTP Headers
+              'user_agent' :  user_agent,
+              'cookie' :  cookie,
+              'referer' :  referer,
+              'x_forwarded_for' : x_forwarded_for,
+              #---------
               'db_type' : str(self.ui.dbTypeBox.currentText()), 
               'inj_type' : str(self.ui.comboInjType.currentText()), 
               'table' : self.ui.lineTable.text(), 
@@ -650,6 +726,7 @@ class EnemaForm(QtGui.QMainWindow):
               'columns' : self.ui.lineColumns.text().split(";"), 
               'fromPos' : int(self.ui.lineFrom.text()), 
               'toPos' :  int(self.ui.lineTo.text())}
+              
         return wD
     
     #checking for keywords
@@ -657,12 +734,17 @@ class EnemaForm(QtGui.QMainWindow):
         kwFound = False
         if kw in self.ui.lineUrl.text():
             kwFound = True
-        if kw in self.ui.lineCookie.text():
-            kwFound = True
         if kw in self.ui.textData.toPlainText():
             kwFound = True
-        if kwFound:
-            return kwFound
+        if kw in self.headers_frm.ui.lineUserAgent.text():
+            kwFound = True
+        if kw in self.headers_frm.ui.lineCookie.text():
+            kwFound = True
+        if kw in self.headers_frm.ui.lineReferer.text():
+            kwFound = True
+        if kw in self.headers_frm.ui.lineXForwardedFor.text():
+            kwFound = True
+        return kwFound
             
     #Connecting to signals and starting thread
     def connectAndStart(self, blind=False):
@@ -796,16 +878,27 @@ class EnemaForm(QtGui.QMainWindow):
         if self.ui.dbListComboBox.count() > 0:
             for i in range(self.ui.dbListComboBox.count()):
                 bases += self.ui.dbListComboBox.itemText(i) + ">>"
+
         #db_strucure tab settings
         settings.setValue('db_structure/url', self.ui.lineUrl.text())
         settings.setValue('db_structure/method', self.ui.comboBox.currentIndex())
         settings.setValue('db_structure/data', self.ui.textData.toPlainText())
-        settings.setValue('db_structure/cookies', self.ui.lineCookie.text())
+        
+        if self.headers_frm.ui.UserAgent.isChecked():
+            settings.setValue('db_structure/user_agent', self.headers_frm.ui.lineUserAgent.text())
+        if self.headers_frm.ui.Cookie.isChecked():
+            settings.setValue('db_structure/cookies', self.headers_frm.ui.lineCookie.text())
+        if self.headers_frm.ui.Referer.isChecked():
+            settings.setValue('db_structure/referer', self.headers_frm.ui.lineReferer.text())
+        if self.headers_frm.ui.XForwardedFor.isChecked():
+            settings.setValue('db_structure/x_forwarded_for', self.headers_frm.ui.lineXForwardedFor.text())
+        
         settings.setValue('db_structure/db_type', self.ui.dbTypeBox.currentIndex())
         settings.setValue('db_structure/inj_type', self.ui.comboInjType.currentIndex())
         settings.setValue('db_structure/tables', tables)
         settings.setValue('db_structure/bases', bases)
         settings.setValue('db_structure/current_db', self.ui.dbListComboBox.currentIndex())
+        
         #query tab settings
         settings.setValue('query/query_str', self.ui.queryText.toPlainText())
         settings.setValue('query/stacked_enabled', self.ui.isStacked.isChecked())
@@ -815,6 +908,7 @@ class EnemaForm(QtGui.QMainWindow):
         settings.setValue('query/true_time', self.ui.trueTimeBox.value())
         settings.setValue('query/auto_enabled', self.ui.isAuto.isChecked())
         settings.setValue('query/max_lag', self.ui.lagBox.value())
+        
         #dump tab settings
         settings.setValue('dump/table', self.ui.lineTable.text())
         settings.setValue('dump/columns', self.ui.lineColumns.text())
@@ -881,11 +975,34 @@ class EnemaForm(QtGui.QMainWindow):
         for db in bases:
             if  db !='':
                 self.ui.dbListComboBox.addItem(db)
+                
         #db_strucure tab settings
         self.ui.lineUrl.setText(settings.value('db_structure/url', ''))
         self.ui.comboBox.setCurrentIndex(settings.value('db_structure/method', 0, int))
         self.ui.textData.setText(settings.value('db_structure/data', ''))
-        self.ui.lineCookie.setText(settings.value('db_structure/cookies', ''))
+        
+        self.headers_frm.ui.lineUserAgent.setText(settings.value('db_structure/user_agent', ''))
+        self.headers_frm.ui.lineCookie.setText(settings.value('db_structure/cookies', ''))
+        self.headers_frm.ui.lineReferer.setText(settings.value('db_structure/referer', ''))
+        self.headers_frm.ui.lineXForwardedFor.setText(settings.value('db_structure/x_forwarded_for', ''))
+        #Enabling headers if defined
+        if settings.value('db_structure/user_agent') is not None:
+            self.headers_frm.ui.UserAgent.setChecked(True)
+            self.headers_frm.ui.UALabel.setEnabled(True)
+            self.headers_frm.ui.lineUserAgent.setEnabled(True)
+        if settings.value('db_structure/cookies') is not None:
+            self.headers_frm.ui.Cookie.setChecked(True)
+            self.headers_frm.ui.CookieLabel.setEnabled(True)
+            self.headers_frm.ui.lineCookie.setEnabled(True)
+        if settings.value('db_structure/referer') is not None:
+            self.headers_frm.ui.Referer.setChecked(True)
+            self.headers_frm.ui.RefererLabel.setEnabled(True)
+            self.headers_frm.ui.lineReferer.setEnabled(True)
+        if settings.value('db_structure/x_forwarded_for') is not None:
+            self.headers_frm.ui.XForwardedFor.setChecked(True)
+            self.headers_frm.ui.XForwardedLabel.setEnabled(True)
+            self.headers_frm.ui.lineXForwardedFor.setEnabled(True)
+            
         self.ui.dbTypeBox.setCurrentIndex(settings.value('db_structure/db_type', 0, int))
         self.ui.comboInjType.setCurrentIndex(settings.value('db_structure/inj_type', 0, int))
         self.preferences_frm.ui.lineMP.setText(settings.value('db_structure/pattern', ''))
@@ -893,6 +1010,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.preferences_frm.ui.threadBox.setValue(settings.value('db_structure/threads', 10, int))
         self.preferences_frm.ui.lineTimeout.setText(settings.value('db_structure/timeout', '30'))
         self.ui.dbListComboBox.setCurrentIndex(settings.value('db_structure/current_db', 0, int))
+        
         #query tab settings
         self.ui.queryText.setText(settings.value('query/query_str', ''))
         self.ui.isStacked.setChecked(settings.value('query/stacked_enabled', False, bool))
@@ -902,6 +1020,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.trueTimeBox.setValue(settings.value('query/true_time', 0.00, float))
         self.ui.isAuto.setChecked(settings.value('query/auto_enabled', True, bool))
         self.ui.lagBox.setValue(settings.value('query/max_lag', 5.00, float))
+        
         #dump tab settings
         self.ui.lineTable.setText(settings.value('dump/table', ''))
         self.ui.lineColumns.setText(settings.value('dump/columns', ''))
@@ -947,6 +1066,10 @@ class EnemaForm(QtGui.QMainWindow):
         
 #----------------------------------------------BUTTONS-EVENTS----------------------------------------------------#
 
+    def headersButton_OnClick(self):
+        self.headers_frm.show()
+        self.headers_frm.activateWindow()
+        
     #Run Task button    
     def runButton_OnClick(self):
         if self.isBusy():
@@ -1185,8 +1308,17 @@ class EnemaForm(QtGui.QMainWindow):
         kw = "[blind]"
         if kw in self.ui.lineUrl.text():
             blind = True
-        if kw in self.ui.lineCookie.text():
+            
+        #Checking for blind keayword in headers
+        if kw in self.headers_frm.ui.lineUserAgent.text():
             blind = True
+        if kw in self.headers_frm.ui.lineCookie.text():
+            blind = True
+        if kw in self.headers_frm.ui.lineReferer.text():
+            blind = True
+        if kw in self.headers_frm.ui.lineXForwardedFor.text():
+            blind = True
+            
         if kw in self.ui.textData.toPlainText():
             blind = True
         if blind:
@@ -1248,7 +1380,7 @@ class EnemaForm(QtGui.QMainWindow):
     #Add db to listBox
     def addBase(self, db_name):
         self.ui.dbListComboBox.addItem(db_name)
-            
+
     #Add table to ListWidget
     def addTable(self, table_name):
         self.ui.listOfTables.addItem(table_name)
