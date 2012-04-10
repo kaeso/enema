@@ -104,6 +104,8 @@ class Injector(QtCore.QThread):
             if db_name == "no_content": 
                 self.logger(sys._getframe().f_code.co_name + "() -> db_name", False)
                 return 'no_db'
+            elif db_name == "[---Timed out---]":
+                return 'no_db'
             self.dbSignal.emit(db_name)
         else:
             db_name = self.vars['dbName']
@@ -425,7 +427,7 @@ class BlindInjector(QtCore.QThread):
             self.querySignal.emit(testLog, False)
             #If HTTP timeout occured
             try:
-                if "Time" in response:
+                if "[---Timed out---]" in response:
                     return
             except TypeError:
                 pass
@@ -477,7 +479,7 @@ class BlindInjector(QtCore.QThread):
                 ")\n\n====================================\n") 
                 #If HTTP timeout occured
                 try:
-                    if "Time" in response:
+                    if "[---Timed out---]" in response:
                         return
                 except TypeError:
                     pass
@@ -584,7 +586,7 @@ class BlindInjector(QtCore.QThread):
         response = self.wq.httpRequest(query, False, self.vars, True)
         #If HTTP timeout occured
         try:
-            if "Time" in response:
+            if "[---Timed out---]" in response:
                 return
         except TypeError:
                 pass

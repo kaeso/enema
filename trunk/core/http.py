@@ -24,7 +24,6 @@ from urllib import request
 from urllib.error import HTTPError
 from urllib.error import URLError
 from urllib.parse import urlencode
-from core.e_const import USER_AGENT
 from core.e_const import QUOTED_CONTENT
 
 
@@ -35,11 +34,27 @@ class HTTP_Handler(QtCore.QObject):
     
     def __init__(self):
         QtCore.QObject.__init__(self)
-                   
+
+    def kwordsInHeader(self, header):
+        kwFound = False
+        if "[sub]" in header:
+            kwFound = True
+        if "[cmd]" in header:
+            kwFound = True
+        if "[blind]" in header:
+            kwFound = True
+        return kwFound
+        
     #Injection in cookies?:
-    def isCookieInjection(self, cookie):
-        if ("[sub]" or "[cmd]") in cookie:
-            return True
+    def isInjectionInHeader(self, vars):
+        if self.kwordsInHeader(vars['user_agent']):
+            return "user_agent"
+        if self.kwordsInHeader(vars['cookie']):
+            return "cookie"
+        if self.kwordsInHeader(vars['referer']):
+            return "referer"
+        if self.kwordsInHeader(vars['x_forwarded_for']):
+            return "x_forwarded_for"
 
     #SET variables in string to valid value 
     def buildQuery(self, query, vars, args=None):
@@ -82,10 +97,11 @@ class HTTP_Handler(QtCore.QObject):
             query = core.txtproc.rndUpCase(query)
         return query
 
-    def buildUrl(self, strVar, query, isCmd, isCookie):
-        if isCookie:
-            query = request.quote(query)
-            strVar = strVar.replace("[eq]", "%3d")
+    def buildRequest(self, strVar, query, isCmd, isHeader, header=None):
+        if isHeader:
+            if header == "cookie" or header == "referer":
+                query = request.quote(query)
+                strVar = strVar.replace("[eq]", "%3d")
         else:
             strVar = strVar.replace("[eq]", "=")
         if isCmd:
@@ -172,50 +188,17 @@ class HTTP_Handler(QtCore.QObject):
     def httpRequest(self, query, isCmd, vars, blind=False):
         urlOpener = request.build_opener()
         data = vars['data']
-        cookie = vars['cookie']
         data = data.replace("+",  " ").replace("%3D",  "[eq-urlhex]")
         data = request.unquote(data)
-        start_time = time.time()
+        vuln_header = self.isInjectionInHeader(vars)
+
         if vars['method'] == "POST":
             postData = self.preparePostData(data, query, isCmd, vars['encoding'])
             if (postData is None or postData == "fail"):
                 return "no_content"
-            if self.isCookieInjection(cookie):
-                cookie = self.buildUrl(cookie, query, isCmd, True)
-            reqLog = "\n[POST] " + vars['url'] + "\n+data+:\n{\n" + postData.decode(vars['encoding'])\
-                        + "\n}"
-            if len(cookie) > 0:
-                reqLog += "\nCookie:" + cookie
-                urlOpener.addheaders = [('User-Agent', USER_AGENT), ('Cookie', cookie)]
-            else:
-                urlOpener.addheaders = [('User-Agent', USER_AGENT)]
-            try:
-                time.sleep(0.01)
-                self.logSignal.emit(reqLog)
-                response = urlOpener.open(vars['url'], postData, vars['timeOut'])
-                content = response.read()
-            except HTTPError as httpErr: 
-                content = httpErr.read()
-            #Handling timeout. 
-            except socket.error:
-                errno, errstr = sys.exc_info()[:2]
-                if errno == socket.timeout:
-                    time.sleep(0.01)
-                    self.logSignal.emit("\n\n[HTTP Timeout]")
-                    return "[---Timed out---]"
-            except URLError as uerr:
-                if isinstance(uerr.reason, socket.timeout):
-                    time.sleep(0.01)
-                    self.logSignal.emit("\n\n[HTTP Timeout]")
-                    return "[---Timed out---]"
-            except ValueError as err:
-                time.sleep(0.01)
-                self.logSignal.emit("\n[x] Can't start task.\n\n[reason]: " + str(err))
-                return "no_content"
+            reqLog = "\n[POST] " + vars['url'] + "\n+data+\n{\n" + postData.decode(vars['encoding']) + "\n}"
         else:
-            if self.isCookieInjection(cookie):
-                cookie = self.buildUrl(cookie, query, isCmd, True)
-            get_url = self.buildUrl(vars['url'], query, isCmd, False)
+            get_url = self.buildRequest(vars['url'], query, isCmd, False)
             parsed = self.checkForSpecKw(get_url)
             if type(parsed) is dict:
                 get_url = request.quote(parsed['str'])
@@ -225,34 +208,73 @@ class HTTP_Handler(QtCore.QObject):
             #Replacing important symbols
             get_url = get_url.replace("%3D", "=").replace("%26", "&").replace("%3A", ":").replace("%3F", "?")
             reqLog = "\n[GET] " + get_url
-            if len(cookie) > 0:
-                reqLog += "\nCookie: " + cookie
-                urlOpener.addheaders = [('User-Agent', USER_AGENT), ('Cookie', cookie)]
+
+        reqLog += "\n+headers+\n{"
+        
+        #If injection in header
+        if vuln_header is not None:
+            inj_header = self.buildRequest(vars[vuln_header], query, isCmd, True, vuln_header)
+            
+        #Adding headers if defined
+        if len(vars['user_agent']) > 0:
+            if vuln_header == "user_agent":
+                header = inj_header
             else:
-                urlOpener.addheaders = [('User-Agent', USER_AGENT)]
-            try:
+                header = vars['user_agent']
+            reqLog += "\nUser-Agent: " + header
+            urlOpener.addheaders = [('User-Agent', header)]
+        if len(vars['cookie']) > 0:
+            if vuln_header == "cookie":
+                header = inj_header
+            else:
+                header = vars['cookie']
+            reqLog += "\nCookie: " + header
+            urlOpener.addheaders = [('Cookie', header)]
+        if len(vars['referer']) > 0:
+            if vuln_header == "referer":
+                header = inj_header
+            else:
+                header = vars['referer']
+            reqLog += "\nReferer: " + header
+            urlOpener.addheaders = [('Referer', header)]
+        if len(vars['x_forwarded_for']) > 0:
+            if vuln_header == "x_forwarded_for":
+                header = inj_header
+            else:
+                header = vars['x_forwarded_for']
+            reqLog += "\nX-Forwarded-For: " + header
+            urlOpener.addheaders = [('X-Forwarded-For', header)]
+        reqLog += "\n}"
+        
+        start_time = time.time()
+        try:
+            if not vars['method'] == "POST":
+                postData = None
+                url = get_url
+            else:
+                url = vars['url']
+            self.logSignal.emit(reqLog)
+            response = urlOpener.open(url, postData, vars['timeOut'])
+            content = response.read()
+        except HTTPError as httpErr: 
+            content = httpErr.read()
+        #Handling timeout. 
+        except socket.error:
+            errno, errstr = sys.exc_info()[:2]
+            if errno == socket.timeout:
                 time.sleep(0.01)
-                self.logSignal.emit(reqLog)
-                response = urlOpener.open(get_url, None, vars['timeOut'])
-                content = response.read()
-            except HTTPError as httpErr: 
-                content = httpErr.read()
-            #Handling timeout
-            except socket.error:
-                errno, errstr = sys.exc_info()[:2]
-                if errno == socket.timeout:
-                    time.sleep(0.01)
-                    self.logSignal.emit("\n\n[HTTP Timeout]")
-                    return "[---Timed out---]"
-            except URLError as uerr:
-                if isinstance(uerr.reason, socket.timeout):
-                    time.sleep(0.01)
-                    self.logSignal.emit("\n\n[HTTP Timeout]")
-                    return "[---Timed out---]"
-            except ValueError as err:
+                self.logSignal.emit("\n\n[HTTP Timeout]")
+                return "[---Timed out---]"
+        except URLError as uerr:
+            if isinstance(uerr.reason, socket.timeout):
                 time.sleep(0.01)
-                self.logSignal.emit("\n[x] Can't start task.\n\n[reason]: " + str(err))
-                return "no_content"
+                self.logSignal.emit("\n\n[HTTP Timeout]")
+                return "[---Timed out---]"
+        except ValueError as err:
+            time.sleep(0.01)
+            self.logSignal.emit("\n[x] Can't start task.\n\n[reason]: " + str(err))
+            return "no_content"
+        
         if blind:
             if vars['blind_inj_type'] == "Time":
                 response_time = round((time.time() - start_time), 4)

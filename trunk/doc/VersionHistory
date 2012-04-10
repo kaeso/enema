@@ -1,0 +1,12 @@
+Enema v1.69 
+
+	+ Added injection support in http headers (User-Agent, Cookie, Referer, X-Forwarded-For) 
+
+Enema v1.68
+
+	+ Added special keyword ([urlenc]) fot GET method. It force urlencoding all between [urlenc^ ... ^]
+	  This makes http request logs unreadable and bypassing some url filters / WAFs
+      Example: http://www.site.com/index.asp?id=23[urlenc^ or 1=[sub]--^]
+	
+	- Removed 'verbose' option because unusefull. This option automaticaly enabled for blind injection only.
+
