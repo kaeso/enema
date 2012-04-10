@@ -79,7 +79,9 @@ Post data should be:
 username=' and 1[eq][sub]--&password=test123
 </code>
 
-*{{{[eq]}}}* keyword means equal symbol - "=". *This is important. Use {{{[eq]}}} instead of "=" in defined post data, and use *"%3b"* instead of ";" in defined Cookie header.*
+*{{{[eq]}}}* keyword means equal symbol - "=". 
+
+*This is important. Use {{{[eq]}}} instead of "=" in defined post data, and use *"%3b"* instead of ";" in defined Cookie header.*
 
 For example Cookie string:
 <code>
