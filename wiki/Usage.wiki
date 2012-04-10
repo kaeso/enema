@@ -9,6 +9,8 @@
 
 [#Dump_tab]
 
+[#Useful_functions]
+
 ---------------
 ===SQL injection in GET requests===
 ---------------
@@ -127,3 +129,15 @@ create table tmptbl (num int identity, sqldata varchar(8000) NULL, primary key (
 Dumper multithreaded. I successfuly tested it up to 50 threads. Your threads depend on your bandwidth speed :)
 
 *Important*: `Dumper starts thread pool for each column. It means if you defined 10 threads and dumping table with 3 columns, dumper will start 30 threads.`
+
+---------------
+===Useful functions===
+---------------
+{{{[urlenc]}}} (for GET method). Full urlencode all between {{{[urlenc^ ... ^]}}}
+
+This makes http request logs unreadable and bypassing some url filters / WAFs.
+
+Example:
+<code>
+http://www.site.com/index.asp?id=23[urlenc^ or 1=[sub]--^]
+</code>
