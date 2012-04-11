@@ -210,21 +210,24 @@ class HTTP_Handler(QtCore.QObject):
         else:
             get_url = self.buildRequest(url, query, isCmd, False)
             parsed = self.checkForSpecKw(get_url)
+            specKwFound = False
             if type(parsed) is dict:
-                url = request.quote(parsed['str'])
-                url = url.replace("ERASEDSUBSTRING", parsed['substr'])
+                specKwFound = True
+                url = parsed['str']
             else:
                 url = get_url
-        
+
         url = request.quote(url)
         #Replacing important symbols in url
         url = url.replace("%3D", "=").replace("%26", "&").replace("%3A", ":").replace("%3F", "?")
-        
+        if specKwFound:
+            url = url.replace("ERASEDSUBSTRING", parsed['substr'])
+
         reqLog = "[" + vars['method'] + "] " + url
         if vars['method'] == "POST":
             reqLog += "\n+data+\n{\n" + postData.decode(vars['encoding']) + "\n}"           
         reqLog += "\n+headers+\n{"
-        
+
         #If injection in header
         if vuln_header is not None:
             inj_header = self.buildRequest(vars[vuln_header], query, isCmd, True, vuln_header)
