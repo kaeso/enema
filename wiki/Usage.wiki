@@ -83,7 +83,7 @@ username=' and 1[eq][sub]--&password=test123
 
 *{{{[eq]}}}* keyword means equal symbol - "=". 
 
-*This is important. Use {{{[eq]}}} instead of "=" in defined post data, and use *"%3b"* instead of ";" in defined Cookie header.*
+*This is important. Use {{{[eq]}}} instead of "=" in defined POST data or Cookies, and use *"%3b"* instead of ";" in defined Cookie header.*
 
 For example Cookie string:
 <code>
