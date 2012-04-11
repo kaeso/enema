@@ -428,6 +428,7 @@ class HeadersForm(QtGui.QWidget):
         self.ui.Cookie.stateChanged.connect(self.headersStateChanged)
         self.ui.Referer.stateChanged.connect(self.headersStateChanged)
         self.ui.XForwardedFor.stateChanged.connect(self.headersStateChanged)
+        self.ui.Custom.stateChanged.connect(self.headersStateChanged)
         
     def headersStateChanged(self):
         #User-Agent header
@@ -458,7 +459,17 @@ class HeadersForm(QtGui.QWidget):
         else:
             self.ui.XForwardedLabel.setEnabled(False)
             self.ui.lineXForwardedFor.setEnabled(False)
+        #Custom header
+        if self.ui.Custom.isChecked():
+            self.ui.lineCustomHeaderName.setEnabled(True)
+            self.ui.lineCustomHeader.setEnabled(True)
+            self.ui.urlencode.setEnabled(True)
+        else:
+            self.ui.lineCustomHeaderName.setEnabled(False)
+            self.ui.lineCustomHeader.setEnabled(False)
+            self.ui.urlencode.setEnabled(False)
             
+
 #Main form GUI class
 class EnemaForm(QtGui.QMainWindow):
     
@@ -687,6 +698,13 @@ class EnemaForm(QtGui.QMainWindow):
         else:
             x_forwarded_for = ""
 
+        if self.headers_frm.ui.Custom.isChecked():
+            custom_header = self.headers_frm.ui.lineCustomHeader.text()
+            header_urlencode =  self.headers_frm.ui.urlencode.isChecked()
+        else:
+            custom_header = ""
+            header_urlencode = False
+            
         wD = {
               'url' : self.ui.lineUrl.text(), 
               'method' : str(self.ui.comboBox.currentText()), 
@@ -718,6 +736,9 @@ class EnemaForm(QtGui.QMainWindow):
               'cookie' :  cookie,
               'referer' :  referer,
               'x_forwarded_for' : x_forwarded_for,
+              'custom_header_name' : self.headers_frm.ui.lineCustomHeaderName.text(), 
+              'custom_header' : custom_header, 
+              'header_urlencode' : header_urlencode,
               #---------
               'db_type' : str(self.ui.dbTypeBox.currentText()), 
               'inj_type' : str(self.ui.comboInjType.currentText()), 
@@ -743,6 +764,8 @@ class EnemaForm(QtGui.QMainWindow):
         if kw in self.headers_frm.ui.lineReferer.text():
             kwFound = True
         if kw in self.headers_frm.ui.lineXForwardedFor.text():
+            kwFound = True
+        if kw in self.headers_frm.ui.lineCustomHeader.text():
             kwFound = True
         return kwFound
             
@@ -884,6 +907,7 @@ class EnemaForm(QtGui.QMainWindow):
         settings.setValue('db_structure/method', self.ui.comboBox.currentIndex())
         settings.setValue('db_structure/data', self.ui.textData.toPlainText())
         
+        #headers
         if self.headers_frm.ui.UserAgent.isChecked():
             settings.setValue('db_structure/user_agent', self.headers_frm.ui.lineUserAgent.text())
         if self.headers_frm.ui.Cookie.isChecked():
@@ -892,7 +916,11 @@ class EnemaForm(QtGui.QMainWindow):
             settings.setValue('db_structure/referer', self.headers_frm.ui.lineReferer.text())
         if self.headers_frm.ui.XForwardedFor.isChecked():
             settings.setValue('db_structure/x_forwarded_for', self.headers_frm.ui.lineXForwardedFor.text())
-        
+        if self.headers_frm.ui.Custom.isChecked():
+            settings.setValue('db_structure/custom_header_name', self.headers_frm.ui.lineCustomHeaderName.text())
+            settings.setValue('db_structure/custom_header', self.headers_frm.ui.lineCustomHeader.text())
+            settings.setValue('db_structure/custom_header_urlenc', self.headers_frm.ui.urlencode.isChecked())
+            
         settings.setValue('db_structure/db_type', self.ui.dbTypeBox.currentIndex())
         settings.setValue('db_structure/inj_type', self.ui.comboInjType.currentIndex())
         settings.setValue('db_structure/tables', tables)
@@ -985,6 +1013,8 @@ class EnemaForm(QtGui.QMainWindow):
         self.headers_frm.ui.lineCookie.setText(settings.value('db_structure/cookies', ''))
         self.headers_frm.ui.lineReferer.setText(settings.value('db_structure/referer', ''))
         self.headers_frm.ui.lineXForwardedFor.setText(settings.value('db_structure/x_forwarded_for', ''))
+        self.headers_frm.ui.lineCustomHeaderName.setText(settings.value('db_structure/custom_header_name', ''))
+        self.headers_frm.ui.lineCustomHeader.setText(settings.value('db_structure/custom_header', ''))
         #Enabling headers if defined
         if settings.value('db_structure/user_agent') is not None:
             self.headers_frm.ui.UserAgent.setChecked(True)
@@ -1002,7 +1032,13 @@ class EnemaForm(QtGui.QMainWindow):
             self.headers_frm.ui.XForwardedFor.setChecked(True)
             self.headers_frm.ui.XForwardedLabel.setEnabled(True)
             self.headers_frm.ui.lineXForwardedFor.setEnabled(True)
-            
+        if settings.value('db_structure/custom_header_name') is not None:
+            self.headers_frm.ui.Custom.setChecked(True)
+            self.headers_frm.ui.lineCustomHeaderName.setEnabled(True)
+            self.headers_frm.ui.lineCustomHeader.setEnabled(True)
+            self.headers_frm.ui.urlencode.setEnabled(True)
+            self.headers_frm.ui.urlencode.setChecked(settings.value('db_structure/custom_header_urlenc', False, bool))
+
         self.ui.dbTypeBox.setCurrentIndex(settings.value('db_structure/db_type', 0, int))
         self.ui.comboInjType.setCurrentIndex(settings.value('db_structure/inj_type', 0, int))
         self.preferences_frm.ui.lineMP.setText(settings.value('db_structure/pattern', ''))
@@ -1317,6 +1353,8 @@ class EnemaForm(QtGui.QMainWindow):
         if kw in self.headers_frm.ui.lineReferer.text():
             blind = True
         if kw in self.headers_frm.ui.lineXForwardedFor.text():
+            blind = True
+        if kw in self.headers_frm.ui.lineCustomHeader.text():
             blind = True
             
         if kw in self.ui.textData.toPlainText():

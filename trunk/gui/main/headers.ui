@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>572</width>
-    <height>162</height>
+    <height>192</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>572</width>
-    <height>162</height>
+    <height>192</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>572</width>
-    <height>162</height>
+    <height>192</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -31,7 +31,7 @@
      <x>10</x>
      <y>10</y>
      <width>551</width>
-     <height>141</height>
+     <height>171</height>
     </rect>
    </property>
    <property name="title">
@@ -218,6 +218,73 @@
     </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="Custom">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>140</y>
+      <width>16</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineCustomHeader">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>140</y>
+      <width>331</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineCustomHeaderName">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>140</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Custom-Header</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="urlencode">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>140</y>
+      <width>71</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>urlencode</string>
     </property>
     <property name="checked">
      <bool>false</bool>

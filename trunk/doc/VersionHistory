@@ -8,5 +8,5 @@ Enema v1.68
 	  This makes http request logs unreadable and bypassing some url filters / WAFs
       Example: http://www.site.com/index.asp?id=23[urlenc^ or 1=[sub]--^]
 	
-	- Removed 'verbose' option because unusefull. This option automaticaly enabled for blind injection only.
+	- Removed 'verbose' option because unuseful. This option automaticaly enabled for blind injection only.
 
