@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\Projects\enema\gui\main\main.ui'
 #
-# Created: Tue Apr 10 23:40:02 2012
+# Created: Wed Apr 11 13:40:38 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -413,7 +413,7 @@ class Ui_MainForm(object):
     def retranslateUi(self, MainForm):
         self.comboBox.setItemText(0, QtGui.QApplication.translate("MainForm", "GET", None, QtGui.QApplication.UnicodeUTF8))
         self.comboBox.setItemText(1, QtGui.QApplication.translate("MainForm", "POST", None, QtGui.QApplication.UnicodeUTF8))
-        self.lineUrl.setText(QtGui.QApplication.translate("MainForm", "http://192.168.1.53/mssql.asp?id=-1 or 1=[sub];[cmd]--", None, QtGui.QApplication.UnicodeUTF8))
+        self.lineUrl.setText(QtGui.QApplication.translate("MainForm", "http://192.168.1.53/?db=mssql&id=-1\' or 1=[sub];[cmd]--", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("MainForm", "URL:", None, QtGui.QApplication.UnicodeUTF8))
         self.textData.setHtml(QtGui.QApplication.translate("MainForm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"

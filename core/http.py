@@ -55,7 +55,9 @@ class HTTP_Handler(QtCore.QObject):
             return "referer"
         if self.kwordsInHeader(vars['x_forwarded_for']):
             return "x_forwarded_for"
-
+        if self.kwordsInHeader(vars['custom_header']):
+            return "custom_header"
+            
     #SET variables in string to valid value 
     def buildQuery(self, query, vars, args=None):
         ms =  core.txtproc.strToSqlChar(vars['ms'], vars['db_type'])
@@ -99,9 +101,17 @@ class HTTP_Handler(QtCore.QObject):
 
     def buildRequest(self, strVar, query, isCmd, isHeader, header=None):
         if isHeader:
-            if header == "cookie" or header == "referer":
+            if (header == "cookie"):
                 query = request.quote(query)
-                strVar = strVar.replace("[eq]", "%3d")
+                strVar = strVar.replace("%3b", "[semicolon]")
+                strVar = request.unquote(strVar)            
+                strVar = strVar.replace("; ", "COOKIESEPARATOR").replace("=", "COOKIEEQUAL").replace(";", "COOKIESEPARATOR")
+                strVar = strVar.replace("[semicolon]", ";")
+                strVar = strVar.replace("[eq]", "=")
+                strVar = strVar.replace("[", "LEFTSQBRK").replace("]", "RIGHTSQBRK")
+                strVar = request.quote(strVar)
+                strVar = strVar.replace("COOKIESEPARATOR", "; ").replace("COOKIEEQUAL", "=")\
+                .replace("LEFTSQBRK", "[").replace("RIGHTSQBRK", "]")
         else:
             strVar = strVar.replace("[eq]", "=")
         if isCmd:
@@ -111,7 +121,7 @@ class HTTP_Handler(QtCore.QObject):
                     strVar = strVar.replace("[sub]", "null")
         else:
             if "[cmd]" in strVar:
-                strVar = strVar.replace(";[cmd]", "")
+                strVar = strVar.replace(";[cmd]", "").replace("%3B[cmd]", "")
             strVar = strVar.replace("[sub]", query)
         if "[blind]" in strVar:
             strVar = strVar.replace("[blind]", query)
@@ -187,28 +197,32 @@ class HTTP_Handler(QtCore.QObject):
     #Http request main function:
     def httpRequest(self, query, isCmd, vars, blind=False):
         urlOpener = request.build_opener()
-        data = vars['data']
-        data = data.replace("+",  " ").replace("%3D",  "[eq-urlhex]")
+        data = vars['data'].replace("+",  " ").replace("%3D",  "[eq-urlhex]")
         data = request.unquote(data)
+        url = vars['url'].replace("+", " ")
+        url = request.unquote(url)
         vuln_header = self.isInjectionInHeader(vars)
 
         if vars['method'] == "POST":
             postData = self.preparePostData(data, query, isCmd, vars['encoding'])
             if (postData is None or postData == "fail"):
                 return "no_content"
-            reqLog = "\n[POST] " + vars['url'] + "\n+data+\n{\n" + postData.decode(vars['encoding']) + "\n}"
         else:
-            get_url = self.buildRequest(vars['url'], query, isCmd, False)
+            get_url = self.buildRequest(url, query, isCmd, False)
             parsed = self.checkForSpecKw(get_url)
             if type(parsed) is dict:
-                get_url = request.quote(parsed['str'])
-                get_url = get_url.replace("ERASEDSUBSTRING", parsed['substr'])
+                url = request.quote(parsed['str'])
+                url = url.replace("ERASEDSUBSTRING", parsed['substr'])
             else:
-                get_url = request.quote(get_url)
-            #Replacing important symbols
-            get_url = get_url.replace("%3D", "=").replace("%26", "&").replace("%3A", ":").replace("%3F", "?")
-            reqLog = "\n[GET] " + get_url
-
+                url = get_url
+        
+        url = request.quote(url)
+        #Replacing important symbols in url
+        url = url.replace("%3D", "=").replace("%26", "&").replace("%3A", ":").replace("%3F", "?")
+        
+        reqLog = "[" + vars['method'] + "] " + url
+        if vars['method'] == "POST":
+            reqLog += "\n+data+\n{\n" + postData.decode(vars['encoding']) + "\n}"           
         reqLog += "\n+headers+\n{"
         
         #If injection in header
@@ -232,9 +246,9 @@ class HTTP_Handler(QtCore.QObject):
             urlOpener.addheaders = [('Cookie', header)]
         if len(vars['referer']) > 0:
             if vuln_header == "referer":
-                header = inj_header
+                header = request.quote(inj_header)
             else:
-                header = vars['referer']
+                header = request.quote(vars['referer'])
             reqLog += "\nReferer: " + header
             urlOpener.addheaders = [('Referer', header)]
         if len(vars['x_forwarded_for']) > 0:
@@ -244,15 +258,21 @@ class HTTP_Handler(QtCore.QObject):
                 header = vars['x_forwarded_for']
             reqLog += "\nX-Forwarded-For: " + header
             urlOpener.addheaders = [('X-Forwarded-For', header)]
-        reqLog += "\n}"
+        if len(vars['custom_header']) > 0:
+            if vuln_header == "custom_header":
+                header = inj_header
+            else:
+                header = vars['custom_header']
+            if vars['header_urlencode']:
+                header = request.quote(header)
+            reqLog += "\n" + vars['custom_header_name'] + ": " + header
+            urlOpener.addheaders = [(vars['custom_header_name'], header)]
+        reqLog += "\n}\n\n------"
         
         start_time = time.time()
         try:
             if not vars['method'] == "POST":
                 postData = None
-                url = get_url
-            else:
-                url = vars['url']
             self.logSignal.emit(reqLog)
             response = urlOpener.open(url, postData, vars['timeOut'])
             content = response.read()

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\Projects\enema\gui\main\headers.ui'
 #
-# Created: Tue Apr 10 23:39:58 2012
+# Created: Wed Apr 11 13:40:42 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,11 +17,11 @@ except AttributeError:
 class Ui_HeadersWidget(object):
     def setupUi(self, HeadersWidget):
         HeadersWidget.setObjectName(_fromUtf8("HeadersWidget"))
-        HeadersWidget.resize(572, 162)
-        HeadersWidget.setMinimumSize(QtCore.QSize(572, 162))
-        HeadersWidget.setMaximumSize(QtCore.QSize(572, 162))
+        HeadersWidget.resize(572, 192)
+        HeadersWidget.setMinimumSize(QtCore.QSize(572, 192))
+        HeadersWidget.setMaximumSize(QtCore.QSize(572, 192))
         self.groupBox = QtGui.QGroupBox(HeadersWidget)
-        self.groupBox.setGeometry(QtCore.QRect(10, 10, 551, 141))
+        self.groupBox.setGeometry(QtCore.QRect(10, 10, 551, 171))
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.lineUserAgent = QtGui.QLineEdit(self.groupBox)
         self.lineUserAgent.setGeometry(QtCore.QRect(100, 20, 441, 21))
@@ -77,6 +77,25 @@ class Ui_HeadersWidget(object):
         self.XForwardedFor.setText(_fromUtf8(""))
         self.XForwardedFor.setChecked(False)
         self.XForwardedFor.setObjectName(_fromUtf8("XForwardedFor"))
+        self.Custom = QtGui.QCheckBox(self.groupBox)
+        self.Custom.setGeometry(QtCore.QRect(10, 140, 16, 21))
+        self.Custom.setText(_fromUtf8(""))
+        self.Custom.setChecked(False)
+        self.Custom.setObjectName(_fromUtf8("Custom"))
+        self.lineCustomHeader = QtGui.QLineEdit(self.groupBox)
+        self.lineCustomHeader.setEnabled(False)
+        self.lineCustomHeader.setGeometry(QtCore.QRect(130, 140, 331, 21))
+        self.lineCustomHeader.setText(_fromUtf8(""))
+        self.lineCustomHeader.setObjectName(_fromUtf8("lineCustomHeader"))
+        self.lineCustomHeaderName = QtGui.QLineEdit(self.groupBox)
+        self.lineCustomHeaderName.setEnabled(False)
+        self.lineCustomHeaderName.setGeometry(QtCore.QRect(30, 140, 91, 21))
+        self.lineCustomHeaderName.setObjectName(_fromUtf8("lineCustomHeaderName"))
+        self.urlencode = QtGui.QCheckBox(self.groupBox)
+        self.urlencode.setEnabled(False)
+        self.urlencode.setGeometry(QtCore.QRect(470, 140, 71, 21))
+        self.urlencode.setChecked(False)
+        self.urlencode.setObjectName(_fromUtf8("urlencode"))
 
         self.retranslateUi(HeadersWidget)
         QtCore.QMetaObject.connectSlotsByName(HeadersWidget)
@@ -88,6 +107,8 @@ class Ui_HeadersWidget(object):
         self.UALabel.setText(QtGui.QApplication.translate("HeadersWidget", "User-Agent:", None, QtGui.QApplication.UnicodeUTF8))
         self.CookieLabel.setText(QtGui.QApplication.translate("HeadersWidget", "Cookie:", None, QtGui.QApplication.UnicodeUTF8))
         self.XForwardedLabel.setText(QtGui.QApplication.translate("HeadersWidget", "X-Forwarded-For:", None, QtGui.QApplication.UnicodeUTF8))
+        self.lineCustomHeaderName.setText(QtGui.QApplication.translate("HeadersWidget", "Custom-Header", None, QtGui.QApplication.UnicodeUTF8))
+        self.urlencode.setText(QtGui.QApplication.translate("HeadersWidget", "urlencode", None, QtGui.QApplication.UnicodeUTF8))
 
 
 if __name__ == "__main__":
