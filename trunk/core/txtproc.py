@@ -56,7 +56,7 @@ def extractString(string, specKw):
     toStr = string.find("^]", fromStr, len(string))
     substring = string[fromStr:toStr]
     string = ''.join((string[:fromStr - len(keyword)] + "ERASEDSUBSTRING" + string[toStr + 2:]))
-    return {'str' : string, 'substr' : substring}
+    return {'str' : string, 'substr' : substring, 'kword' : specKw}
     
 #Symbols recovery to readable format
 def recoverSymbols(cmdResult):
