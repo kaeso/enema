@@ -411,6 +411,7 @@ class PreferencesForm(QtGui.QWidget):
         settings.setValue('Main/timeout', self.ui.lineTimeout.text())
         settings.setValue('Main/encoding', self.ui.lineEncoding.text())
         settings.setValue('Main/rnd_upcase', self.ui.isRndUpper.isChecked())
+        settings.setValue('Main/accept_cookies', self.ui.acceptCookies.isChecked())
         settings.sync()
 
 
@@ -537,6 +538,7 @@ class EnemaForm(QtGui.QMainWindow):
             self.preferences_frm.ui.lineTimeout.setText(settings.value('Main/timeout', '60'))
             self.preferences_frm.ui.lineEncoding.setText(settings.value('Main/encoding', 'windows-1251'))
             self.preferences_frm.ui.isRndUpper.setChecked(settings.value('Main/rnd_upcase', False, bool))
+            self.preferences_frm.ui.acceptCookies.setChecked(settings.value('Main/accept_cookies', False, bool))
             #restoring widgets position
             widgetPosition = settings.value("Main/window_position")
             if widgetPosition is not None: 
@@ -708,6 +710,7 @@ class EnemaForm(QtGui.QMainWindow):
               'true_time' : self.ui.trueTimeBox.value(), 
               'encoding' : self.preferences_frm.ui.lineEncoding.text(), 
               'isRandomUpCase' : self.preferences_frm.ui.isRndUpper.isChecked(), 
+              'accept_cookies' : self.preferences_frm.ui.acceptCookies.isChecked(),
               'dbListCount' : self.ui.dbListComboBox.count(),
               'dbName' : str(self.ui.dbListComboBox.currentText()), 
               'notInArray' : self.ui.radioNotInArray.isChecked(),
@@ -895,6 +898,7 @@ class EnemaForm(QtGui.QMainWindow):
         settings.setValue('db_structure/data', self.ui.textData.toPlainText())
         
         #headers
+        settings.setValue('db_structure/user_agent', self.headers_frm.ui.lineUserAgent.text())
         if self.headers_frm.ui.Cookie.isChecked():
             settings.setValue('db_structure/cookies', self.headers_frm.ui.lineCookie.text())
         if self.headers_frm.ui.Referer.isChecked():
@@ -994,7 +998,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.comboBox.setCurrentIndex(settings.value('db_structure/method', 0, int))
         self.ui.textData.setText(settings.value('db_structure/data', ''))
         
-        self.headers_frm.ui.lineUserAgent.setText(settings.value('db_structure/user_agent', ''))
+        self.headers_frm.ui.lineUserAgent.setText(settings.value('db_structure/user_agent', DEFAULT_USER_AGENT))
         self.headers_frm.ui.lineCookie.setText(settings.value('db_structure/cookies', ''))
         self.headers_frm.ui.lineReferer.setText(settings.value('db_structure/referer', ''))
         self.headers_frm.ui.lineXForwardedFor.setText(settings.value('db_structure/x_forwarded_for', ''))

@@ -80,7 +80,7 @@ class Injector(QtCore.QThread):
         if notFunction:
             self.logSignal.emit(strValue)
             return
-        self.logSignal.emit("\n - [x] 'no_content' returned by function " + strValue)
+        self.logSignal.emit(strValue + "\n - [x] 'no_content' returned by function " + strValue)
         
     #Current db type selected
     def dbType(self, todo):
@@ -375,7 +375,7 @@ class BlindInjector(QtCore.QThread):
             self.blindTask()
             
         self.progressSignal.emit(0, True)
-         
+        time.sleep(0.1)
         self.logSignal.emit("\n--- BLIND TASK STOPPED ---")
         
     def kill(self):
@@ -403,11 +403,10 @@ class BlindInjector(QtCore.QThread):
     
     def verbose(self, query, respInfo=None):
         if query is None:
-            self.logSignal.emit("[RESPONSE DATA]: " + str(respInfo['rdata']) + "\n[RESPONSE TIME]: " + str(respInfo['rtime']) )
+            self.logSignal.emit("[RESPONSE DATA(BOOL)]: " + str(respInfo['rdata']) + "\n[RESPONSE TIME]: " + str(respInfo['rtime']))
         else:
             query = query.replace("[eq]", "=")
-            self.logSignal.emit("---------------------------------------")
-            self.logSignal.emit("[QUERY]: " + query)
+            self.logSignal.emit("\n\n[QUERY]: " + query)
    
     #Testing for optimal delay
     def delayTest(self):
