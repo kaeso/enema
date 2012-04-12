@@ -231,36 +231,37 @@ class HTTP_Handler(QtCore.QObject):
         #If injection in header
         if vuln_header is not None:
             inj_header = self.buildRequest(vars[vuln_header], query, isCmd, True, vuln_header)
-            
+        
         #Adding headers if defined
+        HTTP_headers = []
         if len(vars['user_agent']) > 0:
             if vuln_header == "user_agent":
                 header = inj_header
             else:
                 header = vars['user_agent']
+            HTTP_headers += [('User-Agent', header)]
             reqLog += "\nUser-Agent: " + header
-            urlOpener.addheaders = [('User-Agent', header)]
         if len(vars['cookie']) > 0:
             if vuln_header == "cookie":
                 header = inj_header
             else:
                 header = vars['cookie']
+            HTTP_headers += [('Cookie', header)]
             reqLog += "\nCookie: " + header
-            urlOpener.addheaders = [('Cookie', header)]
         if len(vars['referer']) > 0:
             if vuln_header == "referer":
                 header = request.quote(inj_header)
             else:
                 header = request.quote(vars['referer'])
+            HTTP_headers += [('Referer', header)]
             reqLog += "\nReferer: " + header
-            urlOpener.addheaders = [('Referer', header)]
         if len(vars['x_forwarded_for']) > 0:
             if vuln_header == "x_forwarded_for":
                 header = inj_header
             else:
                 header = vars['x_forwarded_for']
+            HTTP_headers += [('X-Forwarded-For', header)]
             reqLog += "\nX-Forwarded-For: " + header
-            urlOpener.addheaders = [('X-Forwarded-For', header)]
         if len(vars['custom_header']) > 0:
             if vuln_header == "custom_header":
                 header = inj_header
@@ -268,8 +269,10 @@ class HTTP_Handler(QtCore.QObject):
                 header = vars['custom_header']
             if vars['header_urlencode']:
                 header = request.quote(header)
+            HTTP_headers += [(vars['custom_header_name'], header)]
             reqLog += "\n" + vars['custom_header_name'] + ": " + header
-            urlOpener.addheaders = [(vars['custom_header_name'], header)]
+        urlOpener.addheaders = HTTP_headers
+        
         reqLog += "\n}\n\n------"
         
         start_time = time.time()
