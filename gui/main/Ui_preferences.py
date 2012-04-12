@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\Projects\enema\gui\main\preferences.ui'
 #
-# Created: Fri Mar 30 16:36:48 2012
+# Created: Thu Apr 12 18:20:49 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,11 +17,11 @@ except AttributeError:
 class Ui_preferencesWidget(object):
     def setupUi(self, preferencesWidget):
         preferencesWidget.setObjectName(_fromUtf8("preferencesWidget"))
-        preferencesWidget.resize(231, 161)
-        preferencesWidget.setMinimumSize(QtCore.QSize(231, 161))
-        preferencesWidget.setMaximumSize(QtCore.QSize(231, 161))
+        preferencesWidget.resize(262, 181)
+        preferencesWidget.setMinimumSize(QtCore.QSize(262, 181))
+        preferencesWidget.setMaximumSize(QtCore.QSize(262, 181))
         self.groupBox = QtGui.QGroupBox(preferencesWidget)
-        self.groupBox.setGeometry(QtCore.QRect(10, 10, 211, 141))
+        self.groupBox.setGeometry(QtCore.QRect(10, 10, 241, 161))
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.lineMP = QtGui.QLineEdit(self.groupBox)
         self.lineMP.setGeometry(QtCore.QRect(160, 20, 41, 20))
@@ -61,6 +61,9 @@ class Ui_preferencesWidget(object):
         self.label_7 = QtGui.QLabel(self.groupBox)
         self.label_7.setGeometry(QtCore.QRect(10, 80, 61, 20))
         self.label_7.setObjectName(_fromUtf8("label_7"))
+        self.acceptCookies = QtGui.QCheckBox(self.groupBox)
+        self.acceptCookies.setGeometry(QtCore.QRect(10, 130, 101, 20))
+        self.acceptCookies.setObjectName(_fromUtf8("acceptCookies"))
 
         self.retranslateUi(preferencesWidget)
         QtCore.QMetaObject.connectSlotsByName(preferencesWidget)
@@ -77,6 +80,7 @@ class Ui_preferencesWidget(object):
         self.isRndUpper.setText(QtGui.QApplication.translate("preferencesWidget", "Random UpCase", None, QtGui.QApplication.UnicodeUTF8))
         self.lineEncoding.setText(QtGui.QApplication.translate("preferencesWidget", "windows-1251", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setText(QtGui.QApplication.translate("preferencesWidget", "Encoding:", None, QtGui.QApplication.UnicodeUTF8))
+        self.acceptCookies.setText(QtGui.QApplication.translate("preferencesWidget", "Accept cookies", None, QtGui.QApplication.UnicodeUTF8))
 
 
 if __name__ == "__main__":

@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>231</width>
-    <height>161</height>
+    <width>262</width>
+    <height>181</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>231</width>
-    <height>161</height>
+    <width>262</width>
+    <height>181</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>231</width>
-    <height>161</height>
+    <width>262</width>
+    <height>181</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -30,8 +30,8 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>211</width>
-     <height>141</height>
+     <width>241</width>
+     <height>161</height>
     </rect>
    </property>
    <property name="title">
@@ -187,6 +187,19 @@
     </property>
     <property name="text">
      <string>Encoding:</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="acceptCookies">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>130</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Accept cookies</string>
     </property>
    </widget>
   </widget>
