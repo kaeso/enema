@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\Projects\enema\gui\main\headers.ui'
 #
-# Created: Wed Apr 11 13:40:42 2012
+# Created: Thu Apr 12 11:39:24 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -24,7 +24,7 @@ class Ui_HeadersWidget(object):
         self.groupBox.setGeometry(QtCore.QRect(10, 10, 551, 171))
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.lineUserAgent = QtGui.QLineEdit(self.groupBox)
-        self.lineUserAgent.setGeometry(QtCore.QRect(100, 20, 441, 21))
+        self.lineUserAgent.setGeometry(QtCore.QRect(80, 20, 461, 21))
         self.lineUserAgent.setText(_fromUtf8(""))
         self.lineUserAgent.setObjectName(_fromUtf8("lineUserAgent"))
         self.RefererLabel = QtGui.QLabel(self.groupBox)
@@ -47,7 +47,7 @@ class Ui_HeadersWidget(object):
         self.lineCookie.setText(_fromUtf8(""))
         self.lineCookie.setObjectName(_fromUtf8("lineCookie"))
         self.UALabel = QtGui.QLabel(self.groupBox)
-        self.UALabel.setGeometry(QtCore.QRect(30, 20, 71, 21))
+        self.UALabel.setGeometry(QtCore.QRect(10, 20, 71, 21))
         self.UALabel.setObjectName(_fromUtf8("UALabel"))
         self.CookieLabel = QtGui.QLabel(self.groupBox)
         self.CookieLabel.setEnabled(False)
@@ -57,11 +57,6 @@ class Ui_HeadersWidget(object):
         self.XForwardedLabel.setEnabled(False)
         self.XForwardedLabel.setGeometry(QtCore.QRect(30, 110, 91, 21))
         self.XForwardedLabel.setObjectName(_fromUtf8("XForwardedLabel"))
-        self.UserAgent = QtGui.QCheckBox(self.groupBox)
-        self.UserAgent.setGeometry(QtCore.QRect(10, 20, 16, 21))
-        self.UserAgent.setText(_fromUtf8(""))
-        self.UserAgent.setChecked(True)
-        self.UserAgent.setObjectName(_fromUtf8("UserAgent"))
         self.Cookie = QtGui.QCheckBox(self.groupBox)
         self.Cookie.setGeometry(QtCore.QRect(10, 50, 16, 21))
         self.Cookie.setText(_fromUtf8(""))

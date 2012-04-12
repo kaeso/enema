@@ -424,20 +424,12 @@ class HeadersForm(QtGui.QWidget):
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         
-        self.ui.UserAgent.stateChanged.connect(self.headersStateChanged)
         self.ui.Cookie.stateChanged.connect(self.headersStateChanged)
         self.ui.Referer.stateChanged.connect(self.headersStateChanged)
         self.ui.XForwardedFor.stateChanged.connect(self.headersStateChanged)
         self.ui.Custom.stateChanged.connect(self.headersStateChanged)
         
     def headersStateChanged(self):
-        #User-Agent header
-        if self.ui.UserAgent.isChecked():
-            self.ui.UALabel.setEnabled(True)
-            self.ui.lineUserAgent.setEnabled(True)
-        else:
-            self.ui.UALabel.setEnabled(False)
-            self.ui.lineUserAgent.setEnabled(False)
         #Cookie header
         if self.ui.Cookie.isChecked():
             self.ui.CookieLabel.setEnabled(True)
@@ -677,12 +669,7 @@ class EnemaForm(QtGui.QMainWindow):
 #------------------------------------------------GENERAL-FUNCTIONS------------------------------------------------------#
 
     #Get user defined parametes from GUI
-    def webData(self):
-        if self.headers_frm.ui.UserAgent.isChecked():
-            user_agent = self.headers_frm.ui.lineUserAgent.text()
-        else:
-            user_agent = ""
-            
+    def webData(self):           
         if self.headers_frm.ui.Cookie.isChecked():
             cookie = self.headers_frm.ui.lineCookie.text()
         else:
@@ -732,7 +719,7 @@ class EnemaForm(QtGui.QMainWindow):
               'isStacked' : self.ui.isStacked.isChecked(), 
               'data' : self.ui.textData.toPlainText(), 
               #HTTP Headers
-              'user_agent' :  user_agent,
+              'user_agent' :  self.headers_frm.ui.lineUserAgent.text(),
               'cookie' :  cookie,
               'referer' :  referer,
               'x_forwarded_for' : x_forwarded_for,
@@ -908,8 +895,6 @@ class EnemaForm(QtGui.QMainWindow):
         settings.setValue('db_structure/data', self.ui.textData.toPlainText())
         
         #headers
-        if self.headers_frm.ui.UserAgent.isChecked():
-            settings.setValue('db_structure/user_agent', self.headers_frm.ui.lineUserAgent.text())
         if self.headers_frm.ui.Cookie.isChecked():
             settings.setValue('db_structure/cookies', self.headers_frm.ui.lineCookie.text())
         if self.headers_frm.ui.Referer.isChecked():
@@ -1016,10 +1001,6 @@ class EnemaForm(QtGui.QMainWindow):
         self.headers_frm.ui.lineCustomHeaderName.setText(settings.value('db_structure/custom_header_name', ''))
         self.headers_frm.ui.lineCustomHeader.setText(settings.value('db_structure/custom_header', ''))
         #Enabling headers if defined
-        if settings.value('db_structure/user_agent') is not None:
-            self.headers_frm.ui.UserAgent.setChecked(True)
-            self.headers_frm.ui.UALabel.setEnabled(True)
-            self.headers_frm.ui.lineUserAgent.setEnabled(True)
         if settings.value('db_structure/cookies') is not None:
             self.headers_frm.ui.Cookie.setChecked(True)
             self.headers_frm.ui.CookieLabel.setEnabled(True)

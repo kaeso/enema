@@ -40,9 +40,9 @@
    <widget class="QLineEdit" name="lineUserAgent">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>80</x>
       <y>20</y>
-      <width>441</width>
+      <width>461</width>
       <height>21</height>
      </rect>
     </property>
@@ -117,7 +117,7 @@
    <widget class="QLabel" name="UALabel">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>10</x>
       <y>20</y>
       <width>71</width>
       <height>21</height>
@@ -157,22 +157,6 @@
     </property>
     <property name="text">
      <string>X-Forwarded-For:</string>
-    </property>
-   </widget>
-   <widget class="QCheckBox" name="UserAgent">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>20</y>
-      <width>16</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
     </property>
    </widget>
    <widget class="QCheckBox" name="Cookie">
