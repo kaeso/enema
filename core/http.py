@@ -50,7 +50,6 @@ class RedirectHandler(request.HTTPRedirectHandler):
         newurl = urljoin(req.full_url, newurl)
 
         new = self.redirect_request(req, fp, code, msg, headers, newurl)
-        
         if new is None:
             return
         
@@ -82,32 +81,24 @@ class HTTP_Handler(QtCore.QObject):
               
     def kwordsInHeader(self, header):
         kwFound = False
-        
         if "[sub]" in header:
             kwFound = True
-            
         if "[cmd]" in header:
             kwFound = True
-            
         if "[blind]" in header:
             kwFound = True
-            
         return kwFound
         
     #Injection in cookies?:
     def isInjectionInHeader(self, vars):
         if self.kwordsInHeader(vars['user_agent']):
             return "user_agent"
-            
         if self.kwordsInHeader(vars['cookie']):
             return "cookie"
-            
         if self.kwordsInHeader(vars['referer']):
             return "referer"
-            
         if self.kwordsInHeader(vars['x_forwarded_for']):
             return "x_forwarded_for"
-            
         if self.kwordsInHeader(vars['custom_header']):
             return "custom_header"
             
@@ -193,13 +184,11 @@ class HTTP_Handler(QtCore.QObject):
     #checking for special keywords
     def checkForSpecKw(self, string):
         parsedStr = string
-        
         if "urlenc^" in string:
             parsedStr = core.txtproc.extractString(string, "urlenc")
             hexStr = core.txtproc.strToHex(parsedStr['substr'], False)
             urlhex = hexStr.replace("0x", "%")
             parsedStr['substr'] = urlhex
-            
         return parsedStr
             
     #Content parser

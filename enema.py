@@ -171,17 +171,21 @@ class QueryEditorForm(QtGui.QWidget):
     #Finding and Replacing in query strings
     def replaceButton_OnClick(self):
         cfgparser = configparser.ConfigParser()
+        
         if os.path.exists(QSTRINGS_CUSTOM_PATH):
             cfgparser.read_file(open(QSTRINGS_CUSTOM_PATH))
         else:
             cfgparser.read_file(open(QSTRINGS_DEFAULT_PATH))
+            
         qstrings = cfgparser
         findStr = self.ui.lineFindStr.text()
         replaceStr = self.ui.lineResplaceStr.text()
+        
         if "%" in replaceStr:
             return
         if ("\"" in findStr) or ("\"" in replaceStr):
             return
+        
         stringFound = 0
         for inj_type in qstrings:
             for string in qstrings[inj_type]:
@@ -190,6 +194,7 @@ class QueryEditorForm(QtGui.QWidget):
         #if string not found then no custom file will be created
         if stringFound <= 0:
             return
+        
         qstrings.write(open(QSTRINGS_CUSTOM_PATH, "w"))
         self.loadQstrings()
         self.qstringsChanged.emit()
@@ -336,20 +341,25 @@ class EncoderForm(QtGui.QWidget):
     #Encode button click
     def encodeButton_OnClick(self):
         string = self.ui.lineString.text()
+        
         if len(string) < 1:
             return
+            
         if self.ui.isPlay.isChecked():
             string = core.txtproc.rndUpCase(string)
+            
         if self.ui.comboBox.currentText() == "Base64":
             readyStr = core.txtproc.base64proc(string, "enc", self.preferences_frm.ui.lineEncoding.text())
             self.ui.textResult.setText(readyStr)
             return
+            
         if self.ui.radioHex.isChecked():
             hexStr = core.txtproc.strToHex(string, False)
             if self.ui.isUrlencoded.isChecked():
                 readyStr = hexStr.replace("0x", "%")
             else:
                 readyStr = core.txtproc.strToHex(string, True)
+                
         else:
             if self.ui.comboBox.currentText() == "MySQL":
                 readyStr = core.txtproc.strToSqlChar(string, "MySQL")
@@ -357,6 +367,7 @@ class EncoderForm(QtGui.QWidget):
                 readyStr = core.txtproc.strToSqlChar(string, "MSSQL")
                 if self.ui.isUrlencoded.isChecked():
                     readyStr = readyStr.replace("+",  "%2b")
+                    
         self.ui.textResult.setText(readyStr)
 
     #Encode button click
@@ -438,6 +449,7 @@ class HeadersForm(QtGui.QWidget):
         else:
             self.ui.CookieLabel.setEnabled(False)
             self.ui.lineCookie.setEnabled(False)
+            
         #Referer header
         if self.ui.Referer.isChecked():
             self.ui.RefererLabel.setEnabled(True)
@@ -445,6 +457,7 @@ class HeadersForm(QtGui.QWidget):
         else:
             self.ui.RefererLabel.setEnabled(False)
             self.ui.lineReferer.setEnabled(False)
+            
         #X-Forwarded-For header
         if self.ui.XForwardedFor.isChecked():
             self.ui.XForwardedLabel.setEnabled(True)
@@ -452,6 +465,7 @@ class HeadersForm(QtGui.QWidget):
         else:
             self.ui.XForwardedLabel.setEnabled(False)
             self.ui.lineXForwardedFor.setEnabled(False)
+            
         #Custom header
         if self.ui.Custom.isChecked():
             self.ui.lineCustomHeaderName.setEnabled(True)
@@ -498,6 +512,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.sysTray=QtGui.QSystemTrayIcon(trayIcon, self)
         self.sysTray.setToolTip("Enema " + VERSION)
         self.sysTray.setContextMenu(self.trayMenu)
+        
         if self.sysTray.isSystemTrayAvailable():
             self.sysTray.show()
             
@@ -539,8 +554,10 @@ class EnemaForm(QtGui.QMainWindow):
             self.preferences_frm.ui.lineEncoding.setText(settings.value('Main/encoding', 'windows-1251'))
             self.preferences_frm.ui.isRndUpper.setChecked(settings.value('Main/rnd_upcase', False, bool))
             self.preferences_frm.ui.acceptCookies.setChecked(settings.value('Main/accept_cookies', False, bool))
+            
             #restoring widgets position
             widgetPosition = settings.value("Main/window_position")
+            
             if widgetPosition is not None: 
                 self.move(widgetPosition)
                 self.enc_frm.move(widgetPosition)
@@ -548,6 +565,7 @@ class EnemaForm(QtGui.QMainWindow):
                 self.about_frm.move(widgetPosition)
                 self.preferences_frm.move(widgetPosition)
                 self.headers_frm.move(widgetPosition)
+                
         #Query strings loading
         self.readQstrings()
         
@@ -764,13 +782,10 @@ class EnemaForm(QtGui.QMainWindow):
         if not blind:
             #dbSignal
             self.qthread.dbSignal.connect(self.addBase, type=QtCore.Qt.QueuedConnection)
-
             #columnSignal
             self.qthread.columnSignal.connect(self.addColumn, type=QtCore.Qt.QueuedConnection)
-        
             #rowDataSignal
             self.qthread.rowDataSignal.connect(self.addRowData, type=QtCore.Qt.QueuedConnection)
-
             #tblSignal
             self.qthread.tblSignal.connect(self.addTable, type=QtCore.Qt.QueuedConnection)
         else:
@@ -779,10 +794,8 @@ class EnemaForm(QtGui.QMainWindow):
             
         #logSignal
         self.qthread.logSignal.connect(self.addLog, type=QtCore.Qt.QueuedConnection)
-        
         #progressSignal
         self.qthread.progressSignal.connect(self.updatePb, type=QtCore.Qt.QueuedConnection)
-        
         #querySignal
         self.qthread.querySignal.connect(self.queryResult, type=QtCore.Qt.QueuedConnection)
         
@@ -854,19 +867,23 @@ class EnemaForm(QtGui.QMainWindow):
     def writeToFile(self, filePath, save):
         try:
             file = open(filePath, "w")
+            
             if save == "tables":
                 for i in range(self.ui.listOfTables.count()):
                     file.write(self.ui.listOfTables.item(i).text() + "\n")
+                    
             elif save == "columns":
                 for i in range (self.ui.treeOfTables.topLevelItemCount()):
                     file.write("---[" + self.ui.treeOfTables.topLevelItem(i).text(0) + "]---")
                     for num in range(self.ui.treeOfTables.topLevelItem(i).childCount()):
                         file.write("\n" + self.ui.treeOfTables.topLevelItem(i).child(num).text(0))
                     file.write("\n\n")
+                    
             elif save == "bases":
                 for i in range(self.ui.dbListComboBox.count()):
                     db_name = self.ui.dbListComboBox.itemText(i)
                     file.write(db_name + "\n")
+                    
             elif save == "csv":
                 strLine = ""
                 for row in range(self.ui.tableWidget.rowCount()):
@@ -874,6 +891,7 @@ class EnemaForm(QtGui.QMainWindow):
                         strLine +=  str(self.ui.tableWidget.item(row, column).data(QtCore.Qt.DisplayRole)) + ";"
                     strLine = strLine[:-1] + "\n"
                 file.write(strLine)
+                
             file.close()
         except Exception:
             return
@@ -881,11 +899,13 @@ class EnemaForm(QtGui.QMainWindow):
     #Saving site settings
     def saveSiteSettings(self, filepath):
         settings = QtCore.QSettings(filepath, QtCore.QSettings.IniFormat)
+        
         #Making tables list to config format - table1>>table2>>etc...
         tables = ""
         if self.ui.listOfTables.count() > 0:
             for i in range(self.ui.listOfTables.count()):
                 tables += self.ui.listOfTables.item(i).text() + ">>"
+        
         #Making bases list to config format - base1>>base2>>etc...
         bases = ""
         if self.ui.dbListComboBox.count() > 0:
@@ -980,12 +1000,14 @@ class EnemaForm(QtGui.QMainWindow):
         if len(filepath) < 1:
             return
         settings = QtCore.QSettings(filepath, QtCore.QSettings.IniFormat)
+        
         #Reading tables from config
         tables = settings.value('db_structure/tables', '').split('>>')
         self.ui.listOfTables.clear()
         for tbl in tables:
             if tbl !='':
                 self.ui.listOfTables.addItem(tbl)
+                
         #Reading bases from config
         bases = settings.value('db_structure/bases', '').split('>>')
         self.ui.dbListComboBox.clear()
@@ -998,6 +1020,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.comboBox.setCurrentIndex(settings.value('db_structure/method', 0, int))
         self.ui.textData.setText(settings.value('db_structure/data', ''))
         
+        #headers
         self.headers_frm.ui.lineUserAgent.setText(settings.value('db_structure/user_agent', DEFAULT_USER_AGENT))
         self.headers_frm.ui.lineCookie.setText(settings.value('db_structure/cookies', ''))
         self.headers_frm.ui.lineReferer.setText(settings.value('db_structure/referer', ''))
@@ -1239,6 +1262,7 @@ class EnemaForm(QtGui.QMainWindow):
         else:
             self.ui.radioOrdinalPosition.setEnabled(False)
             self.ui.treeOfTables.setEnabled(False)
+            
         if str(self.ui.dbTypeBox.currentText())  == "MySQL":
             self.ui.radioLimit.setEnabled(True)
             self.ui.radioLimit.setChecked(True)
