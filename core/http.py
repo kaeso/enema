@@ -267,13 +267,18 @@ class HTTP_Handler(QtCore.QObject):
         
         if vars['accept_cookies']:
             urlOpener.add_handler(request.HTTPCookieProcessor())
-            
-        data = vars['data'].replace("+",  " ").replace("%3D",  "[eq-urlhex]")
-        data = request.unquote(data)
+
         url = vars['url'].replace("+", " ")
         url = request.unquote(url)
+        data = vars['data'].replace("+",  " ").replace("%3D",  "[eq-urlhex]")
+        data = request.unquote(data)
         vuln_header = self.isInjectionInHeader(vars)
 
+        if "[random]" in data:
+            data = data.replace("[random]", core.txtproc.rndString(16))
+        if "[random]" in url:
+            url = url.replace("[random]", core.txtproc.rndString(16))
+            
         if vars['method'] == "POST":
             postData = self.preparePostData(data, query, isCmd, vars['encoding'])
             if (postData is None or postData == "fail"):
@@ -295,7 +300,7 @@ class HTTP_Handler(QtCore.QObject):
             if specKwFound:
                 url = url.replace("ERASEDSUBSTRING", parsed['substr'])
 
-        reqLog = "[" + vars['method'] + "] " + url
+        reqLog = "#############################################\n\n[" + vars['method'] + "] " + url
         if vars['method'] == "POST":
             reqLog += "\n+data+\n{\n" + postData.decode(vars['encoding']) + "\n}"           
         reqLog += "\n+headers+\n{"
@@ -390,14 +395,16 @@ class HTTP_Handler(QtCore.QObject):
             self.logSignal.emit("\n[x] Can't start task.\n\n[reason]: " + str(err))
             return "no_content"
         
+        response_time = round((time.time() - start_time), 4)
+        
         reqLog += "\n=================="
+        reqLog += "\n[RESPONSE TIME]: " + str(response_time)
         self.logSignal.emit(reqLog)
         
         if blind:
             if vars['blind_inj_type'] == "Time":
-                response_time = round((time.time() - start_time), 4)
                 return response_time
-                
+        
         if not isCmd:
             if QUOTED_CONTENT:
                 content = request.unquote(content)
@@ -414,7 +421,7 @@ class HTTP_Handler(QtCore.QObject):
                         return False
                     else:
                         return True
-                        
+            
             db_data = self.contentParse(content, vars['mp'], vars['ms'])
             
         else:

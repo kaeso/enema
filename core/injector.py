@@ -436,13 +436,6 @@ class BlindInjector(QtCore.QThread):
             else:
                 qstring = self.qstrings['mssql_blind_boolean_based'][todo]
         return core.txtproc.correctQstr(qstring)
-    
-    def verbose(self, query, respInfo=None):
-        if query is None:
-            self.logSignal.emit("[RESPONSE DATA(BOOL)]: " + str(respInfo['rdata']) + "\n[RESPONSE TIME]: " + str(respInfo['rtime']))
-        else:
-            query = query.replace("[eq]", "=")
-            self.logSignal.emit("\n\n[QUERY]: " + query)
    
     #Testing for optimal delay
     def delayTest(self):
@@ -456,11 +449,9 @@ class BlindInjector(QtCore.QThread):
             
         for resp in range(3):
             response = self.wq.httpRequest("", False, self.vars, True)
-            self.verbose(None, {'rdata' : "Empty",  'rtime' : str(response)})
             testLog += str(response) + " (" + str(core.txtproc.roundTime(response)) + " sec) / "
             
             response = self.wq.httpRequest(query, False, self.vars, True)
-            self.verbose(None, {'rdata' : "Empty",  'rtime' : str(response)})
             testLog += str(response) + " (" + str(core.txtproc.roundTime(response)) + " sec)\n"
             
             self.querySignal.emit(testLog, False)
@@ -513,9 +504,7 @@ class BlindInjector(QtCore.QThread):
                     query = self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars, {'hex' : hex})
                     
                 for i in range(2):
-                    self.verbose(query)
                     response = self.wq.httpRequest(query, False, self.vars, True)
-                    self.verbose(None, {'rdata' : "Empty",  'rtime' : str(response)})
                     
                 self.logSignal.emit("\n====================================\n\n"\
                 "[+] Setting 'True' response time to " + str(core.txtproc.roundTime(response)) +\
@@ -642,7 +631,6 @@ class BlindInjector(QtCore.QThread):
         if self.vars['hexed'] :
             query = self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars,{'hex' : core.txtproc.strToHex(query, True)})
             
-        self.verbose(query)
         self.request_counter += 1
         response = self.wq.httpRequest(query, False, self.vars, True)
         
@@ -657,16 +645,14 @@ class BlindInjector(QtCore.QThread):
         if self.vars['blind_inj_type'] == "Time":
             if (core.txtproc.roundTime(response) >= core.txtproc.roundTime(self.response)):
                 self.bad_response = False
-                self.verbose(None, {'rdata' : True,  'rtime' : str(response)})
                 #If response > response time + max lagging time
                 if (core.txtproc.roundTime(response) > (self.response + self.vars['max_lag'])):
-                    self.verbose(None, {'rdata' : "UNKNOWN (response time was longer). Try to increase maximum lag time.",  'rtime' : str(response)})
+                    self.logSignal.emit("\n!!! - UNKNOWN (response time was longer). Try to increase maximum lag time."+ str(response))
                     self.bad_response = True
                     self.bad_time = response
                     return False
                 return True
             else:
-                self.verbose(None, {'rdata' : False,  'rtime' : str(response)})
                 return False
         #Boolean based
         else:
