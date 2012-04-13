@@ -15,6 +15,7 @@
 
 import random
 import base64
+import string as strings
 
 #Convert string to base64:
 def base64proc(string, mode, encoding):
@@ -57,7 +58,11 @@ def extractString(string, specKw):
     substring = string[fromStr:toStr]
     string = ''.join((string[:fromStr - len(keyword)] + "ERASEDSUBSTRING" + string[toStr + 2:]))
     return {'str' : string, 'substr' : substring, 'kword' : specKw}
-    
+
+def rndString(length):
+	alpha_numeric_str = ''.join([random.choice(strings.ascii_letters + strings.digits) for s in range(length)])
+	return alpha_numeric_str
+
 #Symbols recovery to readable format
 def recoverSymbols(cmdResult):
     symbols = {
