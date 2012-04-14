@@ -75,12 +75,6 @@ def recoverSymbols(cmdResult):
         cmdResult = cmdResult.replace(key, symbols[key])
     return cmdResult
 
-#Some settings in INI file between double quotes, removing qoutes
-def correctQstr(qstring):
-    if (qstring.startswith('"') and qstring.endswith('"')):
-        return qstring[1:-1]
-    return qstring
-
 #Rounding time
 def roundTime(tm):
     seconds = str(tm).split(".")
