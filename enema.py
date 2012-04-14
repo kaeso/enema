@@ -16,7 +16,6 @@
 import os
 import sys
 import core.txtproc
-import configparser
 #Plugins
 #ftp
 from plugins.mssql.ftp import FtpWidget
@@ -170,32 +169,25 @@ class QueryEditorForm(QtGui.QWidget):
      
     #Finding and Replacing in query strings
     def replaceButton_OnClick(self):
-        cfgparser = configparser.ConfigParser()
-        
         if os.path.exists(QSTRINGS_CUSTOM_PATH):
-            cfgparser.read_file(open(QSTRINGS_CUSTOM_PATH))
+            qs_path = QSTRINGS_CUSTOM_PATH
         else:
-            cfgparser.read_file(open(QSTRINGS_DEFAULT_PATH))
-            
-        qstrings = cfgparser
+            qs_path = QSTRINGS_DEFAULT_PATH
+        qstrings = QtCore.QSettings(qs_path, QtCore.QSettings.IniFormat)
+        
         findStr = self.ui.lineFindStr.text()
         replaceStr = self.ui.lineResplaceStr.text()
         
-        if "%" in replaceStr:
-            return
-        if ("\"" in findStr) or ("\"" in replaceStr):
-            return
-        
         stringFound = 0
-        for inj_type in qstrings:
-            for string in qstrings[inj_type]:
-                stringFound += qstrings[inj_type][string].find(findStr)
-                qstrings[inj_type][string] = qstrings[inj_type][string].replace(findStr, replaceStr)
+        for query in qstrings.allKeys():
+            stringFound += qstrings.value(query).find(findStr)
+            qstrings.setValue(query, qstrings.value(query).replace(findStr, replaceStr))
         #if string not found then no custom file will be created
         if stringFound <= 0:
             return
+
+        qstrings.sync()
         
-        qstrings.write(open(QSTRINGS_CUSTOM_PATH, "w"))
         self.loadQstrings()
         self.qstringsChanged.emit()
         
@@ -651,7 +643,7 @@ class EnemaForm(QtGui.QMainWindow):
         if not self.keywordsCheck("[cmd]"):
             QtGui.QMessageBox.information(self, "Enema", "[cmd] keyword required for this plugin", 1, 0)
             return
-        self.pluginWidget = FtpWidget(self.webData(), self.qstrings['mssql_error_based']['exec_hex'], self)
+        self.pluginWidget = FtpWidget(self.webData(), self.qstrings.value('mssql_error_based/exec_hex'), self)
         self.pluginWidget.logSignal.connect(self.addLog)
         self.pluginWidget.show()
         self.pluginWidget.activateWindow()
@@ -661,7 +653,7 @@ class EnemaForm(QtGui.QMainWindow):
         if not self.keywordsCheck("[cmd]"):
             QtGui.QMessageBox.information(self, "Enema", "[cmd] keyword required for this plugin", 1, 0)
             return
-        self.pluginWidget = AddUserWidget(self.webData(), self.qstrings['mssql_error_based']['exec_hex'], self)
+        self.pluginWidget = AddUserWidget(self.webData(), self.qstrings.value('mssql_error_based/exec_hex'), self)
         self.pluginWidget.logSignal.connect(self.addLog)
         self.pluginWidget.show()
         self.pluginWidget.activateWindow()
@@ -671,7 +663,7 @@ class EnemaForm(QtGui.QMainWindow):
         if not self.keywordsCheck("[cmd]"):
             QtGui.QMessageBox.information(self, "Enema", "[cmd] keyword required for this plugin", 1, 0)
             return
-        self.pluginWidget = OpenrowsetWidget(self.webData(), self.qstrings['mssql_error_based']['exec_hex'], self)
+        self.pluginWidget = OpenrowsetWidget(self.webData(), self.qstrings.value('mssql_error_based/exec_hex'), self)
         self.pluginWidget.logSignal.connect(self.addLog)
         self.pluginWidget.show()
         self.pluginWidget.activateWindow()
@@ -1090,12 +1082,12 @@ class EnemaForm(QtGui.QMainWindow):
         
     #Reading default or custom query strings
     def readQstrings(self):
-        cfgparser = configparser.ConfigParser()
         if os.path.exists(QSTRINGS_CUSTOM_PATH):
-            cfgparser.read_file(open(QSTRINGS_CUSTOM_PATH))
+            qs_path = QSTRINGS_CUSTOM_PATH
         else:
-            cfgparser.read_file(open(QSTRINGS_DEFAULT_PATH))
-        self.qstrings = cfgparser
+            qs_path = QSTRINGS_DEFAULT_PATH
+        qstrings = QtCore.QSettings(qs_path, QtCore.QSettings.IniFormat)
+        self.qstrings = qstrings
     
 #------------------------------------------------[MENU]ABOUT-SLOTS------------------------------------------------------#
         
@@ -1150,8 +1142,8 @@ class EnemaForm(QtGui.QMainWindow):
             if self.ui.dbListComboBox.count() < 1:
                 wD['dbName'] = ""
             elif self.ui.dbListComboBox.count() > 1:
-                self.ui.dbListComboBox.clear()
                 wD['dbName'] = ""
+                self.ui.dbListComboBox.clear()
             else:
                 wD['dbName'] = ",'" + str(self.ui.dbListComboBox.currentText()) + "'"
         

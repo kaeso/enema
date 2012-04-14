@@ -86,15 +86,15 @@ class Injector(QtCore.QThread):
     def dbType(self, todo):
         if self.vars['db_type'] == "MySQL":
             if self.vars['inj_type'] == "ERROR-BASED":
-                qstring = self.qstrings['mysql_error_based'][todo]
+                qstring = self.qstrings.value('mysql_error_based/' + todo)
             else:
-                qstring = self.qstrings['mysql_union_based'][todo]
+                qstring = self.qstrings.value('mysql_union_based/' + todo)
         else:
             if self.vars['inj_type'] == "ERROR-BASED":
-                qstring = self.qstrings['mssql_error_based'][todo]
+                qstring = self.qstrings.value('mssql_error_based/' + todo)
             else:
-                qstring = self.qstrings['mssql_union_based'][todo]
-        return core.txtproc.correctQstr(qstring)
+                qstring = self.qstrings.value('mssql_union_based/' + todo)
+        return qstring
         
     #Get current database
     def getCurrDb(self):
@@ -144,7 +144,7 @@ class Injector(QtCore.QThread):
                 return
             if dbCount < 1:
                 return
-
+            
             tQueue = Queue()
             threads = []
             for tNum in range(dbCount):  
@@ -427,15 +427,15 @@ class BlindInjector(QtCore.QThread):
     def blindType(self, todo):
         if self.vars['db_type'] == "MySQL":
             if self.vars['blind_inj_type'] == "Time":
-                qstring = self.qstrings['mysql_blind_time_based'][todo]
+                qstring = self.qstrings.value('mysql_blind_time_based/' + todo)
             else:
-                qstring = self.qstrings['mysql_blind_boolean_based'][todo]
+                qstring = self.qstrings.value('mysql_blind_boolean_based/' + todo)
         else:
             if self.vars['blind_inj_type'] == "Time":
-                qstring = self.qstrings['mssql_blind_time_based'][todo]
+                qstring = self.qstrings.value('mssql_blind_time_based/' + todo)
             else:
-                qstring = self.qstrings['mssql_blind_boolean_based'][todo]
-        return core.txtproc.correctQstr(qstring)
+                qstring = self.qstrings.value('mssql_blind_boolean_based/' + todo)
+        return qstring
    
     #Testing for optimal delay
     def delayTest(self):
@@ -445,7 +445,7 @@ class BlindInjector(QtCore.QThread):
         
         if self.vars['hexed']:
             hex = core.txtproc.strToHex(query, True)
-            query = self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars, {'hex' : hex})
+            query = self.wq.buildQuery(self.qstrings.value('mssql_error_based/exec_hex'), self.vars, {'hex' : hex})
             
         for resp in range(3):
             response = self.wq.httpRequest("", False, self.vars, True)
@@ -501,7 +501,7 @@ class BlindInjector(QtCore.QThread):
                 query = self.wq.buildQuery(self.blindType('delay'), self.vars, {'delay' : str(self.vars['time'])})
                 if self.vars['hexed']:
                     hex = core.txtproc.strToHex(query, True)
-                    query = self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars, {'hex' : hex})
+                    query = self.wq.buildQuery(self.qstrings.value('mssql_error_based/exec_hex'), self.vars, {'hex' : hex})
                     
                 for i in range(2):
                     response = self.wq.httpRequest(query, False, self.vars, True)
@@ -629,7 +629,7 @@ class BlindInjector(QtCore.QThread):
                                         {'symbol_num' : str(self.symbol_num), 'condition' : " " + condition, 'delay' : str(self.vars['time'])})
                                         
         if self.vars['hexed'] :
-            query = self.wq.buildQuery(core.txtproc.correctQstr(self.qstrings['mssql_error_based']['exec_hex']), self.vars,{'hex' : core.txtproc.strToHex(query, True)})
+            query = self.wq.buildQuery(self.qstrings.value('mssql_error_based/exec_hex'), self.vars,{'hex' : core.txtproc.strToHex(query, True)})
             
         self.request_counter += 1
         response = self.wq.httpRequest(query, False, self.vars, True)
