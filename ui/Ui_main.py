@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\Projects\enema\gui\main\main.ui'
+# Form implementation generated from reading ui file 'D:\Projects\enema-dev\ui\main.ui'
 #
-# Created: Wed Apr 11 13:40:38 2012
+# Created: Sun Apr 15 10:21:10 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -156,9 +156,6 @@ class Ui_MainForm(object):
         self.killButton = QtGui.QToolButton(self.db_structureTab)
         self.killButton.setGeometry(QtCore.QRect(460, 520, 91, 23))
         self.killButton.setObjectName(_fromUtf8("killButton"))
-        self.logButton = QtGui.QToolButton(self.db_structureTab)
-        self.logButton.setGeometry(QtCore.QRect(460, 490, 91, 21))
-        self.logButton.setObjectName(_fromUtf8("logButton"))
         self.tabs.addTab(self.db_structureTab, _fromUtf8(""))
         self.queryTab = QtGui.QWidget()
         self.queryTab.setObjectName(_fromUtf8("queryTab"))
@@ -340,8 +337,6 @@ class Ui_MainForm(object):
         self.menuHelp.setObjectName(_fromUtf8("menuHelp"))
         self.menuPlugins = QtGui.QMenu(self.menubar)
         self.menuPlugins.setObjectName(_fromUtf8("menuPlugins"))
-        self.menuMssql = QtGui.QMenu(self.menuPlugins)
-        self.menuMssql.setObjectName(_fromUtf8("menuMssql"))
         MainForm.setMenuBar(self.menubar)
         self.saveTables = QtGui.QAction(MainForm)
         self.saveTables.setObjectName(_fromUtf8("saveTables"))
@@ -365,14 +360,6 @@ class Ui_MainForm(object):
         self.lsSettings.setObjectName(_fromUtf8("lsSettings"))
         self.qEditor = QtGui.QAction(MainForm)
         self.qEditor.setObjectName(_fromUtf8("qEditor"))
-        self.actionFtp = QtGui.QAction(MainForm)
-        self.actionFtp.setObjectName(_fromUtf8("actionFtp"))
-        self.actionAdd_user = QtGui.QAction(MainForm)
-        self.actionAdd_user.setObjectName(_fromUtf8("actionAdd_user"))
-        self.actionOpenrowset = QtGui.QAction(MainForm)
-        self.actionOpenrowset.setObjectName(_fromUtf8("actionOpenrowset"))
-        self.actionXp_cmdshell = QtGui.QAction(MainForm)
-        self.actionXp_cmdshell.setObjectName(_fromUtf8("actionXp_cmdshell"))
         self.actionPreferences = QtGui.QAction(MainForm)
         self.actionPreferences.setObjectName(_fromUtf8("actionPreferences"))
         self.actionManual = QtGui.QAction(MainForm)
@@ -392,11 +379,6 @@ class Ui_MainForm(object):
         self.menuTools.addAction(self.actionPreferences)
         self.menuHelp.addAction(self.actionManual)
         self.menuHelp.addAction(self.menuAbout)
-        self.menuMssql.addAction(self.actionFtp)
-        self.menuMssql.addAction(self.actionAdd_user)
-        self.menuMssql.addAction(self.actionOpenrowset)
-        self.menuMssql.addAction(self.actionXp_cmdshell)
-        self.menuPlugins.addAction(self.menuMssql.menuAction())
         self.menubar.addAction(self.menuSave.menuAction())
         self.menubar.addAction(self.menuLoad.menuAction())
         self.menubar.addAction(self.menuTools.menuAction())
@@ -441,7 +423,6 @@ class Ui_MainForm(object):
         self.radioLimit.setText(QtGui.QApplication.translate("MainForm", "LIMIT", None, QtGui.QApplication.UnicodeUTF8))
         self.headersButton.setText(QtGui.QApplication.translate("MainForm", "Headers", None, QtGui.QApplication.UnicodeUTF8))
         self.killButton.setText(QtGui.QApplication.translate("MainForm", "Kill all", None, QtGui.QApplication.UnicodeUTF8))
-        self.logButton.setText(QtGui.QApplication.translate("MainForm", "Show log", None, QtGui.QApplication.UnicodeUTF8))
         self.tabs.setTabText(self.tabs.indexOf(self.db_structureTab), QtGui.QApplication.translate("MainForm", "Structure", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_3.setTitle(QtGui.QApplication.translate("MainForm", "Query", None, QtGui.QApplication.UnicodeUTF8))
         self.queryButton.setText(QtGui.QApplication.translate("MainForm", "Run", None, QtGui.QApplication.UnicodeUTF8))
@@ -484,7 +465,6 @@ class Ui_MainForm(object):
         self.menuTools.setTitle(QtGui.QApplication.translate("MainForm", "Tools", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainForm", "Help", None, QtGui.QApplication.UnicodeUTF8))
         self.menuPlugins.setTitle(QtGui.QApplication.translate("MainForm", "Plugins", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuMssql.setTitle(QtGui.QApplication.translate("MainForm", "mssql", None, QtGui.QApplication.UnicodeUTF8))
         self.saveTables.setText(QtGui.QApplication.translate("MainForm", "Tables", None, QtGui.QApplication.UnicodeUTF8))
         self.saveColumns.setText(QtGui.QApplication.translate("MainForm", "Columns", None, QtGui.QApplication.UnicodeUTF8))
         self.loadTables.setText(QtGui.QApplication.translate("MainForm", "Tables", None, QtGui.QApplication.UnicodeUTF8))
@@ -498,10 +478,6 @@ class Ui_MainForm(object):
         self.lsSettings.setText(QtGui.QApplication.translate("MainForm", "Site settings", None, QtGui.QApplication.UnicodeUTF8))
         self.lsSettings.setShortcut(QtGui.QApplication.translate("MainForm", "Ctrl+O", None, QtGui.QApplication.UnicodeUTF8))
         self.qEditor.setText(QtGui.QApplication.translate("MainForm", "Query editor", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionFtp.setText(QtGui.QApplication.translate("MainForm", "ftp", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionAdd_user.setText(QtGui.QApplication.translate("MainForm", "add_user", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionOpenrowset.setText(QtGui.QApplication.translate("MainForm", "openrowset", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionXp_cmdshell.setText(QtGui.QApplication.translate("MainForm", "xp_cmdshell", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPreferences.setText(QtGui.QApplication.translate("MainForm", "Preferences", None, QtGui.QApplication.UnicodeUTF8))
         self.actionManual.setText(QtGui.QApplication.translate("MainForm", "Manual", None, QtGui.QApplication.UnicodeUTF8))
 

