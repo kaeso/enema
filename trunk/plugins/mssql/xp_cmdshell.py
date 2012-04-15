@@ -23,9 +23,14 @@ from queue import Queue
 from core.http import HTTP_Handler
 from PyQt4 import QtCore, QtGui
 
-from gui.mssql.xp_cmdshell.Ui_xp_cmdshell import Ui_cmdshellWidget
+from .ui.Ui_xp_cmdshell import Ui_cmdshellWidget
+
 
 PLUGIN_NAME = "XP_CMDSHELL"
+PLUGIN_GROUP = "mssql"
+PLUGIN_CLASS_NAME = "CmdShellWidget"
+PLUGIN_DESCRIPTION = "xp_cmdshell output fetcher (multithreaded)"
+
 
 class CmdShellWidget(QtGui.QWidget):
     

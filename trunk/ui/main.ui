@@ -528,19 +528,6 @@ p, li { white-space: pre-wrap; }
        <string>Kill all</string>
       </property>
      </widget>
-     <widget class="QToolButton" name="logButton">
-      <property name="geometry">
-       <rect>
-        <x>460</x>
-        <y>490</y>
-        <width>91</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Show log</string>
-      </property>
-     </widget>
     </widget>
     <widget class="QWidget" name="queryTab">
      <attribute name="title">
@@ -1210,16 +1197,6 @@ p, li { white-space: pre-wrap; }
     <property name="title">
      <string>Plugins</string>
     </property>
-    <widget class="QMenu" name="menuMssql">
-     <property name="title">
-      <string>mssql</string>
-     </property>
-     <addaction name="actionFtp"/>
-     <addaction name="actionAdd_user"/>
-     <addaction name="actionOpenrowset"/>
-     <addaction name="actionXp_cmdshell"/>
-    </widget>
-    <addaction name="menuMssql"/>
    </widget>
    <addaction name="menuSave"/>
    <addaction name="menuLoad"/>
@@ -1286,26 +1263,6 @@ p, li { white-space: pre-wrap; }
   <action name="qEditor">
    <property name="text">
     <string>Query editor</string>
-   </property>
-  </action>
-  <action name="actionFtp">
-   <property name="text">
-    <string>ftp</string>
-   </property>
-  </action>
-  <action name="actionAdd_user">
-   <property name="text">
-    <string>add_user</string>
-   </property>
-  </action>
-  <action name="actionOpenrowset">
-   <property name="text">
-    <string>openrowset</string>
-   </property>
-  </action>
-  <action name="actionXp_cmdshell">
-   <property name="text">
-    <string>xp_cmdshell</string>
    </property>
   </action>
   <action name="actionPreferences">

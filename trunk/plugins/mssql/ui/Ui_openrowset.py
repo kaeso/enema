@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\Projects\enema\gui\mssql\openrowset\openrowset.ui'
+# Form implementation generated from reading ui file 'D:\Projects\enema-dev\plugins\mssql\ui\openrowset.ui'
 #
-# Created: Tue Apr  3 09:10:26 2012
+# Created: Sun Apr 15 10:21:12 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!

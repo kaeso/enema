@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\Projects\enema\gui\main\preferences.ui'
+# Form implementation generated from reading ui file 'D:\Projects\enema-dev\ui\preferences.ui'
 #
-# Created: Thu Apr 12 18:20:49 2012
+# Created: Sun Apr 15 10:21:10 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!

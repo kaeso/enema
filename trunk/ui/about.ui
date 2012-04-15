@@ -701,7 +701,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>170</x>
      <y>60</y>
-     <width>211</width>
+     <width>201</width>
      <height>16</height>
     </rect>
    </property>
@@ -712,7 +712,7 @@ p, li { white-space: pre-wrap; }
     </font>
    </property>
    <property name="text">
-    <string>Powerfull SQL injection tool</string>
+    <string>SQL Injection Framework</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_4">

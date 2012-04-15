@@ -1,5 +1,5 @@
 """
-    Enema module: GUI events (main)
+    Enema main: GUI events
     Copyright (C) 2011 Valeriy Bogachuk
     
     This program is free software: you can redistribute it and/or modify
@@ -16,28 +16,21 @@
 import os
 import sys
 import core.txtproc
-#Plugins
-#ftp
-from plugins.mssql.ftp import FtpWidget
-#add_user
-from plugins.mssql.add_user import AddUserWidget
-#openrowset
-from plugins.mssql.openrowset import OpenrowsetWidget
-#xp_cmdshell
-from plugins.mssql.xp_cmdshell import CmdShellWidget
 
 from core.e_const import *
 from core.injector import Injector
 from core.injector import BlindInjector
+from core.plugins import PluginHandler
 
 from PyQt4 import QtCore, QtGui 
+from importlib import import_module
 
-from gui.main.Ui_main import Ui_MainForm
-from gui.main.Ui_preferences import Ui_preferencesWidget
-from gui.main.Ui_headers import Ui_HeadersWidget
-from gui.main.Ui_encoder import Ui_EncoderForm
-from gui.main.Ui_about import Ui_AboutForm
-from gui.main.Ui_query_editor import Ui_QueryEditorForm
+from ui.Ui_main import Ui_MainForm
+from ui.Ui_preferences import Ui_preferencesWidget
+from ui.Ui_headers import Ui_HeadersWidget
+from ui.Ui_encoder import Ui_EncoderForm
+from ui.Ui_about import Ui_AboutForm
+from ui.Ui_query_editor import Ui_QueryEditorForm
 
 
 #Query editor form GUI class
@@ -468,7 +461,7 @@ class HeadersForm(QtGui.QWidget):
             self.ui.lineCustomHeader.setEnabled(False)
             self.ui.urlencode.setEnabled(False)
             
-
+            
 #Main form GUI class
 class EnemaForm(QtGui.QMainWindow):
     
@@ -478,17 +471,14 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui = Ui_MainForm()
         self.ui.setupUi(self)
         
-        #Setting fixed form size
-        self.setFixedSize(591, 624)
-        
         #-----------------ICONS-----------------  
         #Tray and window icon
-        trayIcon = QtGui.QIcon("gui/resources/icons/tray.png")
+        trayIcon = QtGui.QIcon("ui/resources/icons/tray.png")
         self.setWindowIcon(trayIcon)
         #Tab icons
-        self.ui.tabs.setTabIcon(0, QtGui.QIcon("gui/resources/icons/db_structure.png"))
-        self.ui.tabs.setTabIcon(1, QtGui.QIcon("gui/resources/icons/query.png"))
-        self.ui.tabs.setTabIcon(2, QtGui.QIcon("gui/resources/icons/dump.png"))
+        self.ui.tabs.setTabIcon(0, QtGui.QIcon("ui/resources/icons/db_structure.png"))
+        self.ui.tabs.setTabIcon(1, QtGui.QIcon("ui/resources/icons/query.png"))
+        self.ui.tabs.setTabIcon(2, QtGui.QIcon("ui/resources/icons/dump.png"))
 
         #Tray menu
         self.actionQuit = QtGui.QAction(self)
@@ -532,7 +522,7 @@ class EnemaForm(QtGui.QMainWindow):
         
         #Set current program version and logo
         self.about_frm.ui.versionLabel.setText("Version: " + VERSION)
-        self.about_frm.ui.logoLabel.setPixmap(QtGui.QPixmap("gui/resources/logo.png"))
+        self.about_frm.ui.logoLabel.setPixmap(QtGui.QPixmap("ui/resources/logo.png"))
         
         self.headers_frm.ui.lineUserAgent.setText(DEFAULT_USER_AGENT)
         
@@ -559,12 +549,14 @@ class EnemaForm(QtGui.QMainWindow):
                 self.headers_frm.move(widgetPosition)
                 
         #Query strings loading
-        self.readQstrings()
+        self.loadQstrings()
+        #Plugins loading
+        self.loadPlugins()
         
 #------------------------------------------------SIGNAL-CONNECTIONS------------------------------------------------------#
 
         #Query changed in editor
-        self.qeditor_frm.qstringsChanged.connect(self.readQstrings)
+        self.qeditor_frm.qstringsChanged.connect(self.loadQstrings)
         
         #DB_STRUCTURE-TAB
         self.ui.runButton.clicked.connect(self.runButton_OnClick)
@@ -572,7 +564,6 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.radioTables.toggled.connect(self.radioTables_Toggled)
         self.ui.radioColumns.toggled.connect(self.radioColumns_Toggled)
         self.ui.radioBases.toggled.connect(self.radioBases_Toggled)
-        self.ui.logButton.clicked.connect(self.logButton_OnClick)
         self.ui.clearLogButton.clicked.connect(self.clearLogButton_OnClick)
         self.ui.killButton.clicked.connect(self.killTask)
         self.ui.headersButton.clicked.connect(self.headersButton_OnClick)
@@ -624,60 +615,66 @@ class EnemaForm(QtGui.QMainWindow):
         #Tray icon
         self.actionQuit.triggered.connect(self.trayQuit_Clicked)
         self.sysTray.activated.connect(self.trayActivated)
-
-#--------------------------------------------[MENU]PLUGINS-SIGNAL-CONNECTS-------------------------------------------------#
-
-        #ftp
-        self.ui.actionFtp.triggered.connect(self.actionFtp_OnClick)
-        #add_user
-        self.ui.actionAdd_user.triggered.connect(self.actionAdd_user_OnClick)
-        #openrowset
-        self.ui.actionOpenrowset.triggered.connect(self.actionOpenrowset_OnClick)
-        #xp_cmdshell
-        self.ui.actionXp_cmdshell.triggered.connect(self.actionXp_cmdshell_OnClick)
         
-#------------------------------------------------[MENU]PLUGIN-MENU-SLOTS------------------------------------------------------#
+#------------------------------------------------PLUGINS------------------------------------------------------#
+    
+    #Load plugins
+    def loadPlugins(self):
+        self.ui.menuPlugins.clear()
         
-    #ftp    
-    def actionFtp_OnClick(self):
-        if not self.keywordsCheck("[cmd]"):
-            QtGui.QMessageBox.information(self, "Enema", "[cmd] keyword required for this plugin", 1, 0)
-            return
-        self.pluginWidget = FtpWidget(self.webData(), self.qstrings.value('mssql_error_based/exec_hex'), self)
-        self.pluginWidget.logSignal.connect(self.addLog)
-        self.pluginWidget.show()
-        self.pluginWidget.activateWindow()
-
-    #add_user       
-    def actionAdd_user_OnClick(self):
-        if not self.keywordsCheck("[cmd]"):
-            QtGui.QMessageBox.information(self, "Enema", "[cmd] keyword required for this plugin", 1, 0)
-            return
-        self.pluginWidget = AddUserWidget(self.webData(), self.qstrings.value('mssql_error_based/exec_hex'), self)
-        self.pluginWidget.logSignal.connect(self.addLog)
-        self.pluginWidget.show()
-        self.pluginWidget.activateWindow()
+        P_Handler = PluginHandler()
+        P_Handler.logSignal.connect(self.addLog)
         
-    #openrowset      
-    def actionOpenrowset_OnClick(self):
-        if not self.keywordsCheck("[cmd]"):
-            QtGui.QMessageBox.information(self, "Enema", "[cmd] keyword required for this plugin", 1, 0)
+        import_strings = P_Handler.findPlugins("plugins")
+        all_info = P_Handler.getPluginsInfo(import_strings)
+        
+        self.plugin_groups = []
+        self.modules = {}
+        for path, cls_name in all_info['import_info'].items():
+            module = import_module(path)
+            self.modules[cls_name] = getattr(module, cls_name)
+        for p_info in all_info['plugins_info']:
+            self.addPluginAction(p_info['PLUGIN_GROUP'], p_info['PLUGIN_NAME'], p_info['PLUGIN_CLASS_NAME'])
+            
+    #Adding plugin action to menu
+    def addPluginAction(self, plugin_group, plugin_name, plugin_class):
+        p_action = QtGui.QAction(plugin_name.lower(), self)
+        p_action.setObjectName("pluginAction_" + plugin_name)
+        
+        if len(self.plugin_groups) < 1:
+            self.p_group = QtGui.QMenu(plugin_group.lower(), self)
+            self.ui.menuPlugins.addMenu(self.p_group)
+            self.p_group.addAction(p_action)
+            self.plugin_groups.append(self.p_group)
+            self.pluginSlotConnect(p_action, plugin_class)
             return
-        self.pluginWidget = OpenrowsetWidget(self.webData(), self.qstrings.value('mssql_error_based/exec_hex'), self)
+        else:
+            for grp in self.plugin_groups:
+                if grp.title() == plugin_group:
+                    self.p_group = grp
+            if self.p_group.title() == plugin_group:
+                self.p_group.addAction(p_action)
+            else:
+                self.p_group = QtGui.QMenu(plugin_group, self)
+                self.ui.menuPlugins.addMenu(self.p_group)
+                self.p_group.addAction(p_action)
+                self.plugin_groups.append(self.p_group)
+            self.pluginSlotConnect(p_action, plugin_class)
+    
+    #Connecting to action.triggered signal
+    def pluginSlotConnect(self, p_action,  plugin_class):
+        signalMapper = QtCore.QSignalMapper(self)
+        signalMapper.setMapping(p_action, plugin_class)
+        p_action.triggered.connect(signalMapper.map)
+        signalMapper.mapped[str].connect(self.pluginAction_Triggered)
+    
+    #Slot for action.triggered signal
+    def pluginAction_Triggered(self, cls):
+        self.pluginWidget = self.modules[cls](self.webData(), self.qstrings, self)
         self.pluginWidget.logSignal.connect(self.addLog)
         self.pluginWidget.show()
         self.pluginWidget.activateWindow()
     
-    #xp_cmdshell
-    def actionXp_cmdshell_OnClick(self):
-        if (not self.keywordsCheck("[sub]") or not self.keywordsCheck("[cmd]")):
-            QtGui.QMessageBox.information(self, "Enema", "[sub] and [cmd] keywords required for this plugin", 1, 0)
-            return
-        self.pluginWidget = CmdShellWidget(self.webData(), self.qstrings, self)
-        self.pluginWidget.logSignal.connect(self.addLog)
-        self.pluginWidget.show()
-        self.pluginWidget.activateWindow()
-
 #------------------------------------------------GENERAL-FUNCTIONS------------------------------------------------------#
 
     #Get user defined parametes from GUI
@@ -1080,8 +1077,8 @@ class EnemaForm(QtGui.QMainWindow):
         self.preferences_frm.show()
         self.preferences_frm.activateWindow()
         
-    #Reading default or custom query strings
-    def readQstrings(self):
+    #Loading default or custom query strings
+    def loadQstrings(self):
         if os.path.exists(QSTRINGS_CUSTOM_PATH):
             qs_path = QSTRINGS_CUSTOM_PATH
         else:
@@ -1160,18 +1157,7 @@ class EnemaForm(QtGui.QMainWindow):
     #Cleaning log
     def clearLogButton_OnClick(self):
         self.ui.logTxtEdit.clear()
-        
-    #Show or Hide log field
-    def logButton_OnClick(self):
-        if self.ui.logButton.text() == "Show log":
-            self.setFixedSize(1121, 624)
-            self.resize(1121, 624)
-            self.ui.logButton.setText("Hide log")
-        else:
-            self.setFixedSize(591, 624)
-            self.resize(591, 624)
-            self.ui.logButton.setText("Show log")
-            
+  
     #Run button click (query tab)
     def queryButton_OnClick(self):
         if self.isBusy():
@@ -1440,6 +1426,7 @@ class EnemaForm(QtGui.QMainWindow):
     
     def setTrueTime(self, trueTime):
         self.ui.trueTimeBox.setValue(trueTime)
+        
 #------------------------------------------------END------------------------------------------------------#
 
 if __name__ == "__main__":
