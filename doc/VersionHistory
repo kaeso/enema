@@ -1,3 +1,7 @@
+Enema SQLi Framework 1.70
+
+	+ Added custom plugins support
+	
 Enema v1.69 
 
 	+ Added injection support in http headers (User-Agent, Cookie, Referer, X-Forwarded-For, Custom Header...) 
