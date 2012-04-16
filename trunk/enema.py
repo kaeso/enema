@@ -49,6 +49,25 @@ class QueryEditorForm(QtGui.QWidget):
         self.ui.replaceButton.clicked.connect(self.replaceButton_OnClick)
         self.ui.saveButton.clicked.connect(self.qsSave_OnClick)
         self.ui.defaultsButton.clicked.connect(self.qsRestore_OnClick)
+    
+    #Save settings to new ini file
+    def replaceAndSave(self, qstrings, path):
+        custQstrings = QtCore.QSettings(path, QtCore.QSettings.IniFormat)
+        for key in qstrings.allKeys():
+            custQstrings.setValue(key, qstrings.value(key))
+        
+        findStr = self.ui.lineFindStr.text()
+        replaceStr = self.ui.lineResplaceStr.text()
+    
+        stringFound = 0
+        for query in custQstrings.allKeys():
+            stringFound += custQstrings.value(query).find(findStr)
+            custQstrings.setValue(query, custQstrings.value(query).replace(findStr, replaceStr))
+        #if string not found then no custom file will be created
+        if stringFound <= 0:
+            return
+            
+        custQstrings.sync()
         
     #Loading querystrings to GUI
     def loadQstrings(self):
@@ -166,20 +185,9 @@ class QueryEditorForm(QtGui.QWidget):
             qs_path = QSTRINGS_CUSTOM_PATH
         else:
             qs_path = QSTRINGS_DEFAULT_PATH
+            
         qstrings = QtCore.QSettings(qs_path, QtCore.QSettings.IniFormat)
-        
-        findStr = self.ui.lineFindStr.text()
-        replaceStr = self.ui.lineResplaceStr.text()
-        
-        stringFound = 0
-        for query in qstrings.allKeys():
-            stringFound += qstrings.value(query).find(findStr)
-            qstrings.setValue(query, qstrings.value(query).replace(findStr, replaceStr))
-        #if string not found then no custom file will be created
-        if stringFound <= 0:
-            return
-
-        qstrings.sync()
+        self.replaceAndSave(qstrings, QSTRINGS_CUSTOM_PATH)
         
         self.loadQstrings()
         self.qstringsChanged.emit()
