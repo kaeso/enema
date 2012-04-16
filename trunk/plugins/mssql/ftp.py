@@ -14,6 +14,7 @@
 """
 
 import os
+import time
 import core.txtproc
 from core.e_const import CONFIG_PATH
 from core.http import HTTP_Handler
@@ -131,6 +132,7 @@ class Worker(QtCore.QThread):
         #--------Task----------
         self.ftpTransferTask()
         #-----------------------
+        time.sleep(0.1)
         self.taskDoneSignal.emit()
         self.logSignal.emit("*** [" + PLUGIN_NAME + "]: TASK DONE ***")
         

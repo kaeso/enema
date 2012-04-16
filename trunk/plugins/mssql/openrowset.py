@@ -14,6 +14,7 @@
 """
 
 import os
+import time
 import core.txtproc
 import pyodbc
 from core.e_const import CONFIG_PATH
@@ -297,6 +298,7 @@ class Worker(QtCore.QThread):
             self.enableFeatures()
         else:
             self.opernrowsetWorker()
+        time.sleep(0.1)
         self.taskDoneSignal.emit()
         self.logSignal.emit("*** [" + PLUGIN_NAME + "]: TASK DONE ***")
 

@@ -66,6 +66,7 @@ class Injector(QtCore.QThread):
         if self.vars['task'] == "dump":
             self.syncThreads()
             
+        time.sleep(0.1)
         self.progressSignal.emit(0, True)
          
         self.logSignal.emit("\n--- TASK STOPPED ---")

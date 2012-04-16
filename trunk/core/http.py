@@ -380,18 +380,15 @@ class HTTP_Handler(QtCore.QObject):
         except socket.error:
             errno, errstr = sys.exc_info()[:2]
             if errno == socket.timeout:
-                time.sleep(0.01)
                 self.logSignal.emit("\n\n[HTTP Timeout]")
                 return "[---Timed out---]"
                 
         except URLError as uerr:
             if isinstance(uerr.reason, socket.timeout):
-                time.sleep(0.01)
                 self.logSignal.emit("\n\n[HTTP Timeout]")
                 return "[---Timed out---]"
                 
-        except ValueError as err:
-            time.sleep(0.01)
+        except Exception as err:
             self.logSignal.emit("\n[x] Can't start task.\n\n[reason]: " + str(err))
             return "no_content"
         

@@ -14,6 +14,7 @@
 """
 
 import os
+import time
 import core.txtproc
 from core.e_const import CONFIG_PATH
 from core.http import HTTP_Handler
@@ -86,7 +87,7 @@ class AddUserWidget(QtGui.QWidget):
         self.worker.taskDoneSignal.connect(self.taskDone, type=QtCore.Qt.QueuedConnection)
         #---
         self.worker.start()
-        
+
     #When widget closing
     def closeEvent(self, event):
         #Saving settings
@@ -116,6 +117,7 @@ class Worker(QtCore.QThread):
         #--------Task----------
         self.addUserTask()
         #-----------------------
+        time.sleep(0.1)
         self.taskDoneSignal.emit()
         self.logSignal.emit("*** [" + PLUGIN_NAME + "]: TASK DONE ***")
         

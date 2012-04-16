@@ -145,6 +145,7 @@ class Worker(QtCore.QThread):
             self.xp_cmdshell()
         else:
             self.enable_xp_cmd()
+        time.sleep(0.1)
         self.progressSignal.emit(0, True)
         self.logSignal.emit("*** [" + PLUGIN_NAME + "]: TASK DONE ***")
     

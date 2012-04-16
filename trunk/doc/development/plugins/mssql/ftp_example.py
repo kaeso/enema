@@ -14,7 +14,7 @@
 """
 
 import os
-
+import time
 """ core.txtproc - Text operations, encodings etc """
 import core.txtproc
 
@@ -223,6 +223,7 @@ class Worker(QtCore.QThread):
         """ Runing methods here"""
         self.ftpTransferTask()
         #-----------------------
+        time.sleep(0.1)
         self.taskDoneSignal.emit()
         self.logSignal.emit("*** [" + PLUGIN_NAME + "]: TASK DONE ***")
         
