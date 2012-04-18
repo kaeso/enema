@@ -55,6 +55,7 @@ class PluginHandler(QtCore.QObject):
                 module = module.replace(".", "/") + ".py"
                 mod_full_path = os.path.abspath(module)
                 self.logSignal.emit(" - !!! - \n\n * Can't load plugin '" + mod_full_path + "'\n --> Reason: " + str(ex) + "\n\n - !!! -\n\n")
-        
+                
+        self.logSignal.emit(" - Total plugins loaded: " + str(len(import_info)))
         return {'plugins_info' : plugins_info,  'import_info' : import_info}
     

@@ -32,7 +32,6 @@ from ui.Ui_encoder import Ui_EncoderForm
 from ui.Ui_about import Ui_AboutForm
 from ui.Ui_query_editor import Ui_QueryEditorForm
 
-
 #Query editor form GUI class
 class QueryEditorForm(QtGui.QWidget):
     
@@ -326,6 +325,9 @@ class EncoderForm(QtGui.QWidget):
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
         self.ui.decodeButton.hide()
+        
+        self.preferences_frm = PreferencesForm()
+        
     #SIGNALS------------------------------------------------------------------------
         self.ui.encodeButton.clicked.connect(self.encodeButton_OnClick)
         self.ui.decodeButton.clicked.connect(self.decodeButton_OnClick)
@@ -417,7 +419,6 @@ class PreferencesForm(QtGui.QWidget):
         settings.setValue('Main/rnd_upcase', self.ui.isRndUpper.isChecked())
         settings.setValue('Main/accept_cookies', self.ui.acceptCookies.isChecked())
         settings.sync()
-
 
 #HTTP Headers widget
 class HeadersForm(QtGui.QWidget):
@@ -559,8 +560,14 @@ class EnemaForm(QtGui.QMainWindow):
         #Query strings loading
         self.loadQstrings()
         #Plugins loading
-        self.loadPlugins()
-        
+        if os.path.exists("plugins"):
+            self.ui.menuPlugins.clear()
+            self.loadPlugins()
+        else:
+            dw_plugins = QtGui.QAction("Download", self)
+            self.ui.menuPlugins.addAction(dw_plugins)
+            dw_plugins.triggered.connect(self.downloadPlugins_Clicked)
+            
 #------------------------------------------------SIGNAL-CONNECTIONS------------------------------------------------------#
 
         #Query changed in editor
@@ -625,7 +632,11 @@ class EnemaForm(QtGui.QMainWindow):
         self.sysTray.activated.connect(self.trayActivated)
         
 #------------------------------------------------PLUGINS------------------------------------------------------#
-    
+
+    #download plugins from repository
+    def downloadPlugins_Clicked(self):
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl("http://code.google.com/p/enema/downloads/list"))
+        
     #Load plugins
     def loadPlugins(self):
         self.ui.menuPlugins.clear()
