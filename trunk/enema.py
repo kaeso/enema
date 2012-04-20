@@ -59,20 +59,17 @@ class QueryEditorForm(QtGui.QWidget):
         self.ui.treeQueryStrings.topLevelItem(2).setIcon(0, QtGui.QIcon("ui/resources/icons/query_editor/oracle.png"))
         self.ui.treeQueryStrings.topLevelItem(3).setIcon(0, QtGui.QIcon("ui/resources/icons/query_editor/postgresql.png"))
         
-    def setCurrSettingsHeader(self, path):
-        if "custom" in path:
-            header_name = "Query strings (CUSTOM)"
-        else:
-            header_name = "Query strings"
-        self.ui.treeQueryStrings.setHeaderLabel(header_name)
-        
     def qstringsEdited(self):
         self.edited = True
     
     def lineEditingFinished(self):
         if self.edited:
-            self.custom_settings.setValue(self.ui.treeQueryStrings.currentItem().parent().text(0)\
+            try:
+                self.custom_settings.setValue(self.ui.treeQueryStrings.currentItem().parent().text(0)\
                                           + "/" + self.ui.treeQueryStrings.currentItem().text(0), self.ui.lineQueryString.text())
+            except AttributeError:
+                self.edited = False
+                return
             self.replaceAndSave(True)
             self.edited = False
             
@@ -103,7 +100,6 @@ class QueryEditorForm(QtGui.QWidget):
         for query in self.custom_settings.allKeys():
             stringsFound += self.custom_settings.value(query).find(findStr)
             self.custom_settings.setValue(query, self.custom_settings.value(query).replace(findStr, replaceStr))
-        #if string not found then no custom file will be created
         if stringsFound <= 0:
             QtGui.QMessageBox.information(self, "Enema - Query Editor", "Nothing to replace.", 1, 0)
             return
@@ -120,7 +116,6 @@ class QueryEditorForm(QtGui.QWidget):
         
         self.settings = QtCore.QSettings(path, QtCore.QSettings.IniFormat)
         self.custom_settings = self.cloneSettings(self.settings, QSTRINGS_CUSTOM_PATH)
-        self.setCurrSettingsHeader(path)
         
         if not self.edited:
             #Cleaning tree
@@ -498,7 +493,7 @@ class EnemaForm(QtGui.QMainWindow):
 
     #download plugins from repository
     def downloadPlugins_Clicked(self):
-        QtGui.QDesktopServices.openUrl(QtCore.QUrl("http://code.google.com/p/enema/downloads/list"))
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl("http://code.google.com/p/enema-plugins/downloads/list"))
         
     #Load plugins
     def loadPlugins(self):
