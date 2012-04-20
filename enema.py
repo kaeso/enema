@@ -32,6 +32,7 @@ from ui.Ui_encoder import Ui_EncoderForm
 from ui.Ui_about import Ui_AboutForm
 from ui.Ui_query_editor import Ui_QueryEditorForm
 
+
 #Query editor form GUI class
 class QueryEditorForm(QtGui.QWidget):
     
@@ -42,268 +43,130 @@ class QueryEditorForm(QtGui.QWidget):
         self.ui = Ui_QueryEditorForm()
         self.ui.setupUi(self)
         self.setWindowModality(QtCore.Qt.ApplicationModal)
+        self.edited = False
         self.loadQstrings()
-
+        
         #SIGNALS-----------------------------------------------------------------------
         self.ui.replaceButton.clicked.connect(self.replaceButton_OnClick)
-        self.ui.saveButton.clicked.connect(self.qsSave_OnClick)
-        self.ui.defaultsButton.clicked.connect(self.qsRestore_OnClick)
-    
-    #Save settings to new ini file
-    def replaceAndSave(self, qstrings, path):
-        custQstrings = QtCore.QSettings(path, QtCore.QSettings.IniFormat)
-        for key in qstrings.allKeys():
-            custQstrings.setValue(key, qstrings.value(key))
+        self.ui.defaultsButton.clicked.connect(self.defaultsButton_OnClick)
+        self.ui.treeQueryStrings.itemClicked.connect(self.loadQueryToLine)
+        self.ui.lineQueryString.textEdited.connect(self.qstringsEdited)
+        self.ui.lineQueryString.editingFinished.connect(self.lineEditingFinished)
         
-        findStr = self.ui.lineFindStr.text()
-        replaceStr = self.ui.lineResplaceStr.text()
+        #Setting icons for Databases
+        self.ui.treeQueryStrings.topLevelItem(0).setIcon(0, QtGui.QIcon("ui/resources/icons/query_editor/mssql.png"))
+        self.ui.treeQueryStrings.topLevelItem(1).setIcon(0, QtGui.QIcon("ui/resources/icons/query_editor/mysql.png"))
+        self.ui.treeQueryStrings.topLevelItem(2).setIcon(0, QtGui.QIcon("ui/resources/icons/query_editor/oracle.png"))
+        self.ui.treeQueryStrings.topLevelItem(3).setIcon(0, QtGui.QIcon("ui/resources/icons/query_editor/postgresql.png"))
+        
+    def setCurrSettingsHeader(self, path):
+        if "custom" in path:
+            header_name = "Query strings (CUSTOM)"
+        else:
+            header_name = "Query strings"
+        self.ui.treeQueryStrings.setHeaderLabel(header_name)
+        
+    def qstringsEdited(self):
+        self.edited = True
     
-        stringFound = 0
-        for query in custQstrings.allKeys():
-            stringFound += custQstrings.value(query).find(findStr)
-            custQstrings.setValue(query, custQstrings.value(query).replace(findStr, replaceStr))
-        #if string not found then no custom file will be created
-        if stringFound <= 0:
+    def lineEditingFinished(self):
+        if self.edited:
+            self.custom_settings.setValue(self.ui.treeQueryStrings.currentItem().parent().text(0)\
+                                          + "/" + self.ui.treeQueryStrings.currentItem().text(0), self.ui.lineQueryString.text())
+            self.replaceAndSave(True)
+            self.edited = False
+            
+    def loadQueryToLine(self):          
+        try:
+            editableString = self.ui.treeQueryStrings.currentItem().parent().text(0) + "/" + self.ui.treeQueryStrings.currentItem().text(0)
+            self.ui.lineQueryString.setText(self.settings.value(editableString))
+        except AttributeError:
+            pass
+     
+    #Creating settings clone
+    def cloneSettings(self, settings, newPath):
+        cloned_settings = QtCore.QSettings(newPath, QtCore.QSettings.IniFormat)
+        for key in settings.allKeys():
+            cloned_settings.setValue(key, settings.value(key))
+        return cloned_settings
+        
+    def replaceAndSave(self, save_only=False):
+        if save_only:
+            self.custom_settings.sync()
+            self.loadQstrings()
+            self.qstringsChanged.emit()
             return
             
-        custQstrings.sync()
-        
-    #Loading querystrings to GUI
+        findStr = self.ui.lineFindStr.text()
+        replaceStr = self.ui.lineResplaceStr.text()
+        stringsFound = 0
+        for query in self.custom_settings.allKeys():
+            stringsFound += self.custom_settings.value(query).find(findStr)
+            self.custom_settings.setValue(query, self.custom_settings.value(query).replace(findStr, replaceStr))
+        #if string not found then no custom file will be created
+        if stringsFound <= 0:
+            QtGui.QMessageBox.information(self, "Enema - Query Editor", "Nothing to replace.", 1, 0)
+            return
+        else:
+            QtGui.QMessageBox.information(self, "Enema - Query Editor", "Replaced: " + str(stringsFound), 1, 0)
+            
+        self.custom_settings.sync()
+       
     def loadQstrings(self):
         if os.path.exists(QSTRINGS_CUSTOM_PATH):
-            settings = QtCore.QSettings(QSTRINGS_CUSTOM_PATH, QtCore.QSettings.IniFormat)
+            path = QSTRINGS_CUSTOM_PATH
         else:
-            settings = QtCore.QSettings(QSTRINGS_DEFAULT_PATH, QtCore.QSettings.IniFormat)
+            path = QSTRINGS_DEFAULT_PATH
+        
+        self.settings = QtCore.QSettings(path, QtCore.QSettings.IniFormat)
+        self.custom_settings = self.cloneSettings(self.settings, QSTRINGS_CUSTOM_PATH)
+        self.setCurrSettingsHeader(path)
+        
+        if not self.edited:
+            #Cleaning tree
+            for db in range(self.ui.treeQueryStrings.topLevelItemCount()):
+                for i in range(self.ui.treeQueryStrings.topLevelItem(db).childCount()):
+                    self.ui.treeQueryStrings.topLevelItem(db).takeChildren()
+                    
+            for group in self.settings.childGroups():
+                grp =  QtGui.QTreeWidgetItem()
+                grp.setText(0, group)  
             
-        #MSSQL------------------------------------------------------------------
+                #Setting icons for injection types
+                if "_blind_boolean_" in group:
+                    grp.setIcon(0, QtGui.QIcon("ui/resources/icons/query_editor/blind_boolean.png"))
+                elif "_blind_time_" in group:
+                    grp.setIcon(0, QtGui.QIcon("ui/resources/icons/query_editor/blind_time.png"))
+                elif "_error_" in group:
+                    grp.setIcon(0, QtGui.QIcon("ui/resources/icons/query_editor/error.png"))
+                else:
+                    grp.setIcon(0, QtGui.QIcon("ui/resources/icons/query_editor/other.png"))
+                
+                #Adding injection types for each db
+                if "mssql_" in group:
+                    self.ui.treeQueryStrings.topLevelItem(0).addChild(grp)
+                if "mysql_" in group:
+                    self.ui.treeQueryStrings.topLevelItem(1).addChild(grp)
+                if "oracle_" in group:
+                    self.ui.treeQueryStrings.topLevelItem(2).addChild(grp)
+                if "postgresql_" in group:
+                    self.ui.treeQueryStrings.topLevelItem(3).addChild(grp)
+            
+                self.settings.beginGroup(group)
+                for key in self.settings.childKeys():
+                    grp_child =  QtGui.QTreeWidgetItem(grp)
+                    grp_child.setText(0, key)
+                    grp_child.setIcon(0, QtGui.QIcon("ui/resources/icons/query_editor/query_str.png"))
+                self.settings.endGroup()
         
-        #ERROR-BASED---
-        qstring_type = "mssql_error_based/"
-        #bases
-        self.ui.q_ms_curr_db_name.setText(settings.value(qstring_type + 'curr_db_name', ''))
-        self.ui.q_ms_dbs_count.setText(settings.value(qstring_type + 'dbs_count', ''))
-        self.ui.q_ms_get_db_name.setText(settings.value(qstring_type + 'get_db_name', ''))
-        self.ui.q_ms_get_db_name2.setText(settings.value(qstring_type + 'get_db_name2', ''))
-        #tables
-        self.ui.q_ms_tbls_count.setText(settings.value(qstring_type + 'tbls_count', ''))
-        self.ui.q_ms_get_tbl_name.setText(settings.value(qstring_type + 'get_tbl_name', ''))
-        self.ui.q_ms_get_tbl_name2.setText(settings.value(qstring_type + 'get_tbl_name2', ''))
-        #columns
-        self.ui.q_ms_get_column_name.setText(settings.value(qstring_type + 'get_column_name', ''))
-        self.ui.q_ms_columns_count.setText(settings.value(qstring_type + 'columns_count', ''))
-        self.ui.q_ms_get_column_name2.setText(settings.value(qstring_type + 'get_column_name2', ''))
-        self.ui.q_ms_get_column_name3.setText(settings.value(qstring_type + 'get_column_name3', ''))      
-        #xp_cmdshell
-        self.ui.q_ms_exec_hex.setText(settings.value(qstring_type + 'exec_hex', ''))
-        #etc
-        self.ui.q_ms_get_row.setText(settings.value(qstring_type + 'get_row', ''))
-        self.ui.q_ms_query.setText(settings.value(qstring_type + 'query', ''))
-        self.ui.q_ms_data_dump.setText(settings.value(qstring_type + 'data_dump', ''))
-
-        #UNION-BASED---
-        qstring_type = "mssql_union_based/"
-        #bases
-        self.ui.q_union_ms_curr_db_name.setText(settings.value(qstring_type + 'curr_db_name', ''))
-        self.ui.q_union_ms_dbs_count.setText(settings.value(qstring_type + 'dbs_count', ''))
-        self.ui.q_union_ms_get_db_name.setText(settings.value(qstring_type + 'get_db_name', ''))
-        self.ui.q_union_ms_get_db_name2.setText(settings.value(qstring_type + 'get_db_name2', ''))
-        #tables
-        self.ui.q_union_ms_tbls_count.setText(settings.value(qstring_type + 'tbls_count', ''))
-        self.ui.q_union_ms_get_tbl_name.setText(settings.value(qstring_type + 'get_tbl_name', ''))
-        self.ui.q_union_ms_get_tbl_name2.setText(settings.value(qstring_type + 'get_tbl_name2', ''))
-        #columns
-        self.ui.q_union_ms_get_column_name.setText(settings.value(qstring_type + 'get_column_name', ''))
-        self.ui.q_union_ms_columns_count.setText(settings.value(qstring_type + 'columns_count', ''))
-        self.ui.q_union_ms_get_column_name2.setText(settings.value(qstring_type + 'get_column_name2', ''))
-        self.ui.q_union_ms_get_column_name3.setText(settings.value(qstring_type + 'get_column_name3', ''))      
-        #etc
-        self.ui.q_union_ms_get_row.setText(settings.value(qstring_type + 'get_row', ''))
-        self.ui.q_union_ms_query.setText(settings.value(qstring_type + 'query', ''))
-        self.ui.q_union_ms_data_dump.setText(settings.value(qstring_type + 'data_dump', ''))
-        
-        #BLIND---
-        #Time-Based
-        qstring_type = "mssql_blind_time_based/"
-        self.ui.q_blind_ms_delay.setText(settings.value(qstring_type + 'delay', ''))
-        self.ui.q_blind_ms_single_row.setText(settings.value(qstring_type + 'single_row', ''))
-        self.ui.q_blind_ms_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
-        #Boolean-Based
-        qstring_type = "mssql_blind_boolean_based/"
-        self.ui.q_blind_ms_bool_single_row.setText(settings.value(qstring_type + 'single_row', ''))
-        self.ui.q_blind_ms_bool_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
-
-        #MySQL------------------------------------------------------------------
-        
-        #ERROR-BASED----
-        qstring_type = "mysql_error_based/"
-        #bases
-        self.ui.q_my_curr_db_name.setText(settings.value(qstring_type + 'curr_db_name', ''))
-        self.ui.q_my_dbs_count.setText(settings.value(qstring_type + 'dbs_count', ''))
-        self.ui.q_my_get_db_name2.setText(settings.value(qstring_type + 'get_db_name2', ''))
-        #tables
-        self.ui.q_my_tbls_count.setText(settings.value(qstring_type + 'tbls_count', ''))
-        self.ui.q_my_get_tbl_name2.setText(settings.value(qstring_type + 'get_tbl_name2', ''))
-        #columns
-        self.ui.q_my_columns_count.setText(settings.value(qstring_type + 'columns_count', ''))
-        self.ui.q_my_get_column_name2.setText(settings.value(qstring_type + 'get_column_name2', ''))
-        self.ui.q_my_get_column_name3.setText(settings.value(qstring_type + 'get_column_name3', ''))      
-        #etc
-        self.ui.q_my_query.setText(settings.value(qstring_type + 'query', ''))
-        
-        #UNION-Based---
-        qstring_type = "mysql_union_based/"
-        #bases
-        self.ui.q_union_my_curr_db_name.setText(settings.value(qstring_type + 'curr_db_name', ''))
-        self.ui.q_union_my_dbs_count.setText(settings.value(qstring_type + 'dbs_count', ''))
-        self.ui.q_union_my_get_db_name2.setText(settings.value(qstring_type + 'get_db_name2', ''))
-        #tables
-        self.ui.q_union_my_tbls_count.setText(settings.value(qstring_type + 'tbls_count', ''))
-        self.ui.q_union_my_get_tbl_name2.setText(settings.value(qstring_type + 'get_tbl_name2', ''))
-        #columns
-        self.ui.q_union_my_columns_count.setText(settings.value(qstring_type + 'columns_count', ''))
-        self.ui.q_union_my_get_column_name2.setText(settings.value(qstring_type + 'get_column_name2', ''))
-        self.ui.q_union_my_get_column_name3.setText(settings.value(qstring_type + 'get_column_name3', ''))      
-        #etc
-        self.ui.q_union_my_query.setText(settings.value(qstring_type + 'query', ''))
-        
-        #BLIND---
-        #Time-Based
-        qstring_type = "mysql_blind_time_based/"
-        self.ui.q_blind_my_delay.setText(settings.value(qstring_type + 'delay', ''))
-        self.ui.q_blind_my_single_row.setText(settings.value(qstring_type + 'single_row', ''))
-        self.ui.q_blind_my_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
-        #Boolean-Based
-        qstring_type = "mysql_blind_boolean_based/"
-        self.ui.q_blind_my_bool_single_row.setText(settings.value(qstring_type + 'single_row', ''))
-        self.ui.q_blind_my_bool_rows_count.setText(settings.value(qstring_type + 'rows_count', ''))
-        #---------------------------------------------------------------------------
-     
     #Finding and Replacing in query strings
-    def replaceButton_OnClick(self):
-        if os.path.exists(QSTRINGS_CUSTOM_PATH):
-            qs_path = QSTRINGS_CUSTOM_PATH
-        else:
-            qs_path = QSTRINGS_DEFAULT_PATH
-            
-        qstrings = QtCore.QSettings(qs_path, QtCore.QSettings.IniFormat)
-        self.replaceAndSave(qstrings, QSTRINGS_CUSTOM_PATH)
-        
+    def replaceButton_OnClick(self):          
+        self.replaceAndSave()
         self.loadQstrings()
         self.qstringsChanged.emit()
-        
-    def qsSave_OnClick(self):
-        #Saving customised querys
-        settings = QtCore.QSettings(QSTRINGS_CUSTOM_PATH, QtCore.QSettings.IniFormat)
-        
-        #MSSQL------------------------------------------------------------------
-        
-        #ERROR-BASED---
-        qstring_type = "mssql_error_based/"
-        #bases
-        settings.setValue(qstring_type + 'curr_db_name', self.ui.q_ms_curr_db_name.text())
-        settings.setValue(qstring_type + 'dbs_count', self.ui.q_ms_dbs_count.text())
-        settings.setValue(qstring_type + 'get_db_name', self.ui.q_ms_get_db_name.text())
-        settings.setValue(qstring_type + 'get_db_name2', self.ui.q_ms_get_db_name2.text())
-        #tables
-        settings.setValue(qstring_type + 'tbls_count', self.ui.q_ms_tbls_count.text())
-        settings.setValue(qstring_type + 'get_tbl_name', self.ui.q_ms_get_tbl_name.text())
-        settings.setValue(qstring_type + 'get_tbl_name2', self.ui.q_ms_get_tbl_name2.text())
-        #columns
-        settings.setValue(qstring_type + 'get_column_name', self.ui.q_ms_get_column_name.text())
-        settings.setValue(qstring_type + 'columns_count', self.ui.q_ms_columns_count.text())
-        settings.setValue(qstring_type + 'get_column_name2', self.ui.q_ms_get_column_name2.text())
-        settings.setValue(qstring_type + 'get_column_name3', self.ui.q_ms_get_column_name3.text())    
-        #xp_cmdshell
-        settings.setValue(qstring_type + 'exec_hex', self.ui.q_ms_exec_hex.text())
-        #etc
-        settings.setValue(qstring_type + 'get_row', self.ui.q_ms_get_row.text())
-        settings.setValue(qstring_type + 'query', self.ui.q_ms_query.text())
-        settings.setValue(qstring_type + 'data_dump', self.ui.q_ms_data_dump.text())
-        
-        #UNION-BASED---
-        qstring_type = "mssql_union_based/"
-        #bases
-        settings.setValue(qstring_type + 'curr_db_name', self.ui.q_union_ms_curr_db_name.text())
-        settings.setValue(qstring_type + 'dbs_count', self.ui.q_union_ms_dbs_count.text())
-        settings.setValue(qstring_type + 'get_db_name', self.ui.q_union_ms_get_db_name.text())
-        settings.setValue(qstring_type + 'get_db_name2', self.ui.q_union_ms_get_db_name2.text())
-        #tables
-        settings.setValue(qstring_type + 'tbls_count', self.ui.q_union_ms_tbls_count.text())
-        settings.setValue(qstring_type + 'get_tbl_name', self.ui.q_union_ms_get_tbl_name.text())
-        settings.setValue(qstring_type + 'get_tbl_name2', self.ui.q_union_ms_get_tbl_name2.text())
-        #columns
-        settings.setValue(qstring_type + 'get_column_name', self.ui.q_union_ms_get_column_name.text())
-        settings.setValue(qstring_type + 'columns_count', self.ui.q_union_ms_columns_count.text())
-        settings.setValue(qstring_type + 'get_column_name2', self.ui.q_union_ms_get_column_name2.text())
-        settings.setValue(qstring_type + 'get_column_name3', self.ui.q_union_ms_get_column_name3.text())    
-        #etc
-        settings.setValue(qstring_type + 'get_row', self.ui.q_union_ms_get_row.text())
-        settings.setValue(qstring_type + 'query', self.ui.q_union_ms_query.text())
-        settings.setValue(qstring_type + 'data_dump', self.ui.q_union_ms_data_dump.text())
-        
-        #BLIND---
-        #Time-Based
-        qstring_type = "mssql_blind_time_based/"
-        settings.setValue(qstring_type + 'delay', self.ui.q_blind_ms_delay.text())
-        settings.setValue(qstring_type + 'single_row', self.ui.q_blind_ms_single_row.text())
-        settings.setValue(qstring_type + 'rows_count', self.ui.q_blind_ms_rows_count.text())
-        #Boolean-based
-        qstring_type = "mssql_blind_boolean_based/"
-        settings.setValue(qstring_type + 'single_row', self.ui.q_blind_ms_bool_single_row.text())
-        settings.setValue(qstring_type + 'rows_count', self.ui.q_blind_ms_bool_rows_count.text())
-        
-        #MySQL------------------------------------------------------------------
-        
-        #ERROR-BASED---
-        qstring_type = "mysql_error_based/"
-        #bases
-        settings.setValue(qstring_type + 'curr_db_name', self.ui.q_my_curr_db_name.text())
-        settings.setValue(qstring_type + 'dbs_count', self.ui.q_my_dbs_count.text())
-        settings.setValue(qstring_type + 'get_db_name2', self.ui.q_my_get_db_name2.text())
-        #tables
-        settings.setValue(qstring_type + 'tbls_count', self.ui.q_my_tbls_count.text())
-        settings.setValue(qstring_type + 'get_tbl_name2', self.ui.q_my_get_tbl_name2.text())
-        #columns
-        settings.setValue(qstring_type + 'columns_count', self.ui.q_my_columns_count.text())
-        settings.setValue(qstring_type + 'get_column_name2', self.ui.q_my_get_column_name2.text())
-        settings.setValue(qstring_type + 'get_column_name3', self.ui.q_my_get_column_name3.text())    
-        #etc
-        settings.setValue(qstring_type + 'query', self.ui.q_my_query.text())
-        
-        #UNION-BASED---
-        qstring_type = "mysql_union_based/"
-        #bases
-        settings.setValue(qstring_type + 'curr_db_name', self.ui.q_union_my_curr_db_name.text())
-        settings.setValue(qstring_type + 'dbs_count', self.ui.q_union_my_dbs_count.text())
-        settings.setValue(qstring_type + 'get_db_name2', self.ui.q_union_my_get_db_name2.text())
-        #tables
-        settings.setValue(qstring_type + 'tbls_count', self.ui.q_union_my_tbls_count.text())
-        settings.setValue(qstring_type + 'get_tbl_name2', self.ui.q_union_my_get_tbl_name2.text())
-        #columns
-        settings.setValue(qstring_type + 'columns_count', self.ui.q_union_my_columns_count.text())
-        settings.setValue(qstring_type + 'get_column_name2', self.ui.q_union_my_get_column_name2.text())
-        settings.setValue(qstring_type + 'get_column_name3', self.ui.q_union_my_get_column_name3.text())    
-        #etc
-        settings.setValue(qstring_type + 'query', self.ui.q_union_my_query.text())
-        
-        #BLIND---
-        #Time-Based
-        qstring_type = "mysql_blind_time_based/"
-        settings.setValue(qstring_type + 'delay', self.ui.q_blind_my_delay.text())
-        settings.setValue(qstring_type + 'single_row', self.ui.q_blind_my_single_row.text())
-        settings.setValue(qstring_type + 'rows_count', self.ui.q_blind_my_rows_count.text())
-        #Boolean-Based
-        qstring_type = "mysql_blind_boolean_based/"
-        settings.setValue(qstring_type + 'single_row', self.ui.q_blind_my_bool_single_row.text())
-        settings.setValue(qstring_type + 'rows_count', self.ui.q_blind_my_bool_rows_count.text())
-        
-        #---------------------------------------------------------------------------
-        
-        settings.sync()
-        self.qstringsChanged.emit()
-
+    
     #Reset query strings to default
-    def qsRestore_OnClick(self):
+    def defaultsButton_OnClick(self):
         if os.path.exists(QSTRINGS_CUSTOM_PATH):
             try:
                 os.remove(QSTRINGS_CUSTOM_PATH)
