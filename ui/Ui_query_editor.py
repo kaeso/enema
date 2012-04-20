@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'D:\Projects\Enema Project\framework\ui\query_editor.ui'
 #
-# Created: Fri Apr 20 16:46:04 2012
+# Created: Fri Apr 20 17:01:03 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -53,7 +53,7 @@ class Ui_QueryEditorForm(object):
 
     def retranslateUi(self, QueryEditorForm):
         QueryEditorForm.setWindowTitle(QtGui.QApplication.translate("QueryEditorForm", "Query Editor", None, QtGui.QApplication.UnicodeUTF8))
-        self.treeQueryStrings.headerItem().setText(0, QtGui.QApplication.translate("QueryEditorForm", "Default query strings", None, QtGui.QApplication.UnicodeUTF8))
+        self.treeQueryStrings.headerItem().setText(0, QtGui.QApplication.translate("QueryEditorForm", "Query strings", None, QtGui.QApplication.UnicodeUTF8))
         __sortingEnabled = self.treeQueryStrings.isSortingEnabled()
         self.treeQueryStrings.setSortingEnabled(False)
         self.treeQueryStrings.topLevelItem(0).setText(0, QtGui.QApplication.translate("QueryEditorForm", "MSSQL", None, QtGui.QApplication.UnicodeUTF8))

@@ -42,7 +42,7 @@
    </attribute>
    <column>
     <property name="text">
-     <string>Default query strings</string>
+     <string>Query strings</string>
     </property>
    </column>
    <item>
