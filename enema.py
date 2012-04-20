@@ -113,6 +113,8 @@ class QueryEditorForm(QtGui.QWidget):
             path = QSTRINGS_CUSTOM_PATH
         else:
             path = QSTRINGS_DEFAULT_PATH
+            
+        self.ui.lineQueryString.setText("")
         
         self.settings = QtCore.QSettings(path, QtCore.QSettings.IniFormat)
         self.custom_settings = self.cloneSettings(self.settings, QSTRINGS_CUSTOM_PATH)
