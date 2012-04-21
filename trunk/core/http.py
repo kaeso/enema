@@ -151,6 +151,8 @@ class HTTP_Handler(QtCore.QObject):
         return query
 
     def buildRequest(self, strVar, query, isCmd, isHeader, header=None):
+        if "[random]" in strVar:
+            strVar = strVar.replace("[random]", core.txtproc.rndString(16))
         if isHeader:
             if (header == "cookie"):
                 query = request.quote(query)
@@ -190,7 +192,7 @@ class HTTP_Handler(QtCore.QObject):
             urlhex = hexStr.replace("0x", "%")
             parsedStr['substr'] = urlhex
         return parsedStr
-            
+        
     #Content parser
     def contentParse(self, content, match_pattern, match_sybol):
         patternStr = content.find(match_pattern)
@@ -212,6 +214,8 @@ class HTTP_Handler(QtCore.QObject):
         
     #Preparing POST data
     def preparePostData(self, data, query, isCmd, encoding):
+        if "[random]" in data:
+            data = data.replace("[random]", core.txtproc.rndString(16))
         #Post data must be Var=value, otherwise function fails when trying to build dictionary.
         data = data.replace("=&",  "=[empty]&").replace("\n", "")
         
@@ -273,11 +277,6 @@ class HTTP_Handler(QtCore.QObject):
         data = vars['data'].replace("+",  " ").replace("%3D",  "[eq-urlhex]")
         data = request.unquote(data)
         vuln_header = self.isInjectionInHeader(vars)
-
-        if "[random]" in data:
-            data = data.replace("[random]", core.txtproc.rndString(16))
-        if "[random]" in url:
-            url = url.replace("[random]", core.txtproc.rndString(16))
             
         if vars['method'] == "POST":
             postData = self.preparePostData(data, query, isCmd, vars['encoding'])
