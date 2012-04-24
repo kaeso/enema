@@ -1244,11 +1244,9 @@ class EnemaForm(QtGui.QMainWindow):
     #Db type changed
     def dbTypeChanged(self):
         if str(self.ui.dbTypeBox.currentText())  == "MySQL":
-            self.ui.menuMssql.setEnabled(False)
             self.ui.isHexed.setChecked(False)
             self.ui.isHexed.setVisible(False)
         else:
-            self.ui.menuMssql.setEnabled(True)
             self.ui.isHexed.setVisible(True)
         self.sqlOptions()
 
