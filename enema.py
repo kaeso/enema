@@ -813,6 +813,7 @@ class EnemaForm(QtGui.QMainWindow):
         settings.setValue('query/true_time', self.ui.trueTimeBox.value())
         settings.setValue('query/auto_enabled', self.ui.isAuto.isChecked())
         settings.setValue('query/max_lag', self.ui.lagBox.value())
+        settings.setValue('query/boolTruePattern', self.ui.lineTruePattern.text())
         
         #dump tab settings
         settings.setValue('dump/table', self.ui.lineTable.text())
@@ -932,6 +933,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.trueTimeBox.setValue(settings.value('query/true_time', 0.00, float))
         self.ui.isAuto.setChecked(settings.value('query/auto_enabled', True, bool))
         self.ui.lagBox.setValue(settings.value('query/max_lag', 5.00, float))
+        self.ui.lineTruePattern.setText(settings.value('query/boolTruePattern', ''))
         
         #dump tab settings
         self.ui.lineTable.setText(settings.value('dump/table', ''))
