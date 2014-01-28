@@ -3,7 +3,6 @@ Requirements:
 --------------
 
 1. Python 3.2+
-2. PyQt4 4.8+ (lib)
-3. pyodbc 3x (lib)
+2. PyQt4 4.8 (lib)
 
-run program: python3 enema.py
+run program: python enema.py
