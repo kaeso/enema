@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\Projects\enema-dev\ui\main.ui'
+# Form implementation generated from reading ui file 'E:\Projects\Enema\framework\ui\main.ui'
 #
-# Created: Sun Apr 15 10:21:10 2012
-#      by: PyQt4 UI code generator 4.9.1
+# Created: Tue Jan 28 12:32:19 2014
+#      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_MainForm(object):
     def setupUi(self, MainForm):
@@ -199,12 +208,6 @@ class Ui_MainForm(object):
         self.delayLabel = QtGui.QLabel(self.timeGroup)
         self.delayLabel.setGeometry(QtCore.QRect(10, 20, 41, 20))
         self.delayLabel.setObjectName(_fromUtf8("delayLabel"))
-        self.delayBox = QtGui.QSpinBox(self.timeGroup)
-        self.delayBox.setGeometry(QtCore.QRect(50, 20, 42, 20))
-        self.delayBox.setMinimum(1)
-        self.delayBox.setMaximum(59)
-        self.delayBox.setProperty("value", 2)
-        self.delayBox.setObjectName(_fromUtf8("delayBox"))
         self.trueTimeBox = QtGui.QDoubleSpinBox(self.timeGroup)
         self.trueTimeBox.setEnabled(False)
         self.trueTimeBox.setGeometry(QtCore.QRect(420, 20, 51, 20))
@@ -224,7 +227,7 @@ class Ui_MainForm(object):
         self.lagLabel.setGeometry(QtCore.QRect(210, 20, 91, 20))
         self.lagLabel.setObjectName(_fromUtf8("lagLabel"))
         self.testButton = QtGui.QPushButton(self.timeGroup)
-        self.testButton.setGeometry(QtCore.QRect(100, 20, 101, 20))
+        self.testButton.setGeometry(QtCore.QRect(120, 20, 81, 21))
         self.testButton.setObjectName(_fromUtf8("testButton"))
         self.lagBox = QtGui.QDoubleSpinBox(self.timeGroup)
         self.lagBox.setGeometry(QtCore.QRect(300, 20, 51, 20))
@@ -233,6 +236,9 @@ class Ui_MainForm(object):
         self.lagBox.setSingleStep(0.1)
         self.lagBox.setProperty("value", 5.0)
         self.lagBox.setObjectName(_fromUtf8("lagBox"))
+        self.lineDelay = QtGui.QLineEdit(self.timeGroup)
+        self.lineDelay.setGeometry(QtCore.QRect(50, 20, 61, 20))
+        self.lineDelay.setObjectName(_fromUtf8("lineDelay"))
         self.booleanGroup = QtGui.QGroupBox(self.queryTab)
         self.booleanGroup.setGeometry(QtCore.QRect(10, 280, 571, 51))
         self.booleanGroup.setObjectName(_fromUtf8("booleanGroup"))
@@ -393,93 +399,94 @@ class Ui_MainForm(object):
         QtCore.QMetaObject.connectSlotsByName(MainForm)
 
     def retranslateUi(self, MainForm):
-        self.comboBox.setItemText(0, QtGui.QApplication.translate("MainForm", "GET", None, QtGui.QApplication.UnicodeUTF8))
-        self.comboBox.setItemText(1, QtGui.QApplication.translate("MainForm", "POST", None, QtGui.QApplication.UnicodeUTF8))
-        self.lineUrl.setText(QtGui.QApplication.translate("MainForm", "http://192.168.1.53/?db=mssql&id=-1\' or 1=[sub];[cmd]--", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("MainForm", "URL:", None, QtGui.QApplication.UnicodeUTF8))
-        self.textData.setHtml(QtGui.QApplication.translate("MainForm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        self.comboBox.setItemText(0, _translate("MainForm", "GET", None))
+        self.comboBox.setItemText(1, _translate("MainForm", "POST", None))
+        self.lineUrl.setText(_translate("MainForm", "http://192.168.1.53/?db=mssql&id=-1\' or 1=[sub];[cmd]--", None))
+        self.label_4.setText(_translate("MainForm", "URL:", None))
+        self.textData.setHtml(_translate("MainForm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_15.setText(QtGui.QApplication.translate("MainForm", "Data:", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_2.setTitle(QtGui.QApplication.translate("MainForm", "Task", None, QtGui.QApplication.UnicodeUTF8))
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", None))
+        self.label_15.setText(_translate("MainForm", "Data:", None))
+        self.groupBox_2.setTitle(_translate("MainForm", "Task", None))
         self.treeOfTables.setSortingEnabled(False)
-        self.treeOfTables.headerItem().setText(0, QtGui.QApplication.translate("MainForm", "1", None, QtGui.QApplication.UnicodeUTF8))
-        self.radioTables.setText(QtGui.QApplication.translate("MainForm", "Tables", None, QtGui.QApplication.UnicodeUTF8))
-        self.radioColumns.setText(QtGui.QApplication.translate("MainForm", "Columns", None, QtGui.QApplication.UnicodeUTF8))
-        self.radioBases.setText(QtGui.QApplication.translate("MainForm", "Bases", None, QtGui.QApplication.UnicodeUTF8))
-        self.runButton.setText(QtGui.QApplication.translate("MainForm", "Run", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("MainForm", "Database:", None, QtGui.QApplication.UnicodeUTF8))
-        self.cleanColumnsButton.setText(QtGui.QApplication.translate("MainForm", "Clean", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox.setTitle(QtGui.QApplication.translate("MainForm", "Options", None, QtGui.QApplication.UnicodeUTF8))
-        self.radioOrdinalPosition.setText(QtGui.QApplication.translate("MainForm", "ordinal_position", None, QtGui.QApplication.UnicodeUTF8))
-        self.radioNotInArray.setText(QtGui.QApplication.translate("MainForm", "not in(array)", None, QtGui.QApplication.UnicodeUTF8))
-        self.radioNotInSubstring.setText(QtGui.QApplication.translate("MainForm", "not in(substring)", None, QtGui.QApplication.UnicodeUTF8))
-        self.dbTypeBox.setItemText(0, QtGui.QApplication.translate("MainForm", "MSSQL", None, QtGui.QApplication.UnicodeUTF8))
-        self.dbTypeBox.setItemText(1, QtGui.QApplication.translate("MainForm", "MySQL", None, QtGui.QApplication.UnicodeUTF8))
-        self.comboInjType.setItemText(0, QtGui.QApplication.translate("MainForm", "ERROR-BASED", None, QtGui.QApplication.UnicodeUTF8))
-        self.comboInjType.setItemText(1, QtGui.QApplication.translate("MainForm", "UNION-BASED", None, QtGui.QApplication.UnicodeUTF8))
-        self.radioLimit.setText(QtGui.QApplication.translate("MainForm", "LIMIT", None, QtGui.QApplication.UnicodeUTF8))
-        self.headersButton.setText(QtGui.QApplication.translate("MainForm", "Headers", None, QtGui.QApplication.UnicodeUTF8))
-        self.killButton.setText(QtGui.QApplication.translate("MainForm", "Kill all", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabs.setTabText(self.tabs.indexOf(self.db_structureTab), QtGui.QApplication.translate("MainForm", "Structure", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox_3.setTitle(QtGui.QApplication.translate("MainForm", "Query", None, QtGui.QApplication.UnicodeUTF8))
-        self.queryButton.setText(QtGui.QApplication.translate("MainForm", "Run", None, QtGui.QApplication.UnicodeUTF8))
-        self.blindMethodList.setItemText(0, QtGui.QApplication.translate("MainForm", "Time", None, QtGui.QApplication.UnicodeUTF8))
-        self.blindMethodList.setItemText(1, QtGui.QApplication.translate("MainForm", "Boolean", None, QtGui.QApplication.UnicodeUTF8))
-        self.isStacked.setText(QtGui.QApplication.translate("MainForm", "Stacked", None, QtGui.QApplication.UnicodeUTF8))
-        self.isHexed.setText(QtGui.QApplication.translate("MainForm", "Hex", None, QtGui.QApplication.UnicodeUTF8))
-        self.methodLabel.setText(QtGui.QApplication.translate("MainForm", "Method:", None, QtGui.QApplication.UnicodeUTF8))
-        self.resultGroup.setTitle(QtGui.QApplication.translate("MainForm", "Result", None, QtGui.QApplication.UnicodeUTF8))
-        self.timeGroup.setTitle(QtGui.QApplication.translate("MainForm", "Time-based options", None, QtGui.QApplication.UnicodeUTF8))
-        self.delayLabel.setText(QtGui.QApplication.translate("MainForm", "Delay:", None, QtGui.QApplication.UnicodeUTF8))
-        self.trueTimeLabel.setText(QtGui.QApplication.translate("MainForm", "\'True\' time:", None, QtGui.QApplication.UnicodeUTF8))
-        self.isAuto.setText(QtGui.QApplication.translate("MainForm", "Autodetect", None, QtGui.QApplication.UnicodeUTF8))
-        self.lagLabel.setText(QtGui.QApplication.translate("MainForm", "Max lag time (+):", None, QtGui.QApplication.UnicodeUTF8))
-        self.testButton.setText(QtGui.QApplication.translate("MainForm", "Test", None, QtGui.QApplication.UnicodeUTF8))
-        self.booleanGroup.setTitle(QtGui.QApplication.translate("MainForm", "Boolean-based options", None, QtGui.QApplication.UnicodeUTF8))
-        self.Label_2.setText(QtGui.QApplication.translate("MainForm", "\'True\' pattern:", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabs.setTabText(self.tabs.indexOf(self.queryTab), QtGui.QApplication.translate("MainForm", "Query", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_18.setText(QtGui.QApplication.translate("MainForm", "Columns:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_19.setText(QtGui.QApplication.translate("MainForm", "Primary key:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_20.setText(QtGui.QApplication.translate("MainForm", "To:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_21.setText(QtGui.QApplication.translate("MainForm", "From:", None, QtGui.QApplication.UnicodeUTF8))
-        self.lineTable.setText(QtGui.QApplication.translate("MainForm", "customers", None, QtGui.QApplication.UnicodeUTF8))
-        self.lineTo.setText(QtGui.QApplication.translate("MainForm", "10", None, QtGui.QApplication.UnicodeUTF8))
-        self.lineColumns.setText(QtGui.QApplication.translate("MainForm", "id;username;password;email", None, QtGui.QApplication.UnicodeUTF8))
-        self.lineFrom.setText(QtGui.QApplication.translate("MainForm", "0", None, QtGui.QApplication.UnicodeUTF8))
-        self.lineKey.setText(QtGui.QApplication.translate("MainForm", "id", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("MainForm", "Table:", None, QtGui.QApplication.UnicodeUTF8))
-        self.dmpButton.setText(QtGui.QApplication.translate("MainForm", "Start", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabs.setTabText(self.tabs.indexOf(self.dumpTab), QtGui.QApplication.translate("MainForm", "Dump", None, QtGui.QApplication.UnicodeUTF8))
-        self.clearLogButton.setText(QtGui.QApplication.translate("MainForm", "Clear", None, QtGui.QApplication.UnicodeUTF8))
-        self.progressBar.setFormat(QtGui.QApplication.translate("MainForm", "%p%", None, QtGui.QApplication.UnicodeUTF8))
-        self.logTxtEdit.setHtml(QtGui.QApplication.translate("MainForm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        self.treeOfTables.headerItem().setText(0, _translate("MainForm", "1", None))
+        self.radioTables.setText(_translate("MainForm", "Tables", None))
+        self.radioColumns.setText(_translate("MainForm", "Columns", None))
+        self.radioBases.setText(_translate("MainForm", "Bases", None))
+        self.runButton.setText(_translate("MainForm", "Run", None))
+        self.label.setText(_translate("MainForm", "Database:", None))
+        self.cleanColumnsButton.setText(_translate("MainForm", "Clean", None))
+        self.groupBox.setTitle(_translate("MainForm", "Options", None))
+        self.radioOrdinalPosition.setText(_translate("MainForm", "ordinal_position", None))
+        self.radioNotInArray.setText(_translate("MainForm", "not in(array)", None))
+        self.radioNotInSubstring.setText(_translate("MainForm", "not in(substring)", None))
+        self.dbTypeBox.setItemText(0, _translate("MainForm", "MSSQL", None))
+        self.dbTypeBox.setItemText(1, _translate("MainForm", "MySQL", None))
+        self.comboInjType.setItemText(0, _translate("MainForm", "ERROR-BASED", None))
+        self.comboInjType.setItemText(1, _translate("MainForm", "UNION-BASED", None))
+        self.radioLimit.setText(_translate("MainForm", "LIMIT", None))
+        self.headersButton.setText(_translate("MainForm", "Headers", None))
+        self.killButton.setText(_translate("MainForm", "Kill all", None))
+        self.tabs.setTabText(self.tabs.indexOf(self.db_structureTab), _translate("MainForm", "Structure", None))
+        self.groupBox_3.setTitle(_translate("MainForm", "Query", None))
+        self.queryButton.setText(_translate("MainForm", "Run", None))
+        self.blindMethodList.setItemText(0, _translate("MainForm", "Time", None))
+        self.blindMethodList.setItemText(1, _translate("MainForm", "Boolean", None))
+        self.isStacked.setText(_translate("MainForm", "Stacked", None))
+        self.isHexed.setText(_translate("MainForm", "Hex", None))
+        self.methodLabel.setText(_translate("MainForm", "Method:", None))
+        self.resultGroup.setTitle(_translate("MainForm", "Result", None))
+        self.timeGroup.setTitle(_translate("MainForm", "Time-based options", None))
+        self.delayLabel.setText(_translate("MainForm", "Delay:", None))
+        self.trueTimeLabel.setText(_translate("MainForm", "\'True\' time:", None))
+        self.isAuto.setText(_translate("MainForm", "Autodetect", None))
+        self.lagLabel.setText(_translate("MainForm", "Max lag time (+):", None))
+        self.testButton.setText(_translate("MainForm", "Test", None))
+        self.lineDelay.setText(_translate("MainForm", "2", None))
+        self.booleanGroup.setTitle(_translate("MainForm", "Boolean-based options", None))
+        self.Label_2.setText(_translate("MainForm", "\'True\' pattern:", None))
+        self.tabs.setTabText(self.tabs.indexOf(self.queryTab), _translate("MainForm", "Query", None))
+        self.label_18.setText(_translate("MainForm", "Columns:", None))
+        self.label_19.setText(_translate("MainForm", "Primary key:", None))
+        self.label_20.setText(_translate("MainForm", "To:", None))
+        self.label_21.setText(_translate("MainForm", "From:", None))
+        self.lineTable.setText(_translate("MainForm", "customers", None))
+        self.lineTo.setText(_translate("MainForm", "10", None))
+        self.lineColumns.setText(_translate("MainForm", "id;username;password;email", None))
+        self.lineFrom.setText(_translate("MainForm", "0", None))
+        self.lineKey.setText(_translate("MainForm", "id", None))
+        self.label_2.setText(_translate("MainForm", "Table:", None))
+        self.dmpButton.setText(_translate("MainForm", "Start", None))
+        self.tabs.setTabText(self.tabs.indexOf(self.dumpTab), _translate("MainForm", "Dump", None))
+        self.clearLogButton.setText(_translate("MainForm", "Clear", None))
+        self.progressBar.setFormat(_translate("MainForm", "%p%", None))
+        self.logTxtEdit.setHtml(_translate("MainForm", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuSave.setTitle(QtGui.QApplication.translate("MainForm", "Save", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuLoad.setTitle(QtGui.QApplication.translate("MainForm", "Open", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuTools.setTitle(QtGui.QApplication.translate("MainForm", "Tools", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuHelp.setTitle(QtGui.QApplication.translate("MainForm", "Help", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuPlugins.setTitle(QtGui.QApplication.translate("MainForm", "Plugins", None, QtGui.QApplication.UnicodeUTF8))
-        self.saveTables.setText(QtGui.QApplication.translate("MainForm", "Tables", None, QtGui.QApplication.UnicodeUTF8))
-        self.saveColumns.setText(QtGui.QApplication.translate("MainForm", "Columns", None, QtGui.QApplication.UnicodeUTF8))
-        self.loadTables.setText(QtGui.QApplication.translate("MainForm", "Tables", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuEncoder.setText(QtGui.QApplication.translate("MainForm", "Encoder", None, QtGui.QApplication.UnicodeUTF8))
-        self.saveBases.setText(QtGui.QApplication.translate("MainForm", "Bases", None, QtGui.QApplication.UnicodeUTF8))
-        self.loadBases.setText(QtGui.QApplication.translate("MainForm", "Bases", None, QtGui.QApplication.UnicodeUTF8))
-        self.menuAbout.setText(QtGui.QApplication.translate("MainForm", "About", None, QtGui.QApplication.UnicodeUTF8))
-        self.csvExport.setText(QtGui.QApplication.translate("MainForm", "Dump to csv", None, QtGui.QApplication.UnicodeUTF8))
-        self.ssSettings.setText(QtGui.QApplication.translate("MainForm", "Site settings", None, QtGui.QApplication.UnicodeUTF8))
-        self.ssSettings.setShortcut(QtGui.QApplication.translate("MainForm", "Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
-        self.lsSettings.setText(QtGui.QApplication.translate("MainForm", "Site settings", None, QtGui.QApplication.UnicodeUTF8))
-        self.lsSettings.setShortcut(QtGui.QApplication.translate("MainForm", "Ctrl+O", None, QtGui.QApplication.UnicodeUTF8))
-        self.qEditor.setText(QtGui.QApplication.translate("MainForm", "Query editor", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionPreferences.setText(QtGui.QApplication.translate("MainForm", "Preferences", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionManual.setText(QtGui.QApplication.translate("MainForm", "Manual", None, QtGui.QApplication.UnicodeUTF8))
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", None))
+        self.menuSave.setTitle(_translate("MainForm", "Save", None))
+        self.menuLoad.setTitle(_translate("MainForm", "Open", None))
+        self.menuTools.setTitle(_translate("MainForm", "Tools", None))
+        self.menuHelp.setTitle(_translate("MainForm", "Help", None))
+        self.menuPlugins.setTitle(_translate("MainForm", "Plugins", None))
+        self.saveTables.setText(_translate("MainForm", "Tables", None))
+        self.saveColumns.setText(_translate("MainForm", "Columns", None))
+        self.loadTables.setText(_translate("MainForm", "Tables", None))
+        self.menuEncoder.setText(_translate("MainForm", "Encoder", None))
+        self.saveBases.setText(_translate("MainForm", "Bases", None))
+        self.loadBases.setText(_translate("MainForm", "Bases", None))
+        self.menuAbout.setText(_translate("MainForm", "About", None))
+        self.csvExport.setText(_translate("MainForm", "Dump to csv", None))
+        self.ssSettings.setText(_translate("MainForm", "Site settings", None))
+        self.ssSettings.setShortcut(_translate("MainForm", "Ctrl+S", None))
+        self.lsSettings.setText(_translate("MainForm", "Site settings", None))
+        self.lsSettings.setShortcut(_translate("MainForm", "Ctrl+O", None))
+        self.qEditor.setText(_translate("MainForm", "Query editor", None))
+        self.actionPreferences.setText(_translate("MainForm", "Preferences", None))
+        self.actionManual.setText(_translate("MainForm", "Manual", None))
 
 
 if __name__ == "__main__":
