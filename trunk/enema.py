@@ -423,10 +423,6 @@ class EnemaForm(QtGui.QMainWindow):
         if os.path.exists("plugins"):
             self.ui.menuPlugins.clear()
             self.loadPlugins()
-        else:
-            dw_plugins = QtGui.QAction("Download", self)
-            self.ui.menuPlugins.addAction(dw_plugins)
-            dw_plugins.triggered.connect(self.downloadPlugins_Clicked)
             
 #------------------------------------------------SIGNAL-CONNECTIONS------------------------------------------------------#
 
@@ -492,10 +488,6 @@ class EnemaForm(QtGui.QMainWindow):
         self.sysTray.activated.connect(self.trayActivated)
         
 #------------------------------------------------PLUGINS------------------------------------------------------#
-
-    #download plugins from repository
-    def downloadPlugins_Clicked(self):
-        QtGui.QDesktopServices.openUrl(QtCore.QUrl("http://code.google.com/p/enema-plugins/downloads/list"))
         
     #Load plugins
     def loadPlugins(self):
@@ -587,7 +579,7 @@ class EnemaForm(QtGui.QMainWindow):
               'ms' : self.preferences_frm.ui.lineMS.text(), 
               'threads' : self.preferences_frm.ui.threadBox.value(), 
               'timeOut' : int(self.preferences_frm.ui.lineTimeout.text()), 
-              'time' : self.ui.delayBox.value(), 
+              'time' : self.ui.lineDelay.text(), 
               'blind_inj_type' : str(self.ui.blindMethodList.currentText()),
               'bool_pattern' : self.ui.lineTruePattern.text(), 
               'max_lag' : self.ui.lagBox.value(), 
@@ -809,7 +801,7 @@ class EnemaForm(QtGui.QMainWindow):
         settings.setValue('query/stacked_enabled', self.ui.isStacked.isChecked())
         settings.setValue('query/hex_enabled', self.ui.isHexed.isChecked())
         settings.setValue('query/blind_method', self.ui.blindMethodList.currentIndex())
-        settings.setValue('query/delay', self.ui.delayBox.value())
+        settings.setValue('query/delay', self.ui.lineDelay.text())
         settings.setValue('query/true_time', self.ui.trueTimeBox.value())
         settings.setValue('query/auto_enabled', self.ui.isAuto.isChecked())
         settings.setValue('query/max_lag', self.ui.lagBox.value())
@@ -929,7 +921,7 @@ class EnemaForm(QtGui.QMainWindow):
         self.ui.isStacked.setChecked(settings.value('query/stacked_enabled', False, bool))
         self.ui.isHexed.setChecked(settings.value('query/hex_enabled', False, bool))
         self.ui.blindMethodList.setCurrentIndex(settings.value('query/blind_method', 0, int))
-        self.ui.delayBox.setValue(settings.value('query/delay', 2, int))
+        self.ui.lineDelay.setText(settings.value('query/delay'))
         self.ui.trueTimeBox.setValue(settings.value('query/true_time', 0.00, float))
         self.ui.isAuto.setChecked(settings.value('query/auto_enabled', True, bool))
         self.ui.lagBox.setValue(settings.value('query/max_lag', 5.00, float))
