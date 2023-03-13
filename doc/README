@@ -2,7 +2,6 @@
 Requirements:
 --------------
 
-1. Python 3.2+
-2. PyQt4 4.8 (lib)
-
-run program: python enema.py
+1. Python 3.10+
+2. PyQt6
+3. pyodbc (for MSSQL:OPENROWSET plugin)
