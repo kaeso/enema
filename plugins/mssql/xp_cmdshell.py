@@ -21,7 +21,7 @@ import core.txtproc
 from core.e_const import CONFIG_PATH
 from queue import Queue
 from core.http import HTTP_Handler
-from PyQt4 import QtCore, QtGui
+from PyQt6 import QtCore, QtWidgets
 
 from .ui.Ui_xp_cmdshell import Ui_cmdshellWidget
 
@@ -32,15 +32,15 @@ PLUGIN_CLASS_NAME = "CmdShellWidget"
 PLUGIN_DESCRIPTION = "xp_cmdshell output fetcher (multithreaded)"
 
 
-class CmdShellWidget(QtGui.QWidget):
+class CmdShellWidget(QtWidgets.QWidget):
     
     logSignal = QtCore.pyqtSignal(str)
      
     def __init__(self, vars, qstrings, parent=None):
-        QtGui.QWidget.__init__(self, parent, QtCore.Qt.Tool)
+        QtWidgets.QWidget.__init__(self, parent, QtCore.Qt.WindowType.Tool)
         self.ui = Ui_cmdshellWidget()
         self.ui.setupUi(self)
-        self.setWindowModality(QtCore.Qt.ApplicationModal)
+        self.setWindowModality(QtCore.Qt.WindowModality.ApplicationModal)
         self.vars = vars
         self.qstrings = qstrings
         self.ui.progressBar.hide()
@@ -51,7 +51,7 @@ class CmdShellWidget(QtGui.QWidget):
         
         #Load config
         if os.path.exists(CONFIG_PATH):
-            settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
+            settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.Format.IniFormat)
             if settings.value("Main/window_position") is not None: 
                 self.move(settings.value("Main/window_position"))
         #---
@@ -78,7 +78,7 @@ class CmdShellWidget(QtGui.QWidget):
         if build:
             self.ui.tableWidget.setRowCount(rowsCount)
             return
-        rData = QtGui.QTableWidgetItem()
+        rData = QtWidgets.QTableWidgetItem()
         rData.setText(string)
         self.ui.tableWidget.setItem(rowNum, 0, rData)
 
@@ -100,9 +100,9 @@ class CmdShellWidget(QtGui.QWidget):
         self.ui.progressBar.show()
         self.worker = Worker(self.vars, self.qstrings)
         #Signal connects
-        self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.QueuedConnection)
-        self.worker.outputSignal.connect(self.cmdOutputAppend, type=QtCore.Qt.QueuedConnection)
-        self.worker.progressSignal.connect(self.updatePb, type=QtCore.Qt.QueuedConnection)
+        self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.ConnectionType.QueuedConnection)
+        self.worker.outputSignal.connect(self.cmdOutputAppend, type=QtCore.Qt.ConnectionType.QueuedConnection)
+        self.worker.progressSignal.connect(self.updatePb, type=QtCore.Qt.ConnectionType.QueuedConnection)
         #---
         self.worker.start()
         
@@ -115,8 +115,8 @@ class CmdShellWidget(QtGui.QWidget):
         self.ui.progressBar.setMaximum(0)
         self.ui.progressBar.show()
         self.worker = Worker(self.vars, self.qstrings)
-        self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.QueuedConnection)
-        self.worker.progressSignal.connect(self.updatePb, type=QtCore.Qt.QueuedConnection)
+        self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.ConnectionType.QueuedConnection)
+        self.worker.progressSignal.connect(self.updatePb, type=QtCore.Qt.ConnectionType.QueuedConnection)
         self.worker.start()
     
 class Worker(QtCore.QThread):

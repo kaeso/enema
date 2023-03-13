@@ -18,7 +18,7 @@ import time
 import core.txtproc
 from core.e_const import CONFIG_PATH
 from core.http import HTTP_Handler
-from PyQt4 import QtCore, QtGui
+from PyQt6 import QtCore, QtWidgets
 
 from .ui.Ui_ftp import Ui_ftpWidget
 
@@ -29,15 +29,15 @@ PLUGIN_CLASS_NAME = "FtpWidget"
 PLUGIN_DESCRIPTION = "FTP file transfer using SEND or GET command"
 
 
-class FtpWidget(QtGui.QWidget):
+class FtpWidget(QtWidgets.QWidget):
     
     logSignal = QtCore.pyqtSignal(str)
      
     def __init__(self, vars, qstrings, parent=None):
-        QtGui.QWidget.__init__(self, parent, QtCore.Qt.Tool)
+        QtWidgets.QWidget.__init__(self, parent, QtCore.Qt.WindowType.Tool)
         self.ui = Ui_ftpWidget()
         self.ui.setupUi(self)
-        self.setWindowModality(QtCore.Qt.ApplicationModal)
+        self.setWindowModality(QtCore.Qt.WindowModality.ApplicationModal)
         self.vars = vars
         self.qstrings = qstrings
         self.ui.progressBar.hide()
@@ -46,7 +46,7 @@ class FtpWidget(QtGui.QWidget):
         
         #Load config
         if os.path.exists(CONFIG_PATH):
-            settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
+            settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.Format.IniFormat)
             self.ui.lineIP.setText(settings.value(PLUGIN_NAME + '/ip', ''))
             self.ui.lineFtpLogin.setText(settings.value(PLUGIN_NAME + '/login', ''))
             self.ui.lineFtpPwd.setText(settings.value(PLUGIN_NAME + '/password', ''))
@@ -93,15 +93,15 @@ class FtpWidget(QtGui.QWidget):
         self.ui.progressBar.show()
         self.worker = Worker(self.vars, self.qstrings)
         #Signal connects
-        self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.QueuedConnection)
-        self.worker.taskDoneSignal.connect(self.taskDone, type=QtCore.Qt.QueuedConnection)
+        self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.ConnectionType.QueuedConnection)
+        self.worker.taskDoneSignal.connect(self.taskDone, type=QtCore.Qt.ConnectionType.QueuedConnection)
         #---
         self.worker.start()
         
     #When widget closing
     def closeEvent(self, event):
         #Saving settings
-        settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
+        settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.Format.IniFormat)
         settings.setValue(PLUGIN_NAME + '/ip', self.ui.lineIP.text())
         settings.setValue(PLUGIN_NAME + '/login', self.ui.lineFtpLogin.text())
         settings.setValue(PLUGIN_NAME + '/password', self.ui.lineFtpPwd.text())

@@ -15,15 +15,17 @@
 
 import os
 import sys
+import ssl
 import time
 import socket
 import core.txtproc
-from PyQt4 import QtCore
+from PyQt6 import QtCore
 from threading import *
 from urllib import request
 from urllib.error import HTTPError
 from urllib.error import URLError
 from urllib.parse import *
+
 from core.e_const import QUOTED_CONTENT
 
 
@@ -75,6 +77,8 @@ class HTTP_Handler(QtCore.QObject):
 
     logSignal = QtCore.pyqtSignal(str)
     requestDoneSignal = QtCore.pyqtSignal(bool)
+    #If SSLcertificate not valid
+    ssl._create_default_https_context = ssl._create_unverified_context
     
     def __init__(self):
         QtCore.QObject.__init__(self)
@@ -357,12 +361,12 @@ class HTTP_Handler(QtCore.QObject):
         reqLog += "\n}\n=================="
 
         start_time = time.time()
+
         try:
             if not vars['method'] == "POST":
                 postData = None
             response = urlOpener.open(url, postData, vars['timeOut'])
             content = response.read()
-            
             #Logging redirect if redirected
             if redirect_handler.redirectOccured:
                 reqLog += "\n[HTTP Status]: " + redirect_handler.redirectInfo

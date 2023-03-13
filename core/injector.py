@@ -18,7 +18,7 @@ import time
 import datetime
 import core.txtproc
 from core.http import HTTP_Handler
-from PyQt4 import QtCore
+from PyQt6 import QtCore
 import threading
 from queue import Queue
 

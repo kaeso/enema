@@ -19,7 +19,7 @@ import core.txtproc
 import pyodbc
 from core.e_const import CONFIG_PATH
 from core.http import HTTP_Handler
-from PyQt4 import QtCore, QtGui
+from PyQt6 import QtCore, QtWidgets
 
 from .ui.Ui_openrowset import Ui_OpenrowsetWidget
 
@@ -30,15 +30,15 @@ PLUGIN_CLASS_NAME = "OpenrowsetWidget"
 PLUGIN_DESCRIPTION = "Query result insertion from remote server to own sql server"
 
 
-class OpenrowsetWidget(QtGui.QWidget):
+class OpenrowsetWidget(QtWidgets.QWidget):
     
     logSignal = QtCore.pyqtSignal(str)
      
     def __init__(self, vars, qstrings, parent=None):
-        QtGui.QWidget.__init__(self, parent, QtCore.Qt.Tool)
+        QtWidgets.QWidget.__init__(self, parent, QtCore.Qt.WindowType.Tool)
         self.ui = Ui_OpenrowsetWidget()
         self.ui.setupUi(self)
-        self.setWindowModality(QtCore.Qt.ApplicationModal)
+        self.setWindowModality(QtCore.Qt.WindowModality.ApplicationModal)
         self.vars = vars
         self.qstrings = qstrings
         self.ui.progressBar.hide()
@@ -52,7 +52,7 @@ class OpenrowsetWidget(QtGui.QWidget):
 
         #Load config
         if os.path.exists(CONFIG_PATH):
-            settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
+            settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.Format.IniFormat)
             self.ui.driverBox.setCurrentIndex(settings.value(PLUGIN_NAME + '/driver', 0, int))
             self.ui.lineIP.setText(settings.value(PLUGIN_NAME + '/ip', ''))
             self.ui.lineUsername.setText(settings.value(PLUGIN_NAME + '/username', ''))
@@ -109,7 +109,7 @@ class OpenrowsetWidget(QtGui.QWidget):
  
     #Add row data
     def addRowData(self,  tNum, num,  rowData):
-        rData = QtGui.QTableWidgetItem()
+        rData = QtWidgets.QTableWidgetItem()
         rData.setText(rowData)
         self.ui.tableWidget.setItem(tNum, num, rData)
    
@@ -136,9 +136,9 @@ class OpenrowsetWidget(QtGui.QWidget):
         self.ui.progressBar.show()
         self.worker = Worker(self.vars, self.qstrings)
         #Signal connects
-        self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.QueuedConnection)
-        self.worker.connResultSignal.connect(self.setConnectionStatus, type=QtCore.Qt.QueuedConnection)
-        self.worker.taskDoneSignal.connect(self.taskDone, type=QtCore.Qt.QueuedConnection)
+        self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.ConnectionType.QueuedConnection)
+        self.worker.connResultSignal.connect(self.setConnectionStatus, type=QtCore.Qt.ConnectionType.QueuedConnection)
+        self.worker.taskDoneSignal.connect(self.taskDone, type=QtCore.Qt.ConnectionType.QueuedConnection)
         #---
         self.worker.start()
 
@@ -149,8 +149,8 @@ class OpenrowsetWidget(QtGui.QWidget):
         self.vars['task'] = "enable"
         self.ui.progressBar.show()
         self.worker = Worker(self.vars, self.qstrings)
-        self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.QueuedConnection)
-        self.worker.taskDoneSignal.connect(self.taskDone, type=QtCore.Qt.QueuedConnection)
+        self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.ConnectionType.QueuedConnection)
+        self.worker.taskDoneSignal.connect(self.taskDone, type=QtCore.Qt.ConnectionType.QueuedConnection)
         self.worker.start()
         
     #FTP Upload button click        
@@ -214,17 +214,17 @@ class OpenrowsetWidget(QtGui.QWidget):
         self.worker = Worker(self.vars, self.qstrings)
         
         #Signal connects
-        self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.QueuedConnection)
-        self.worker.rowDataSignal.connect(self.addRowData, type=QtCore.Qt.QueuedConnection)
-        self.worker.connResultSignal.connect(self.setConnectionStatus, type=QtCore.Qt.QueuedConnection)
-        self.worker.taskDoneSignal.connect(self.taskDone, type=QtCore.Qt.QueuedConnection)
+        self.worker.logSignal.connect(self.emitLog, type=QtCore.Qt.ConnectionType.QueuedConnection)
+        self.worker.rowDataSignal.connect(self.addRowData, type=QtCore.Qt.ConnectionType.QueuedConnection)
+        self.worker.connResultSignal.connect(self.setConnectionStatus, type=QtCore.Qt.ConnectionType.QueuedConnection)
+        self.worker.taskDoneSignal.connect(self.taskDone, type=QtCore.Qt.ConnectionType.QueuedConnection)
         #---
         self.worker.start()
         
     #When widget closing
     def closeEvent(self, event):
         #Saving settings
-        settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.IniFormat)
+        settings = QtCore.QSettings(CONFIG_PATH, QtCore.QSettings.Format.IniFormat)
         settings.setValue(PLUGIN_NAME + '/driver', self.ui.driverBox.currentIndex())
         settings.setValue(PLUGIN_NAME + '/ip', self.ui.lineIP.text())
         settings.setValue(PLUGIN_NAME + '/username', self.ui.lineUsername.text())
