@@ -1142,7 +1142,7 @@ class EnemaForm(QtWidgets.QMainWindow):
         
     #Tray icon clicked
     def trayActivated(self, reason):
-        if reason == QtWidgets.QSystemTrayIcon.ActivationReason.DoubleClick:
+        if reason == QtWidgets.QSystemTrayIcon.ActivationReason.Trigger:
             if self.isHidden():
                 self.show()
                 self.activateWindow()
