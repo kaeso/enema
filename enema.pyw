@@ -680,8 +680,8 @@ class EnemaForm(QtWidgets.QMainWindow):
     #Show busy dialog
     def busyDialog(self):
         clicked = QtWidgets.QMessageBox.question(self, "Enema", "Program is busy. Kill current task?",\
-                                        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        if clicked == QtWidgets.QMessageBox.Yes:
+                                        QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No)
+        if clicked == QtWidgets.QMessageBox.StandardButton.Yes:
             self.killTask()
         else:
             return
@@ -1261,7 +1261,7 @@ class EnemaForm(QtWidgets.QMainWindow):
         if taskDone:
             self.ui.progressBar.hide()
             if (self.isHidden() or self.windowState() == QtCore.Qt.WindowState.WindowMinimized):
-                self.sysTray.showMessage("Enema", "Task finished.", QtGui.QSystemTrayIcon.Information)
+                self.sysTray.showMessage("Enema", "Task finished.", QtWidgets.QSystemTrayIcon.MessageIcon.Information)
             return
         if pbMax >= 0:
             self.ui.progressBar.setMaximum(pbMax)
