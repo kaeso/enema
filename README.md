@@ -1,17 +1,14 @@
 ## SQL Injection and Web Attack Framework ##
-Enema is not auto-hacking software for script kiddies. This is dynamic tool for professional pentesters.
+Enema is not auto-hacking software. This is dynamic tool for professional pentesters.
 
 ### Current version: 1.7 ###
 
   * Whats new:
     + Added custom plugins support.
 
-```
-
   * Requirements:
     + [Python 3.10+]
     + [PyQt6]
----
 
   * Features:
     + Multi-platform.
@@ -30,6 +27,7 @@ Enema is not auto-hacking software for script kiddies. This is dynamic tool for 
     + Union based injection (using subquery).
     + Blind (time and boolean based)
 
+---
 
 [#SQL\_injection\_in\_GET\_requests](#SQL_injection_in_GET_requests.md)
 
