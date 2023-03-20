@@ -188,13 +188,22 @@ class HTTP_Handler(QtCore.QObject):
         return strVar
 
     #checking for special keywords
-    def checkForSpecKw(self, string):
+    def checkForSpecKw(self, string, encoding):
+        
         parsedStr = string
+        
         if "urlenc^" in string:
             parsedStr = core.txtproc.extractString(string, "urlenc")
             hexStr = core.txtproc.strToHex(parsedStr['substr'], False)
             urlhex = hexStr.replace("0x", "%")
             parsedStr['substr'] = urlhex
+            
+        if "base64^" in string:
+            parsedStr = core.txtproc.extractString(string, "base64")
+            hexStr = core.txtproc.base64proc(parsedStr['substr'], "enc", encoding)
+            urlhex = hexStr.replace("0x", "%")
+            parsedStr['substr'] = urlhex
+
         return parsedStr
         
     #Content parser
@@ -288,7 +297,7 @@ class HTTP_Handler(QtCore.QObject):
                 return "no_content"
         else:
             get_url = self.buildRequest(url, query, isCmd, False)
-            parsed = self.checkForSpecKw(get_url)
+            parsed = self.checkForSpecKw(get_url, vars['encoding'])
             specKwFound = False
             if type(parsed) is dict:
                 specKwFound = True
