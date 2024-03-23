@@ -433,7 +433,7 @@ class HTTP_Handler(QtCore.QObject):
                 self.logSignal.emit("\n\n[HTTP Timeout]")
                 return "[---Timed out---]"
                 
-        except URLError as err:
+        except Exception as err:
             self.logSignal.emit("\n[x] Can't start task.\n\n[reason]: " + str(err))
             return "no_content"
         
