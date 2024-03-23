@@ -17,6 +17,7 @@ import os
 import sys
 import ssl
 import time
+import json
 import socket
 import core.txtproc
 from PyQt6 import QtCore
@@ -32,8 +33,18 @@ from core.e_const import QUOTED_CONTENT
 #HTTPRedirectHandler Override
 class RedirectHandler(request.HTTPRedirectHandler):
     
+    def __init__(self, json_req):
+        self.json_req = json_req
+        
     redirectOccured = False
     
+    def http_request(self, req):
+        if self.json_req:
+            if req.has_header('Content-type'):
+                req.remove_header('Content-type')
+                req.add_header('Content-type', 'application/json')
+            return req
+        
     def http_error_302(self, req, fp, code, msg, headers):
         if "location" in headers:
             newurl = headers["location"]
@@ -171,7 +182,7 @@ class HTTP_Handler(QtCore.QObject):
                 .replace("LEFTSQBRK", "[").replace("RIGHTSQBRK", "]")
         else:
             strVar = strVar.replace("[eq]", "=")
-
+            
         if isCmd:
             if "[cmd]" in strVar:
                 strVar = strVar.replace("[cmd]", query)
@@ -192,6 +203,9 @@ class HTTP_Handler(QtCore.QObject):
         
         parsedStr = string
         
+        if "[rnd(" in string:
+            string = core.txtproc.randomiseString(string)
+            
         if "urlenc^" in string:
             parsedStr = core.txtproc.extractString(string, "urlenc")
             hexStr = core.txtproc.strToHex(parsedStr['substr'], False)
@@ -200,10 +214,8 @@ class HTTP_Handler(QtCore.QObject):
             
         if "base64^" in string:
             parsedStr = core.txtproc.extractString(string, "base64")
-            hexStr = core.txtproc.base64proc(parsedStr['substr'], "enc", encoding)
-            urlhex = hexStr.replace("0x", "%")
-            parsedStr['substr'] = urlhex
-
+            parsedStr['substr'] = core.txtproc.base64proc(parsedStr['substr'], "enc", encoding)
+            
         return parsedStr
         
     #Content parser
@@ -224,12 +236,23 @@ class HTTP_Handler(QtCore.QObject):
             return "no_content"
             
         return content[fromStr:toStr]
+    
+    #Preparing Json POST data
+    def prepareJsonPostData(self, data, query, isCmd, encoding):
+        json_data = json.loads(data)
         
+        for key in json_data:
+            if "[blind]" in str(json_data[key]):
+                json_data[key] = json_data[key].replace("[blind]", query)  
+                
+        urlEncoded = urlencode(json_data)
+        postData = urlEncoded.encode(encoding)
+        return postData
+    
     #Preparing POST data
     def preparePostData(self, data, query, isCmd, encoding):
-        if "[random]" in data:
-            data = data.replace("[random]", core.txtproc.rndString(16))
         #Post data must be Var=value, otherwise function fails when trying to build dictionary.
+        ######           
         data = data.replace("=&",  "=[empty]&").replace("\n", "")
         
         if "[blind]" in data:
@@ -245,7 +268,8 @@ class HTTP_Handler(QtCore.QObject):
             data += "[empty]"
             
         data = ''.join([x.replace("=",  ":") for x in data])
-        data = data.replace("[eq]", "=").replace("[eq-urlhex]",  "=")
+        #temporary solution random
+        data = data.replace("[eq]", "=").replace("[eq-urlhex]",  "=").replace("[random]", core.txtproc.rndString(15))
         
         if isCmd:
             if "[cmd]" in data:
@@ -274,17 +298,11 @@ class HTTP_Handler(QtCore.QObject):
     
         urlEncoded = urlencode(data)
         postData = urlEncoded.encode(encoding)
-
         return postData
 
     #Http request main function:
     def httpRequest(self, query, isCmd, vars, blind=False):
-        redirect_handler = RedirectHandler()
-        urlOpener = request.build_opener(redirect_handler)
-        
-        if vars['accept_cookies']:
-            urlOpener.add_handler(request.HTTPCookieProcessor())
-
+        json_req = False
         url = vars['url'].replace("+", " ")
         url = request.unquote(url)
         data = vars['data'].replace("+",  " ").replace("%3D",  "[eq-urlhex]")
@@ -292,7 +310,13 @@ class HTTP_Handler(QtCore.QObject):
         vuln_header = self.isInjectionInHeader(vars)
             
         if vars['method'] == "POST":
-            postData = self.preparePostData(data, query, isCmd, vars['encoding'])
+            #json check
+            if data.startswith("{"):
+                postData = self.prepareJsonPostData(data, query, isCmd, vars['encoding'])
+                json_req = True
+            else:
+                postData = self.preparePostData(data, query, isCmd, vars['encoding'])
+            
             if (postData is None or postData == "fail"):
                 return "no_content"
         else:
@@ -313,14 +337,23 @@ class HTTP_Handler(QtCore.QObject):
                 url = url.replace("ERASEDSUBSTRING", parsed['substr'])
 
         reqLog = "#############################################\n\n[" + vars['method'] + "] " + url
+        postLogStr = ""
         if vars['method'] == "POST":
-            reqLog += "\n+data+\n{\n" + postData.decode(vars['encoding']) + "\n}"           
+            postLogStr = postData.decode(vars['encoding'])
+            reqLog += "\n+data+\n{\n" + postLogStr + "\n}"
+            
         reqLog += "\n+headers+\n{"
 
         #If injection in header
         if vuln_header is not None:
             inj_header = self.buildRequest(vars[vuln_header], query, isCmd, True, vuln_header)
         
+        #custom handler
+        redirect_handler = RedirectHandler(json_req)
+        urlOpener = request.build_opener(redirect_handler)
+        if vars['accept_cookies']:
+            urlOpener.add_handler(request.HTTPCookieProcessor())
+
         #Adding headers if defined
         HTTP_headers = []
         if len(vars['user_agent']) > 0:
@@ -400,7 +433,7 @@ class HTTP_Handler(QtCore.QObject):
                 self.logSignal.emit("\n\n[HTTP Timeout]")
                 return "[---Timed out---]"
                 
-        except Exception as err:
+        except URLError as err:
             self.logSignal.emit("\n[x] Can't start task.\n\n[reason]: " + str(err))
             return "no_content"
         
@@ -435,6 +468,6 @@ class HTTP_Handler(QtCore.QObject):
             
         else:
             db_data = 0
-
+            
         return db_data
         
