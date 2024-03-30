@@ -35,15 +35,14 @@ class RedirectHandler(request.HTTPRedirectHandler):
     
     def __init__(self, json_req):
         self.json_req = json_req
-        
-    redirectOccured = False
+        self.redirectOccured = False
     
     def http_request(self, req):
         if self.json_req:
             if req.has_header('Content-type'):
                 req.remove_header('Content-type')
                 req.add_header('Content-type', 'application/json')
-            return req
+        return req
         
     def http_error_302(self, req, fp, code, msg, headers):
         if "location" in headers:
